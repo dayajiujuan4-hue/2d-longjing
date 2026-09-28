@@ -3,7 +3,7 @@
 /*
 ==========================================================
  杭州探索録2
- GAME SYSTEM Ver.1.2
+ GAME SYSTEM Ver.2.0
 ==========================================================
 */
 
@@ -20,8 +20,7 @@ const ctx=
   );
 
 
-ctx.imageSmoothingEnabled=
-  false;
+ctx.imageSmoothingEnabled=false;
 
 
 /* =========================================================
@@ -34,9 +33,27 @@ const titleScreen=
   );
 
 
-const startButton=
+const exploreModeButton=
   document.getElementById(
-    "startButton"
+    "exploreModeButton"
+  );
+
+
+const storyModeButton=
+  document.getElementById(
+    "storyModeButton"
+  );
+
+
+const storyPreview=
+  document.getElementById(
+    "storyPreview"
+  );
+
+
+const storyPreviewBack=
+  document.getElementById(
+    "storyPreviewBack"
   );
 
 
@@ -137,11 +154,19 @@ const notebookWords=
 
 
 /* =========================================================
+   MODE
+========================================================= */
+
+let gameMode=
+  "explore";
+
+
+/* =========================================================
    SAVE
 ========================================================= */
 
 const SAVE_KEY=
-  "hangzhouExplorer2LongjingV1";
+  "hangzhouExplorer2LongjingV2";
 
 
 let saveData={
@@ -187,8 +212,7 @@ function loadSave(){
 
         saveData.words=
           parsed.words.filter(
-            id=>
-              VOCABULARY[id]
+            id=>VOCABULARY[id]
           );
 
       }
@@ -205,7 +229,7 @@ function loadSave(){
   catch(error){
 
     console.warn(
-      "Save data could not be loaded.",
+      "Save load failed",
       error
     );
 
@@ -229,7 +253,7 @@ function saveGame(){
   catch(error){
 
     console.warn(
-      "Save failed.",
+      "Save failed",
       error
     );
 
@@ -239,7 +263,7 @@ function saveGame(){
 
 
 /* =========================================================
-   MAP / PLAYER
+   PLAYER
 ========================================================= */
 
 let currentMapId=
@@ -249,12 +273,14 @@ let currentMapId=
 const player={
 
   x:
-    MAPS.village.spawn.x *
-    TILE,
+    (
+      MAPS.village.spawn.x+.5
+    )*TILE,
 
   y:
-    MAPS.village.spawn.y *
-    TILE,
+    (
+      MAPS.village.spawn.y+.5
+    )*TILE,
 
   width:18,
 
@@ -270,11 +296,8 @@ const player={
 
 
 const camera={
-
   x:0,
-
   y:0
-
 };
 
 
@@ -300,11 +323,13 @@ window.addEventListener(
 
 
     if(
-      key==="arrowup" ||
-      key==="arrowdown" ||
-      key==="arrowleft" ||
-      key==="arrowright" ||
-      key===" "
+      [
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+        " "
+      ].includes(key)
     ){
 
       event.preventDefault();
@@ -324,18 +349,14 @@ window.addEventListener(
       ){
 
         closeWordPopup();
-
         return;
 
       }
 
 
-      if(
-        dialogue.active
-      ){
+      if(dialogue.active){
 
         advanceDialogue();
-
         return;
 
       }
@@ -363,14 +384,23 @@ window.addEventListener(
       }
 
 
+      if(
+        !storyPreview.classList.contains(
+          "hidden"
+        )
+      ){
+
+        return;
+
+      }
+
+
       interact();
 
     }
 
 
-    if(
-      key==="l"
-    ){
+    if(key==="l"){
 
       if(
         dialogue.active ||
@@ -405,12 +435,14 @@ window.addEventListener(
 
 
 /* =========================================================
-   START
+   TITLE MODE SELECT
 ========================================================= */
 
-startButton.addEventListener(
+exploreModeButton.addEventListener(
   "click",
   ()=>{
+
+    gameMode="explore";
 
     saveData.started=true;
 
@@ -422,7 +454,31 @@ startButton.addEventListener(
     );
 
 
-    updateMapLabel();
+    resetExplorePosition();
+
+  }
+);
+
+
+storyModeButton.addEventListener(
+  "click",
+  ()=>{
+
+    storyPreview.classList.remove(
+      "hidden"
+    );
+
+  }
+);
+
+
+storyPreviewBack.addEventListener(
+  "click",
+  ()=>{
+
+    storyPreview.classList.add(
+      "hidden"
+    );
 
   }
 );
@@ -438,6 +494,38 @@ titleNotebookButton.addEventListener(
 );
 
 
+function resetExplorePosition(){
+
+  currentMapId=
+    "village";
+
+
+  player.x=
+    (
+      MAPS.village.spawn.x+.5
+    )*TILE;
+
+
+  player.y=
+    (
+      MAPS.village.spawn.y+.5
+    )*TILE;
+
+
+  player.direction=
+    "up";
+
+
+  exitCooldown=.5;
+
+
+  updateMapLabel();
+
+  updateCamera();
+
+}
+
+
 /* =========================================================
    COLLISION
 ========================================================= */
@@ -449,7 +537,8 @@ function isWalkableTile(
   return (
     tile===0 ||
     tile===1 ||
-    tile===6
+    tile===6 ||
+    tile===7
   );
 
 }
@@ -536,16 +625,14 @@ function canMoveTo(
 
 
 /* =========================================================
-   PLAYER MOVEMENT
+   MOVEMENT
 ========================================================= */
 
 function updatePlayer(
   dt
 ){
 
-  if(
-    exitCooldown>0
-  ){
+  if(exitCooldown>0){
 
     exitCooldown-=dt;
 
@@ -561,6 +648,9 @@ function updatePlayer(
       "hidden"
     ) ||
     !titleScreen.classList.contains(
+      "hidden"
+    ) ||
+    !storyPreview.classList.contains(
       "hidden"
     )
   ){
@@ -582,7 +672,6 @@ function updatePlayer(
   ){
 
     dy=-1;
-
     player.direction="up";
 
   }
@@ -594,7 +683,6 @@ function updatePlayer(
   ){
 
     dy=1;
-
     player.direction="down";
 
   }
@@ -606,7 +694,6 @@ function updatePlayer(
   ){
 
     dx=-1;
-
     player.direction="left";
 
   }
@@ -618,7 +705,6 @@ function updatePlayer(
   ){
 
     dx=1;
-
     player.direction="right";
 
   }
@@ -629,12 +715,8 @@ function updatePlayer(
     dy!==0;
 
 
-  if(
-    !player.moving
-  ){
-
+  if(!player.moving){
     return;
-
   }
 
 
@@ -650,17 +732,16 @@ function updatePlayer(
 
 
   const amount=
-    player.speed *
-    dt;
+    player.speed*dt;
 
 
   const nx=
-    player.x +
+    player.x+
     dx*amount;
 
 
   const ny=
-    player.y +
+    player.y+
     dy*amount;
 
 
@@ -694,14 +775,12 @@ function updatePlayer(
 
 
 /* =========================================================
-   EXIT
+   EXITS
 ========================================================= */
 
 function checkExits(){
 
-  if(
-    exitCooldown>0
-  ){
+  if(exitCooldown>0){
     return;
   }
 
@@ -754,7 +833,7 @@ function changeMap(
   ){
 
     console.warn(
-      "Unknown map:",
+      "Unknown map",
       exit.target
     );
 
@@ -782,7 +861,7 @@ function changeMap(
   player.moving=false;
 
 
-  exitCooldown=.65;
+  exitCooldown=.7;
 
 
   updateMapLabel();
@@ -812,7 +891,7 @@ function distance(
 
 
 /* =========================================================
-   INTERACTABLE
+   NEARBY
 ========================================================= */
 
 function getNearbyInteractable(){
@@ -929,6 +1008,10 @@ function getNearbyNPC(){
 }
 
 
+/* =========================================================
+   INTERACT
+========================================================= */
+
 function interact(){
 
   const npc=
@@ -962,7 +1045,7 @@ function interact(){
 
 
 /* =========================================================
-   INTERACTION HINT
+   HINT
 ========================================================= */
 
 function updateInteractionHint(){
@@ -976,6 +1059,9 @@ function updateInteractionHint(){
       "hidden"
     ) ||
     !titleScreen.classList.contains(
+      "hidden"
+    ) ||
+    !storyPreview.classList.contains(
       "hidden"
     )
   ){
@@ -1045,7 +1131,7 @@ function obtainWord(
   if(!word){
 
     console.warn(
-      "Unknown vocabulary:",
+      "Unknown vocabulary",
       id
     );
 
@@ -1172,15 +1258,10 @@ function renderNotebook(){
 
 
   const categories=[
-
     "龍井村",
-
     "茶畑",
-
     "製茶",
-
     "山道"
-
   ];
 
 
@@ -1221,7 +1302,9 @@ function renderNotebook(){
         word.category !==
         category
       ){
+
         continue;
+
       }
 
 
@@ -1238,7 +1321,7 @@ function renderNotebook(){
 
 
       row.className=
-        "notebook-word" +
+        "notebook-word"+
         (
           unlocked
           ? ""
@@ -1253,8 +1336,10 @@ function renderNotebook(){
             "div"
           );
 
+
         cn.className=
           "notebook-cn";
+
 
         cn.textContent=
           word.cn;
@@ -1265,6 +1350,7 @@ function renderNotebook(){
             "div"
           );
 
+
         py.textContent=
           word.pinyin;
 
@@ -1273,6 +1359,7 @@ function renderNotebook(){
           document.createElement(
             "div"
           );
+
 
         jp.textContent=
           word.jp;
@@ -1292,8 +1379,10 @@ function renderNotebook(){
             "div"
           );
 
+
         a.className=
           "notebook-cn";
+
 
         a.textContent=
           "？？？";
@@ -1304,6 +1393,7 @@ function renderNotebook(){
             "div"
           );
 
+
         b.textContent=
           "？？？";
 
@@ -1312,6 +1402,7 @@ function renderNotebook(){
           document.createElement(
             "div"
           );
+
 
         c.textContent=
           "未発見";
@@ -1362,7 +1453,7 @@ function updateProgress(){
 
 
 /* =========================================================
-   MAP LABEL
+   LABEL
 ========================================================= */
 
 function updateMapLabel(){
@@ -1416,7 +1507,8 @@ function updateCamera(){
         desiredX,
         Math.max(
           0,
-          mapWidth-canvas.width
+          mapWidth-
+          canvas.width
         )
       )
     );
@@ -1429,7 +1521,8 @@ function updateCamera(){
         desiredY,
         Math.max(
           0,
-          mapHeight-canvas.height
+          mapHeight-
+          canvas.height
         )
       )
     );
@@ -1438,7 +1531,7 @@ function updateCamera(){
 
 
 /* =========================================================
-   UPDATE
+   LOOP
 ========================================================= */
 
 function update(
@@ -1457,10 +1550,6 @@ function update(
 
 }
 
-
-/* =========================================================
-   GAME LOOP
-========================================================= */
 
 let lastTime=
   performance.now();
@@ -1523,5 +1612,5 @@ requestAnimationFrame(
 
 
 console.log(
-  "杭州探索録2 Game System Ver.1.2 loaded"
+  "杭州探索録2 Game System Ver.2.0 loaded"
 );
