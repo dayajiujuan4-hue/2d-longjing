@@ -3,113 +3,175 @@
 /*
 ==========================================================
  杭州探索録2
- GAME SYSTEM Ver.2.2
+ GAME SYSTEM Ver.2.1
 
- ・Dialogue System Ver.2.0 対応
- ・Interior System 対応
- ・茶館カテゴリ対応
+ Dialogue System Ver.2.0 対応
+ ・会話中の単語取得
+ ・単語ポップアップ後の会話復帰
+ ・従来の探索システム維持
 ==========================================================
 */
+
+
+const canvas=
+  document.getElementById(
+    "gameCanvas"
+  );
+
+
+const ctx=
+  canvas.getContext(
+    "2d"
+  );
+
+
+ctx.imageSmoothingEnabled=false;
 
 
 /* =========================================================
    DOM
 ========================================================= */
 
-const canvas=
-  document.getElementById("gameCanvas");
-
-const ctx=
-  canvas.getContext("2d");
-
-
 const titleScreen=
-  document.getElementById("titleScreen");
+  document.getElementById(
+    "titleScreen"
+  );
+
 
 const exploreModeButton=
-  document.getElementById("exploreModeButton");
+  document.getElementById(
+    "exploreModeButton"
+  );
+
 
 const storyModeButton=
-  document.getElementById("storyModeButton");
-
-const titleNotebookButton=
-  document.getElementById("titleNotebookButton");
-
-const titleProgress=
-  document.getElementById("titleProgress");
+  document.getElementById(
+    "storyModeButton"
+  );
 
 
 const storyPreview=
-  document.getElementById("storyPreview");
+  document.getElementById(
+    "storyPreview"
+  );
+
 
 const storyPreviewBack=
-  document.getElementById("storyPreviewBack");
+  document.getElementById(
+    "storyPreviewBack"
+  );
+
+
+const titleNotebookButton=
+  document.getElementById(
+    "titleNotebookButton"
+  );
 
 
 const mapName=
-  document.getElementById("mapName");
+  document.getElementById(
+    "mapName"
+  );
+
 
 const mapNameCN=
-  document.getElementById("mapNameCN");
+  document.getElementById(
+    "mapNameCN"
+  );
 
-const modeLabel=
-  document.getElementById("modeLabel");
 
 const wordCounter=
-  document.getElementById("wordCounter");
+  document.getElementById(
+    "wordCounter"
+  );
 
-const controlHint=
-  document.getElementById("controlHint");
+
+const titleProgress=
+  document.getElementById(
+    "titleProgress"
+  );
+
 
 const interactionHint=
-  document.getElementById("interactionHint");
+  document.getElementById(
+    "interactionHint"
+  );
 
 
 const wordPopup=
-  document.getElementById("wordPopup");
+  document.getElementById(
+    "wordPopup"
+  );
+
 
 const wordChinese=
-  document.getElementById("wordChinese");
+  document.getElementById(
+    "wordChinese"
+  );
+
 
 const wordPinyin=
-  document.getElementById("wordPinyin");
+  document.getElementById(
+    "wordPinyin"
+  );
+
 
 const wordJapanese=
-  document.getElementById("wordJapanese");
+  document.getElementById(
+    "wordJapanese"
+  );
+
 
 const wordDescription=
-  document.getElementById("wordDescription");
+  document.getElementById(
+    "wordDescription"
+  );
+
 
 const wordCloseButton=
-  document.getElementById("wordCloseButton");
+  document.getElementById(
+    "wordCloseButton"
+  );
 
 
 const notebook=
-  document.getElementById("notebook");
+  document.getElementById(
+    "notebook"
+  );
 
-const notebookCloseButton=
-  document.getElementById("notebookCloseButton");
 
-const notebookList=
-  document.getElementById("notebookList");
+const notebookClose=
+  document.getElementById(
+    "notebookClose"
+  );
 
-const notebookProgress=
-  document.getElementById("notebookProgress");
+
+const notebookStats=
+  document.getElementById(
+    "notebookStats"
+  );
+
+
+const notebookWords=
+  document.getElementById(
+    "notebookWords"
+  );
 
 
 /* =========================================================
-   CONSTANTS
+   MODE
+========================================================= */
+
+let gameMode=
+  "explore";
+
+
+/* =========================================================
+   SAVE
 ========================================================= */
 
 const SAVE_KEY=
   "hangzhouExplorer2LongjingV2";
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-let gameMode="explore";
 
 
 let saveData={
@@ -120,51 +182,6 @@ let saveData={
 
 };
 
-
-let currentMapId=
-  "village";
-
-
-let player={
-
-  x:32*TILE+TILE/2,
-
-  y:42*TILE+TILE/2,
-
-  width:18,
-
-  height:20,
-
-  speed:145,
-
-  direction:"up",
-
-  moving:false
-
-};
-
-
-let camera={
-
-  x:0,
-
-  y:0
-
-};
-
-
-let exitCooldown=0;
-
-
-let gameStarted=false;
-
-
-let keys={};
-
-
-/* =========================================================
-   SAVE
-========================================================= */
 
 function loadSave(){
 
@@ -181,30 +198,35 @@ function loadSave(){
     }
 
 
-    const data=
-      JSON.parse(raw);
+    const parsed=
+      JSON.parse(
+        raw
+      );
 
 
     if(
-      data &&
-      Array.isArray(data.words)
+      parsed &&
+      typeof parsed==="object"
     ){
 
-      saveData.words=
-        data.words.filter(
-          id=>VOCABULARY[id]
-        );
+      if(
+        Array.isArray(
+          parsed.words
+        )
+      ){
 
-    }
+        saveData.words=
+          parsed.words.filter(
+            id=>VOCABULARY[id]
+          );
 
+      }
 
-    if(
-      data &&
-      typeof data.started==="boolean"
-    ){
 
       saveData.started=
-        data.started;
+        Boolean(
+          parsed.started
+        );
 
     }
 
@@ -212,7 +234,7 @@ function loadSave(){
   catch(error){
 
     console.warn(
-      "Save load failed:",
+      "Save load failed",
       error
     );
 
@@ -227,14 +249,16 @@ function saveGame(){
 
     localStorage.setItem(
       SAVE_KEY,
-      JSON.stringify(saveData)
+      JSON.stringify(
+        saveData
+      )
     );
 
   }
   catch(error){
 
     console.warn(
-      "Save failed:",
+      "Save failed",
       error
     );
 
@@ -244,358 +268,188 @@ function saveGame(){
 
 
 /* =========================================================
-   RESET
+   PLAYER
 ========================================================= */
 
-function resetGame(){
+let currentMapId=
+  "village";
 
-  saveData={
 
-    words:[],
+const player={
 
-    started:false
+  x:
+    (
+      MAPS.village.spawn.x+.5
+    )*TILE,
 
-  };
+  y:
+    (
+      MAPS.village.spawn.y+.5
+    )*TILE,
 
+  width:18,
 
-  saveGame();
+  height:20,
 
+  speed:145,
 
-  currentMapId=
-    "village";
+  direction:"up",
 
+  moving:false
 
-  const spawn=
-    MAPS.village.spawn;
+};
 
 
-  player.x=
-    spawn.x*TILE+
-    TILE/2;
+const camera={
+  x:0,
+  y:0
+};
 
 
-  player.y=
-    spawn.y*TILE+
-    TILE/2;
-
-
-  camera.x=0;
-  camera.y=0;
-
-
-  updateProgressUI();
-
-}
-
-
-/* =========================================================
-   TITLE
-========================================================= */
-
-function showTitle(){
-
-  titleScreen.classList.remove(
-    "hidden"
-  );
-
-
-  storyPreview.classList.add(
-    "hidden"
-  );
-
-
-  canvas.classList.add(
-    "hidden"
-  );
-
-
-  updateProgressUI();
-
-}
-
-
-function startExploreMode(){
-
-  gameMode=
-    "explore";
-
-
-  gameStarted=true;
-
-
-  saveData.started=true;
-
-  saveGame();
-
-
-  titleScreen.classList.add(
-    "hidden"
-  );
-
-
-  storyPreview.classList.add(
-    "hidden"
-  );
-
-
-  canvas.classList.remove(
-    "hidden"
-  );
-
-
-  if(modeLabel){
-
-    modeLabel.textContent=
-      "中国語探索";
-
-  }
-
-
-  updateMapUI();
-
-  updateProgressUI();
-
-}
-
-
-function showStoryPreview(){
-
-  titleScreen.classList.add(
-    "hidden"
-  );
-
-
-  storyPreview.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-function hideStoryPreview(){
-
-  storyPreview.classList.add(
-    "hidden"
-  );
-
-
-  titleScreen.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-if(exploreModeButton){
-
-  exploreModeButton.addEventListener(
-    "click",
-    startExploreMode
-  );
-
-}
-
-
-if(storyModeButton){
-
-  storyModeButton.addEventListener(
-    "click",
-    showStoryPreview
-  );
-
-}
-
-
-if(storyPreviewBack){
-
-  storyPreviewBack.addEventListener(
-    "click",
-    hideStoryPreview
-  );
-
-}
-
-
-if(titleNotebookButton){
-
-  titleNotebookButton.addEventListener(
-    "click",
-    openNotebook
-  );
-
-}
-
-
-if(wordCloseButton){
-
-  wordCloseButton.addEventListener(
-    "click",
-    ()=>{
-
-      closeWordPopup();
-
-
-      if(
-        typeof resumeDialogueAfterWord===
-        "function"
-      ){
-
-        resumeDialogueAfterWord();
-
-      }
-
-    }
-  );
-
-}
-
-
-if(notebookCloseButton){
-
-  notebookCloseButton.addEventListener(
-    "click",
-    closeNotebook
-  );
-
-}
+let exitCooldown=0;
 
 
 /* =========================================================
    INPUT
 ========================================================= */
 
+const keys={};
+
+
 window.addEventListener(
   "keydown",
   event=>{
 
-    keys[
-      event.key.toLowerCase()
-    ]=true;
+    const key=
+      event.key.toLowerCase();
+
+
+    keys[key]=true;
+
+
+    if(
+      [
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+        " "
+      ].includes(key)
+    ){
+
+      event.preventDefault();
+
+    }
 
 
     /*
-     * WORD POPUP
-     */
+    --------------------------------------------------------
+    E / ENTER
+    --------------------------------------------------------
+    */
 
     if(
-      !wordPopup.classList.contains(
-        "hidden"
-      )
+      key==="e" ||
+      key==="enter"
     ){
 
+      /*
+       * 単語ポップアップが開いている場合
+       */
+
       if(
-        event.key==="Enter" ||
-        event.key.toLowerCase()==="e" ||
-        event.key==="Escape"
+        !wordPopup.classList.contains(
+          "hidden"
+        )
       ){
 
         closeWordPopup();
 
 
+        /*
+         * Dialogue Ver.2.0
+         *
+         * 会話途中で単語を取得した場合、
+         * ポップアップを閉じたあと
+         * 会話へ戻る。
+         */
+
         if(
           typeof resumeDialogueAfterWord===
-          "function"
+            "function"
         ){
 
           resumeDialogueAfterWord();
 
         }
 
-      }
 
-      return;
-
-    }
-
-
-    /*
-     * DIALOGUE
-     */
-
-    if(
-      typeof isDialogueActive===
-      "function" &&
-      isDialogueActive()
-    ){
-
-      if(
-        typeof handleDialogueKey===
-        "function"
-      ){
-
-        handleDialogueKey(
-          event
-        );
+        return;
 
       }
-      else if(
-        event.key==="Enter" ||
-        event.key.toLowerCase()==="e"
-      ){
+
+
+      /*
+       * 会話中
+       */
+
+      if(dialogue.active){
 
         advanceDialogue();
 
+        return;
+
       }
 
-      return;
 
-    }
-
-
-    /*
-     * NOTEBOOK
-     */
-
-    if(
-      !notebook.classList.contains(
-        "hidden"
-      )
-    ){
+      /*
+       * 手帖表示中
+       */
 
       if(
-        event.key==="Escape" ||
-        event.key.toLowerCase()==="l"
+        !notebook.classList.contains(
+          "hidden"
+        )
       ){
 
-        closeNotebook();
+        return;
 
       }
 
-      return;
 
-    }
+      /*
+       * タイトル画面
+       */
 
+      if(
+        !titleScreen.classList.contains(
+          "hidden"
+        )
+      ){
 
-    /*
-     * TITLE / STORY
-     */
+        return;
 
-    if(
-      !titleScreen.classList.contains(
-        "hidden"
-      ) ||
-      !storyPreview.classList.contains(
-        "hidden"
-      )
-    ){
-
-      return;
-
-    }
+      }
 
 
-    /*
-     * INTERACTION
-     */
+      /*
+       * ストーリープレビュー
+       */
 
-    if(
-      event.key==="Enter" ||
-      event.key.toLowerCase()==="e"
-    ){
+      if(
+        !storyPreview.classList.contains(
+          "hidden"
+        )
+      ){
+
+        return;
+
+      }
+
+
+      /*
+       * 通常インタラクト
+       */
 
       interact();
 
@@ -603,14 +457,26 @@ window.addEventListener(
 
 
     /*
-     * NOTEBOOK
-     */
+    --------------------------------------------------------
+    NOTEBOOK
+    --------------------------------------------------------
+    */
 
-    if(
-      event.key.toLowerCase()==="l"
-    ){
+    if(key==="l"){
 
-      openNotebook();
+      if(
+        dialogue.active ||
+        !wordPopup.classList.contains(
+          "hidden"
+        )
+      ){
+
+        return;
+
+      }
+
+
+      toggleNotebook();
 
     }
 
@@ -631,82 +497,116 @@ window.addEventListener(
 
 
 /* =========================================================
-   MOVEMENT INPUT
+   TITLE MODE SELECT
 ========================================================= */
 
-function getMovement(){
+exploreModeButton.addEventListener(
+  "click",
+  ()=>{
 
-  let dx=0;
-  let dy=0;
+    gameMode="explore";
 
+    saveData.started=true;
 
-  if(
-    keys["arrowleft"] ||
-    keys["a"]
-  ){
-
-    dx-=1;
-
-  }
+    saveGame();
 
 
-  if(
-    keys["arrowright"] ||
-    keys["d"]
-  ){
+    titleScreen.classList.add(
+      "hidden"
+    );
 
-    dx+=1;
+
+    resetExplorePosition();
 
   }
+);
 
 
-  if(
-    keys["arrowup"] ||
-    keys["w"]
-  ){
+storyModeButton.addEventListener(
+  "click",
+  ()=>{
 
-    dy-=1;
-
-  }
-
-
-  if(
-    keys["arrowdown"] ||
-    keys["s"]
-  ){
-
-    dy+=1;
+    storyPreview.classList.remove(
+      "hidden"
+    );
 
   }
+);
 
 
-  if(
-    dx!==0 &&
-    dy!==0
-  ){
+storyPreviewBack.addEventListener(
+  "click",
+  ()=>{
 
-    const inv=
-      1/Math.sqrt(2);
-
-    dx*=inv;
-    dy*=inv;
+    storyPreview.classList.add(
+      "hidden"
+    );
 
   }
+);
 
 
-  return{
-    dx,
-    dy
-  };
+titleNotebookButton.addEventListener(
+  "click",
+  ()=>{
+
+    openNotebook();
+
+  }
+);
+
+
+function resetExplorePosition(){
+
+  currentMapId=
+    "village";
+
+
+  player.x=
+    (
+      MAPS.village.spawn.x+.5
+    )*TILE;
+
+
+  player.y=
+    (
+      MAPS.village.spawn.y+.5
+    )*TILE;
+
+
+  player.direction=
+    "up";
+
+
+  exitCooldown=.5;
+
+
+  updateMapLabel();
+
+  updateCamera();
 
 }
 
 
 /* =========================================================
-   TILE
+   COLLISION
 ========================================================= */
 
-function getTileAtPixel(
+function isWalkableTile(
+  tile
+){
+
+  return (
+    tile===0 ||
+    tile===1 ||
+    tile===6 ||
+    tile===7
+  );
+
+}
+
+
+function pointWalkable(
   px,
   py
 ){
@@ -719,6 +619,7 @@ function getTileAtPixel(
     Math.floor(
       px/TILE
     );
+
 
   const ty=
     Math.floor(
@@ -733,137 +634,90 @@ function getTileAtPixel(
     ty>=map.height
   ){
 
-    return 3;
+    return false;
 
   }
 
 
-  return map.grid[ty][tx];
+  return isWalkableTile(
+    map.grid[ty][tx]
+  );
 
 }
 
 
-/* =========================================================
-   WALKABLE
-========================================================= */
-
-function isWalkableTile(
-  tile
+function canMoveTo(
+  x,
+  y
 ){
 
-  /*
-   * 0 grass
-   * 1 stone path
-   * 6 wood
-   * 7 earth
-   */
+  const halfW=
+    player.width/2;
 
-  return(
-    tile===0 ||
-    tile===1 ||
-    tile===6 ||
-    tile===7
+
+  const halfH=
+    player.height/2;
+
+
+  return (
+
+    pointWalkable(
+      x-halfW,
+      y-halfH
+    ) &&
+
+    pointWalkable(
+      x+halfW,
+      y-halfH
+    ) &&
+
+    pointWalkable(
+      x-halfW,
+      y+halfH
+    ) &&
+
+    pointWalkable(
+      x+halfW,
+      y+halfH
+    )
+
   );
 
 }
 
 
 /* =========================================================
-   COLLISION
-========================================================= */
-
-function canStandAt(
-  x,
-  y
-){
-
-  const hw=
-    player.width/2;
-
-  const hh=
-    player.height/2;
-
-
-  const points=[
-
-    [x-hw,y-hh],
-
-    [x+hw,y-hh],
-
-    [x-hw,y+hh],
-
-    [x+hw,y+hh]
-
-  ];
-
-
-  for(
-    const [px,py]
-    of points
-  ){
-
-    if(
-      !isWalkableTile(
-        getTileAtPixel(
-          px,
-          py
-        )
-      )
-    ){
-
-      return false;
-
-    }
-
-  }
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   UPDATE PLAYER
+   MOVEMENT
 ========================================================= */
 
 function updatePlayer(
   dt
 ){
 
-  if(!gameStarted){
-    return;
-  }
+  if(exitCooldown>0){
 
-
-  if(
-    typeof isDialogueActive===
-      "function" &&
-    isDialogueActive()
-  ){
-
-    player.moving=false;
-
-    return;
+    exitCooldown-=dt;
 
   }
 
 
+  /*
+   * UIが開いている間は
+   * プレイヤーを停止。
+   */
+
   if(
+    dialogue.active ||
     !wordPopup.classList.contains(
       "hidden"
-    )
-  ){
-
-    player.moving=false;
-
-    return;
-
-  }
-
-
-  if(
+    ) ||
     !notebook.classList.contains(
+      "hidden"
+    ) ||
+    !titleScreen.classList.contains(
+      "hidden"
+    ) ||
+    !storyPreview.classList.contains(
       "hidden"
     )
   ){
@@ -875,15 +729,60 @@ function updatePlayer(
   }
 
 
-  const movement=
-    getMovement();
+  let dx=0;
+  let dy=0;
 
 
-  const dx=
-    movement.dx;
+  if(
+    keys["w"] ||
+    keys["arrowup"]
+  ){
 
-  const dy=
-    movement.dy;
+    dy=-1;
+
+    player.direction=
+      "up";
+
+  }
+
+
+  if(
+    keys["s"] ||
+    keys["arrowdown"]
+  ){
+
+    dy=1;
+
+    player.direction=
+      "down";
+
+  }
+
+
+  if(
+    keys["a"] ||
+    keys["arrowleft"]
+  ){
+
+    dx=-1;
+
+    player.direction=
+      "left";
+
+  }
+
+
+  if(
+    keys["d"] ||
+    keys["arrowright"]
+  ){
+
+    dx=1;
+
+    player.direction=
+      "right";
+
+  }
 
 
   player.moving=
@@ -891,133 +790,125 @@ function updatePlayer(
     dy!==0;
 
 
-  if(dx<0){
-    player.direction="left";
-  }
-
-  else if(dx>0){
-    player.direction="right";
-  }
-
-  else if(dy<0){
-    player.direction="up";
-  }
-
-  else if(dy>0){
-    player.direction="down";
-  }
-
-
-  const amount=
-    player.speed*dt;
-
-
-  /*
-   * X
-   */
-
-  const nextX=
-    player.x+
-    dx*amount;
-
-
-  if(
-    canStandAt(
-      nextX,
-      player.y
-    )
-  ){
-
-    player.x=
-      nextX;
-
-  }
-
-
-  /*
-   * Y
-   */
-
-  const nextY=
-    player.y+
-    dy*amount;
-
-
-  if(
-    canStandAt(
-      player.x,
-      nextY
-    )
-  ){
-
-    player.y=
-      nextY;
-
-  }
-
-
-  /*
-   * EXIT
-   */
-
-  if(exitCooldown>0){
-
-    exitCooldown-=dt;
-
-  }
-  else{
-
-    checkMapExit();
-
-  }
-
-}
-
-
-/* =========================================================
-   MAP EXIT
-========================================================= */
-
-function checkMapExit(){
-
-  const map=
-    MAPS[currentMapId];
-
-
-  if(
-    !map ||
-    !Array.isArray(map.exits)
-  ){
+  if(!player.moving){
 
     return;
 
   }
 
 
+  /*
+   * 斜め移動速度を補正
+   */
+
+  const length=
+    Math.hypot(
+      dx,
+      dy
+    );
+
+
+  dx/=length;
+
+  dy/=length;
+
+
+  const amount=
+    player.speed*
+    dt;
+
+
+  const nx=
+    player.x+
+    dx*amount;
+
+
+  const ny=
+    player.y+
+    dy*amount;
+
+
+  /*
+   * X / Yを別々に判定することで
+   * 壁に沿って滑らかに移動できる。
+   */
+
+  if(
+    canMoveTo(
+      nx,
+      player.y
+    )
+  ){
+
+    player.x=
+      nx;
+
+  }
+
+
+  if(
+    canMoveTo(
+      player.x,
+      ny
+    )
+  ){
+
+    player.y=
+      ny;
+
+  }
+
+
+  checkExits();
+
+}
+
+
+/* =========================================================
+   EXITS
+========================================================= */
+
+function checkExits(){
+
+  if(exitCooldown>0){
+
+    return;
+
+  }
+
+
+  const map=
+    MAPS[currentMapId];
+
+
   const tx=
     player.x/TILE;
+
 
   const ty=
     player.y/TILE;
 
 
   for(
-    const exit
-    of map.exits
+    const exit of
+    map.exits
   ){
 
     if(
       tx>=exit.x &&
-      tx<exit.x+exit.width &&
+      tx<
+        exit.x+
+        exit.width &&
       ty>=exit.y &&
-      ty<exit.y+exit.height
+      ty<
+        exit.y+
+        exit.height
     ){
 
       changeMap(
-        exit.target,
-        exit.targetX,
-        exit.targetY
+        exit
       );
+
 
       return;
 
@@ -1028,94 +919,52 @@ function checkMapExit(){
 }
 
 
-/* =========================================================
-   CHANGE MAP
-========================================================= */
-
 function changeMap(
-  mapId,
-  targetX,
-  targetY
+  exit
 ){
 
-  if(!MAPS[mapId]){
+  if(
+    !MAPS[
+      exit.target
+    ]
+  ){
+
+    console.warn(
+      "Unknown map",
+      exit.target
+    );
+
+
     return;
+
   }
 
 
   currentMapId=
-    mapId;
-
-
-  const map=
-    MAPS[currentMapId];
-
-
-  const x=
-    typeof targetX==="number"
-      ? targetX
-      : map.spawn.x;
-
-
-  const y=
-    typeof targetY==="number"
-      ? targetY
-      : map.spawn.y;
+    exit.target;
 
 
   player.x=
-    x*TILE+
-    TILE/2;
+    (
+      exit.targetX+.5
+    )*TILE;
 
 
   player.y=
-    y*TILE+
-    TILE/2;
+    (
+      exit.targetY+.5
+    )*TILE;
 
 
-  exitCooldown=
-    .65;
+  player.moving=false;
 
 
-  updateMapUI();
+  exitCooldown=.7;
 
 
-  updateCamera(
-    true
-  );
+  updateMapLabel();
 
-}
-
-
-/* =========================================================
-   MAP UI
-========================================================= */
-
-function updateMapUI(){
-
-  const map=
-    MAPS[currentMapId];
-
-
-  if(!map){
-    return;
-  }
-
-
-  if(mapName){
-
-    mapName.textContent=
-      map.name || "";
-
-  }
-
-
-  if(mapNameCN){
-
-    mapNameCN.textContent=
-      map.cn || "";
-
-  }
+  updateCamera();
 
 }
 
@@ -1131,23 +980,16 @@ function distance(
   by
 ){
 
-  const dx=
-    ax-bx;
-
-  const dy=
-    ay-by;
-
-
-  return Math.sqrt(
-    dx*dx+
-    dy*dy
+  return Math.hypot(
+    ax-bx,
+    ay-by
   );
 
 }
 
 
 /* =========================================================
-   NEARBY INTERACTABLE
+   NEARBY
 ========================================================= */
 
 function getNearbyInteractable(){
@@ -1156,36 +998,27 @@ function getNearbyInteractable(){
     MAPS[currentMapId];
 
 
-  if(
-    !map ||
-    !Array.isArray(
-      map.interactables
-    )
-  ){
+  let best=null;
 
-    return null;
-
-  }
-
-
-  let nearest=null;
-
-  let nearestDistance=
+  let bestDistance=
     Infinity;
 
 
   for(
-    const item
-    of map.interactables
+    const item of
+    map.interactables
   ){
 
     const x=
-      item.x*TILE+
-      TILE/2;
+      (
+        item.x+.5
+      )*TILE;
+
 
     const y=
-      item.y*TILE+
-      TILE/2;
+      (
+        item.y+.5
+      )*TILE;
 
 
     const d=
@@ -1199,26 +1032,22 @@ function getNearbyInteractable(){
 
     if(
       d<56 &&
-      d<nearestDistance
+      d<bestDistance
     ){
 
-      nearest=item;
+      best=item;
 
-      nearestDistance=d;
+      bestDistance=d;
 
     }
 
   }
 
 
-  return nearest;
+  return best;
 
 }
 
-
-/* =========================================================
-   NEARBY NPC
-========================================================= */
 
 function getNearbyNPC(){
 
@@ -1226,34 +1055,27 @@ function getNearbyNPC(){
     MAPS[currentMapId];
 
 
-  if(
-    !map ||
-    !Array.isArray(map.npcs)
-  ){
+  let best=null;
 
-    return null;
-
-  }
-
-
-  let nearest=null;
-
-  let nearestDistance=
+  let bestDistance=
     Infinity;
 
 
   for(
-    const npc
-    of map.npcs
+    const npc of
+    map.npcs
   ){
 
     const x=
-      npc.x*TILE+
-      TILE/2;
+      (
+        npc.x+.5
+      )*TILE;
+
 
     const y=
-      npc.y*TILE+
-      TILE/2;
+      (
+        npc.y+.5
+      )*TILE;
 
 
     const d=
@@ -1267,31 +1089,31 @@ function getNearbyNPC(){
 
     if(
       d<60 &&
-      d<nearestDistance
+      d<bestDistance
     ){
 
-      nearest=npc;
+      best=npc;
 
-      nearestDistance=d;
+      bestDistance=d;
 
     }
 
   }
 
 
-  return nearest;
+  return best;
 
 }
 
 
 /* =========================================================
-   INTERACTION
+   INTERACT
 ========================================================= */
 
 function interact(){
 
   /*
-   * NPC has priority.
+   * NPCを優先。
    */
 
   const npc=
@@ -1300,21 +1122,20 @@ function interact(){
 
   if(npc){
 
-    if(
-      typeof startDialogue===
-      "function"
-    ){
+    startDialogue(
+      npc
+    );
 
-      startDialogue(
-        npc
-      );
-
-    }
 
     return;
 
   }
 
+
+  /*
+   * NPCがいなければ
+   * 語彙オブジェクトを調べる。
+   */
 
   const item=
     getNearbyInteractable();
@@ -1322,22 +1143,9 @@ function interact(){
 
   if(item){
 
-    if(item.word){
-
-      obtainWord(
-        item.word
-      );
-
-    }
-
-    if(
-      typeof item.action===
-      "function"
-    ){
-
-      item.action();
-
-    }
+    obtainWord(
+      item.word
+    );
 
   }
 
@@ -1345,47 +1153,23 @@ function interact(){
 
 
 /* =========================================================
-   INTERACTION HINT
+   HINT
 ========================================================= */
 
 function updateInteractionHint(){
 
-  if(!interactionHint){
-    return;
-  }
-
-
-  if(!gameStarted){
-
-    interactionHint.classList.add(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
   if(
-    typeof isDialogueActive===
-      "function" &&
-    isDialogueActive()
-  ){
-
-    interactionHint.classList.add(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
-  if(
+    dialogue.active ||
     !wordPopup.classList.contains(
       "hidden"
     ) ||
     !notebook.classList.contains(
+      "hidden"
+    ) ||
+    !titleScreen.classList.contains(
+      "hidden"
+    ) ||
+    !storyPreview.classList.contains(
       "hidden"
     )
   ){
@@ -1393,6 +1177,7 @@ function updateInteractionHint(){
     interactionHint.classList.add(
       "hidden"
     );
+
 
     return;
 
@@ -1403,43 +1188,39 @@ function updateInteractionHint(){
     getNearbyNPC();
 
 
-  if(npc){
-
-    interactionHint.textContent=
-      `E / Enter　${npc.name}と話す`;
-
-
-    interactionHint.classList.remove(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
   const item=
     getNearbyInteractable();
 
 
-  if(item){
+  if(npc){
 
     interactionHint.textContent=
-      `E / Enter　${item.label}`;
+      `E　${npc.name}と話す`;
 
 
     interactionHint.classList.remove(
       "hidden"
     );
 
-    return;
+  }
+  else if(item){
+
+    interactionHint.textContent=
+      `E　${item.label}`;
+
+
+    interactionHint.classList.remove(
+      "hidden"
+    );
 
   }
+  else{
 
+    interactionHint.classList.add(
+      "hidden"
+    );
 
-  interactionHint.classList.add(
-    "hidden"
-  );
+  }
 
 }
 
@@ -1459,39 +1240,62 @@ function obtainWord(
   if(!word){
 
     console.warn(
-      "Unknown vocabulary:",
+      "Unknown vocabulary",
       id
     );
+
 
     return;
 
   }
 
 
-  const alreadyKnown=
-    saveData.words.includes(
+  /*
+   * 初回取得なら保存。
+   */
+
+  if(
+    !saveData.words.includes(
       id
-    );
-
-
-  if(!alreadyKnown){
+    )
+  ){
 
     saveData.words.push(
       id
     );
+
 
     saveGame();
 
   }
 
 
-  showWordPopup(
-    id,
-    !alreadyKnown
+  /*
+   * ポップアップへ表示。
+   */
+
+  wordChinese.textContent=
+    word.cn;
+
+
+  wordPinyin.textContent=
+    word.pinyin;
+
+
+  wordJapanese.textContent=
+    word.jp;
+
+
+  wordDescription.textContent=
+    word.description;
+
+
+  wordPopup.classList.remove(
+    "hidden"
   );
 
 
-  updateProgressUI();
+  updateProgress();
 
 }
 
@@ -1499,75 +1303,6 @@ function obtainWord(
 /* =========================================================
    WORD POPUP
 ========================================================= */
-
-function showWordPopup(
-  id,
-  isNew=true
-){
-
-  const word=
-    VOCABULARY[id];
-
-
-  if(!word){
-    return;
-  }
-
-
-  if(wordChinese){
-
-    wordChinese.textContent=
-      word.cn;
-
-  }
-
-
-  if(wordPinyin){
-
-    wordPinyin.textContent=
-      word.pinyin;
-
-  }
-
-
-  if(wordJapanese){
-
-    wordJapanese.textContent=
-      word.jp;
-
-  }
-
-
-  if(wordDescription){
-
-    wordDescription.textContent=
-      word.description || "";
-
-  }
-
-
-  const badge=
-    wordPopup.querySelector(
-      ".word-new"
-    );
-
-
-  if(badge){
-
-    badge.textContent=
-      isNew
-        ? "NEW WORD"
-        : "DISCOVERED";
-
-  }
-
-
-  wordPopup.classList.remove(
-    "hidden"
-  );
-
-}
-
 
 function closeWordPopup(){
 
@@ -1578,48 +1313,54 @@ function closeWordPopup(){
 }
 
 
-/* =========================================================
-   PROGRESS
-========================================================= */
+/*
+ * ボタンから閉じた場合にも、
+ * Dialogue Ver.2.0の会話へ復帰する。
+ */
 
-function updateProgressUI(){
+wordCloseButton.addEventListener(
+  "click",
+  ()=>{
 
-  const known=
-    saveData.words.length;
-
-  const total=
-    VOCABULARY_IDS.length;
-
-
-  if(wordCounter){
-
-    wordCounter.textContent=
-      `${known} / ${total}`;
-
-  }
+    closeWordPopup();
 
 
-  if(titleProgress){
+    if(
+      typeof resumeDialogueAfterWord===
+        "function"
+    ){
 
-    titleProgress.textContent=
-      `${known} / ${total} words`;
+      resumeDialogueAfterWord();
+
+    }
 
   }
-
-
-  if(notebookProgress){
-
-    notebookProgress.textContent=
-      `${known} / ${total}`;
-
-  }
-
-}
+);
 
 
 /* =========================================================
    NOTEBOOK
 ========================================================= */
+
+function toggleNotebook(){
+
+  if(
+    notebook.classList.contains(
+      "hidden"
+    )
+  ){
+
+    openNotebook();
+
+  }
+  else{
+
+    closeNotebook();
+
+  }
+
+}
+
 
 function openNotebook(){
 
@@ -1642,24 +1383,20 @@ function closeNotebook(){
 }
 
 
-/* =========================================================
-   NOTEBOOK RENDER
-========================================================= */
+notebookClose.addEventListener(
+  "click",
+  closeNotebook
+);
+
 
 function renderNotebook(){
 
-  if(!notebookList){
-    return;
-  }
+  notebookStats.textContent=
+    `発見したことば　${saveData.words.length} / ${VOCABULARY_IDS.length}`;
 
 
-  notebookList.innerHTML="";
+  notebookWords.innerHTML="";
 
-
-  /*
-   * Ver.2.2
-   * 茶館カテゴリ追加
-   */
 
   const categories=[
 
@@ -1669,142 +1406,227 @@ function renderNotebook(){
 
     "製茶",
 
-    "山道",
-
-    "茶館"
+    "山道"
 
   ];
 
 
   for(
-    const category
-    of categories
+    const category of
+    categories
   ){
-
-    const section=
-      document.createElement(
-        "section"
-      );
-
-
-    section.className=
-      "notebook-category";
-
 
     const title=
       document.createElement(
-        "h3"
+        "div"
       );
+
+
+    title.className=
+      "word-section-title";
 
 
     title.textContent=
       category;
 
 
-    section.appendChild(
+    notebookWords.appendChild(
       title
     );
 
 
-    const list=
-      document.createElement(
-        "div"
-      );
-
-
-    list.className=
-      "notebook-word-list";
-
-
-    const ids=
-      VOCABULARY_IDS.filter(
-        id=>
-          VOCABULARY[id]
-            .category===
-          category
-      );
-
-
     for(
-      const id
-      of ids
+      const id of
+      VOCABULARY_IDS
     ){
-
-      const known=
-        saveData.words.includes(
-          id
-        );
-
 
       const word=
         VOCABULARY[id];
 
 
-      const card=
+      if(
+        word.category !==
+        category
+      ){
+
+        continue;
+
+      }
+
+
+      const unlocked=
+        saveData.words.includes(
+          id
+        );
+
+
+      const row=
         document.createElement(
           "div"
         );
 
 
-      card.className=
-        known
-          ? "notebook-word known"
-          : "notebook-word unknown";
+      row.className=
+        "notebook-word"+
+        (
+          unlocked
+            ? ""
+            : " locked"
+        );
 
 
-      if(known){
+      /*
+      --------------------------------------------------------
+      発見済み
+      --------------------------------------------------------
+      */
 
-        card.innerHTML=`
-          <div class="notebook-cn">
-            ${word.cn}
-          </div>
+      if(unlocked){
 
-          <div class="notebook-pinyin">
-            ${word.pinyin}
-          </div>
+        const cn=
+          document.createElement(
+            "div"
+          );
 
-          <div class="notebook-jp">
-            ${word.jp}
-          </div>
-        `;
+
+        cn.className=
+          "notebook-cn";
+
+
+        cn.textContent=
+          word.cn;
+
+
+        const py=
+          document.createElement(
+            "div"
+          );
+
+
+        py.textContent=
+          word.pinyin;
+
+
+        const jp=
+          document.createElement(
+            "div"
+          );
+
+
+        jp.textContent=
+          word.jp;
+
+
+        row.append(
+          cn,
+          py,
+          jp
+        );
 
       }
+
+      /*
+      --------------------------------------------------------
+      未発見
+      --------------------------------------------------------
+      */
+
       else{
 
-        card.innerHTML=`
-          <div class="notebook-cn">
-            ？？？
-          </div>
+        const a=
+          document.createElement(
+            "div"
+          );
 
-          <div class="notebook-pinyin">
-            未発見
-          </div>
 
-          <div class="notebook-jp">
-            龍井村を探索しよう
-          </div>
-        `;
+        a.className=
+          "notebook-cn";
+
+
+        a.textContent=
+          "？？？";
+
+
+        const b=
+          document.createElement(
+            "div"
+          );
+
+
+        b.textContent=
+          "？？？";
+
+
+        const c=
+          document.createElement(
+            "div"
+          );
+
+
+        c.textContent=
+          "未発見";
+
+
+        row.append(
+          a,
+          b,
+          c
+        );
 
       }
 
 
-      list.appendChild(
-        card
+      notebookWords.appendChild(
+        row
       );
 
     }
 
-
-    section.appendChild(
-      list
-    );
-
-
-    notebookList.appendChild(
-      section
-    );
-
   }
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress(){
+
+  const count=
+    saveData.words.length;
+
+
+  const total=
+    VOCABULARY_IDS.length;
+
+
+  wordCounter.textContent=
+    `ことば ${count} / ${total}`;
+
+
+  titleProgress.textContent=
+    `発見したことば　${count} / ${total}`;
+
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+function updateMapLabel(){
+
+  const map=
+    MAPS[currentMapId];
+
+
+  mapName.textContent=
+    map.name;
+
+
+  mapNameCN.textContent=
+    map.cn;
 
 }
 
@@ -1813,101 +1635,77 @@ function renderNotebook(){
    CAMERA
 ========================================================= */
 
-function updateCamera(
-  instant=false
-){
+function updateCamera(){
 
   const map=
     MAPS[currentMapId];
 
 
-  if(!map){
-    return;
-  }
-
-
   const mapWidth=
     map.width*TILE;
+
 
   const mapHeight=
     map.height*TILE;
 
 
-  let targetX=
+  const desiredX=
     player.x-
     canvas.width/2;
 
 
-  let targetY=
+  const desiredY=
     player.y-
     canvas.height/2;
 
 
-  const maxX=
-    Math.max(
-      0,
-      mapWidth-
-      canvas.width
-    );
-
-
-  const maxY=
-    Math.max(
-      0,
-      mapHeight-
-      canvas.height
-    );
-
-
-  targetX=
+  camera.x=
     Math.max(
       0,
       Math.min(
-        maxX,
-        targetX
+        desiredX,
+        Math.max(
+          0,
+          mapWidth-
+          canvas.width
+        )
       )
     );
 
 
-  targetY=
+  camera.y=
     Math.max(
       0,
       Math.min(
-        maxY,
-        targetY
+        desiredY,
+        Math.max(
+          0,
+          mapHeight-
+          canvas.height
+        )
       )
     );
 
-
-  if(instant){
-
-    camera.x=
-      targetX;
-
-    camera.y=
-      targetY;
-
-    return;
-
-  }
+}
 
 
-  /*
-   * Smooth camera
-   */
+/* =========================================================
+   LOOP
+========================================================= */
 
-  camera.x+=
-    (
-      targetX-
-      camera.x
-    )*.12;
+function update(
+  dt
+){
+
+  updatePlayer(
+    dt
+  );
 
 
-  camera.y+=
-    (
-      targetY-
-      camera.y
-    )*.12;
+  updateCamera();
+
+
+  updateInteractionHint();
 
 }
 
@@ -1916,49 +1714,43 @@ function updateCamera(
    GAME LOOP
 ========================================================= */
 
-let previousTime=
+let lastTime=
   performance.now();
 
 
 function gameLoop(
-  now
+  time
 ){
 
   const dt=
     Math.min(
-      .05,
+      .04,
       (
-        now-
-        previousTime
+        time-
+        lastTime
       )/1000
     );
 
 
-  previousTime=
-    now;
+  lastTime=
+    time;
 
 
-  if(gameStarted){
-
-    updatePlayer(
-      dt
-    );
+  update(
+    dt
+  );
 
 
-    updateCamera();
+  /*
+   * visuals.js側の描画。
+   */
 
+  if(
+    typeof drawGame===
+    "function"
+  ){
 
-    updateInteractionHint();
-
-
-    if(
-      typeof drawGame===
-      "function"
-    ){
-
-      drawGame();
-
-    }
+    drawGame();
 
   }
 
@@ -1971,36 +1763,19 @@ function gameLoop(
 
 
 /* =========================================================
-   INITIALIZE
+   INIT
 ========================================================= */
 
 loadSave();
 
 
-const initialSpawn=
-  MAPS[currentMapId].spawn;
+updateProgress();
 
 
-player.x=
-  initialSpawn.x*TILE+
-  TILE/2;
+updateMapLabel();
 
 
-player.y=
-  initialSpawn.y*TILE+
-  TILE/2;
-
-
-updateMapUI();
-
-updateProgressUI();
-
-updateCamera(
-  true
-);
-
-
-showTitle();
+updateCamera();
 
 
 requestAnimationFrame(
@@ -2009,5 +1784,5 @@ requestAnimationFrame(
 
 
 console.log(
-  "杭州探索録2 Game System Ver.2.2 - TEAHOUSE VOCABULARY READY loaded"
+  "杭州探索録2 Game System Ver.2.1 - DIALOGUE READY loaded"
 );
