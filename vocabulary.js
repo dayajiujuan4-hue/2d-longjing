@@ -598,6 +598,130 @@ const VOCABULARY={
  　 jp:"茶器",
   　description:"茶壺や茶杯など、お茶を淹れて飲むために使う道具の総称。"
 　}
+
+  /* ======================================================
+     茶葉店
+  ====================================================== */
+
+  ,lvcha:{
+    category:"茶葉店",
+    cn:"绿茶",
+    pinyin:"lǜchá",
+    jp:"緑茶",
+    description:"発酵させずに作る茶。龍井茶は中国を代表する緑茶の一つ。"
+  },
+
+  longjingcha:{
+    category:"茶葉店",
+    cn:"龙井茶",
+    pinyin:"Lóngjǐngchá",
+    jp:"龍井茶",
+    description:"杭州を代表する緑茶。龍井村周辺はその産地として知られている。"
+  },
+
+  xincha:{
+    category:"茶葉店",
+    cn:"新茶",
+    pinyin:"xīnchá",
+    jp:"新茶",
+    description:"その年に新しく作られた茶。"
+  },
+
+  chuncha:{
+    category:"茶葉店",
+    cn:"春茶",
+    pinyin:"chūnchá",
+    jp:"春茶",
+    description:"春に摘採・製造される茶。"
+  },
+
+  jiage:{
+    category:"茶葉店",
+    cn:"价格",
+    pinyin:"jiàgé",
+    jp:"価格・値段",
+    description:"商品の価格を表す言葉。"
+  },
+
+  duoshaoqian:{
+    category:"茶葉店",
+    cn:"多少钱",
+    pinyin:"duōshao qián",
+    jp:"いくらですか",
+    description:"商品の値段を尋ねるときによく使う表現。"
+  },
+
+  chengzhong:{
+    category:"茶葉店",
+    cn:"称重",
+    pinyin:"chēngzhòng",
+    jp:"重さを量る",
+    description:"秤などを使って商品の重量を量ること。"
+  },
+
+  ke:{
+    category:"茶葉店",
+    cn:"克",
+    pinyin:"kè",
+    jp:"グラム",
+    description:"重さの単位。茶葉を購入するときにも使われる。"
+  },
+
+  yijin:{
+    category:"茶葉店",
+    cn:"一斤",
+    pinyin:"yì jīn",
+    jp:"一斤・500グラム",
+    description:"中国で使われる重量表現。現在の中国大陸では一斤は500グラム。"
+  },
+
+  baozhuang:{
+    category:"茶葉店",
+    cn:"包装",
+    pinyin:"bāozhuāng",
+    jp:"包装・包装する",
+    description:"商品を袋や箱などで包むこと。"
+  },
+
+  lihe:{
+    category:"茶葉店",
+    cn:"礼盒",
+    pinyin:"lǐhé",
+    jp:"ギフトボックス",
+    description:"贈答用の商品などを入れる箱。"
+  },
+
+  maicha:{
+    category:"茶葉店",
+    cn:"买茶",
+    pinyin:"mǎi chá",
+    jp:"お茶を買う",
+    description:"茶葉やお茶を購入すること。"
+  },
+
+  shihe:{
+    category:"茶葉店",
+    cn:"试喝",
+    pinyin:"shìhē",
+    jp:"試飲する",
+    description:"購入する前などに、飲み物を試しに飲んでみること。"
+  },
+
+  tuijian:{
+    category:"茶葉店",
+    cn:"推荐",
+    pinyin:"tuījiàn",
+    jp:"おすすめする・推薦する",
+    description:"人に商品や物事をすすめること。"
+  },
+
+  pinzhi:{
+    category:"茶葉店",
+    cn:"品质",
+    pinyin:"pǐnzhì",
+    jp:"品質",
+    description:"商品の質や品質を表す言葉。"
+  }
 };
 
 
