@@ -3,79 +3,37 @@
 /*
 ==========================================================
  杭州探索録2
- MAP SYSTEM Ver.5.1
+ MAP SYSTEM Ver.5.2
 
  LONGJING TERRACED LANDSCAPE
-
- ・大胆な段々茶畑
- ・高低差を意識した石垣
- ・蛇行する山道
- ・茶摘み生活空間
- ・展望ポイント
- ・visuals.js Ver.5 対応
- ・living.js Ver.1 対応
- ・dialogue.js Ver.2 対応
+ + MURAGUCHI TEAHOUSE INTERIOR
 ==========================================================
 */
-
 
 const TILE=32;
 
 
-/*
-==========================================================
- TILE
+/* =========================================================
+   BASIC GRID
+========================================================= */
 
- 0 = grass
- 1 = stone path
- 2 = tea field
- 3 = building / wall
- 4 = stone terrace
- 5 = water
- 6 = wood
- 7 = earth
-==========================================================
-*/
-
-
-function createGrid(
-  width,
-  height,
-  fill=0
-){
-
+function createGrid(width,height,fill=0){
   return Array.from(
     {length:height},
     ()=>Array(width).fill(fill)
   );
-
 }
 
 
-function rect(
-  grid,
-  x,
-  y,
-  w,
-  h,
-  tile
-){
+function rect(grid,x,y,w,h,tile){
 
-  for(
-    let yy=y;
-    yy<y+h;
-    yy++
-  ){
+  for(let yy=y;yy<y+h;yy++){
 
-    for(
-      let xx=x;
-      xx<x+w;
-      xx++
-    ){
+    for(let xx=x;xx<x+w;xx++){
 
       if(
         grid[yy] &&
-        grid[yy][xx] !== undefined
+        grid[yy][xx]!==undefined
       ){
         grid[yy][xx]=tile;
       }
@@ -87,13 +45,7 @@ function rect(
 }
 
 
-function pathH(
-  grid,
-  x1,
-  x2,
-  y,
-  width=3
-){
+function pathH(grid,x1,x2,y,width=3){
 
   rect(
     grid,
@@ -107,13 +59,7 @@ function pathH(
 }
 
 
-function pathV(
-  grid,
-  x,
-  y1,
-  y2,
-  width=3
-){
+function pathV(grid,x,y1,y2,width=3){
 
   rect(
     grid,
@@ -127,72 +73,29 @@ function pathV(
 }
 
 
-/*
-==========================================================
- TERRACE HELPERS
-==========================================================
-*/
-
-
-function teaTerrace(
-  grid,
-  x,
-  y,
-  w,
-  h
-){
-
-  /*
-   * 茶畑本体
-   */
+function teaTerrace(grid,x,y,w,h){
 
   rect(
     grid,
-    x,
-    y,
-    w,
-    h,
+    x,y,w,h,
     2
   );
 
-
-  /*
-   * 下辺を石垣にする。
-   * visuals.js Ver.5 が
-   * この境界を高低差として強調する。
-   */
-
   rect(
     grid,
-    x,
-    y+h,
-    w,
-    1,
+    x,y+h,w,1,
     4
   );
 
 }
 
 
-function stoneSteps(
-  grid,
-  x,
-  y,
-  width,
-  height
-){
-
-  /*
-   * 通行可能な石段。
-   * collision的には stone path。
-   */
+function stoneSteps(grid,x,y,width,height){
 
   rect(
     grid,
-    x,
-    y,
-    width,
-    height,
+    x,y,
+    width,height,
     1
   );
 
@@ -211,265 +114,62 @@ const villageGrid=
   );
 
 
+pathV(villageGrid,29,37,45,6);
+
+pathH(villageGrid,25,34,35,5);
+pathV(villageGrid,24,29,37,5);
+pathH(villageGrid,24,40,27,5);
+pathV(villageGrid,37,21,31,5);
+pathH(villageGrid,30,41,19,5);
+pathV(villageGrid,28,13,23,5);
+pathH(villageGrid,28,37,11,5);
+pathV(villageGrid,35,0,15,5);
+
+pathH(villageGrid,10,27,30,3);
+pathV(villageGrid,10,24,32,3);
+pathH(villageGrid,10,21,22,3);
+
+pathH(villageGrid,40,55,25,3);
+pathV(villageGrid,53,19,27,3);
+
+pathH(villageGrid,14,30,14,3);
+pathV(villageGrid,14,8,16,3);
+
+
+teaTerrace(villageGrid,3,3,10,7);
+teaTerrace(villageGrid,17,3,13,6);
+teaTerrace(villageGrid,44,3,16,8);
+teaTerrace(villageGrid,3,13,8,7);
+teaTerrace(villageGrid,45,13,14,5);
+teaTerrace(villageGrid,3,35,17,7);
+teaTerrace(villageGrid,43,34,17,8);
+
+
+/* BUILDINGS */
+
+rect(villageGrid,14,17,10,5,3);
+rect(villageGrid,5,24,8,6,3);
+rect(villageGrid,42,20,10,5,3);
+rect(villageGrid,45,28,12,5,3);
+rect(villageGrid,18,32,8,5,3);
+
+
 /*
-----------------------------------------------------------
- SOUTH ENTRANCE
-----------------------------------------------------------
-*/
+ * 村口茶館の正面。
+ * 建物中央の扉前を通行可能にする。
+ */
 
-pathV(
+rect(
   villageGrid,
-  29,
-  37,
-  45,
-  6
-);
-
-
-/*
-----------------------------------------------------------
- MAIN WINDING STREET
-----------------------------------------------------------
-*/
-
-pathH(
-  villageGrid,
-  25,
-  34,
-  35,
-  5
-);
-
-pathV(
-  villageGrid,
+  46,
   24,
-  29,
-  37,
-  5
-);
-
-pathH(
-  villageGrid,
-  24,
-  40,
-  27,
-  5
-);
-
-pathV(
-  villageGrid,
-  37,
-  21,
-  31,
-  5
-);
-
-pathH(
-  villageGrid,
-  30,
-  41,
-  19,
-  5
-);
-
-pathV(
-  villageGrid,
-  28,
-  13,
-  23,
-  5
-);
-
-pathH(
-  villageGrid,
-  28,
-  37,
-  11,
-  5
-);
-
-pathV(
-  villageGrid,
-  35,
-  0,
-  15,
-  5
+  3,
+  3,
+  1
 );
 
 
-/*
-----------------------------------------------------------
- WEST ALLEY
-----------------------------------------------------------
-*/
-
-pathH(
-  villageGrid,
-  10,
-  27,
-  30,
-  3
-);
-
-pathV(
-  villageGrid,
-  10,
-  24,
-  32,
-  3
-);
-
-pathH(
-  villageGrid,
-  10,
-  21,
-  22,
-  3
-);
-
-
-/*
-----------------------------------------------------------
- EAST TEA HOUSE ALLEY
-----------------------------------------------------------
-*/
-
-pathH(
-  villageGrid,
-  40,
-  55,
-  25,
-  3
-);
-
-pathV(
-  villageGrid,
-  53,
-  19,
-  27,
-  3
-);
-
-
-/*
-----------------------------------------------------------
- NORTHWEST PATH
-----------------------------------------------------------
-*/
-
-pathH(
-  villageGrid,
-  14,
-  30,
-  14,
-  3
-);
-
-pathV(
-  villageGrid,
-  14,
-  8,
-  16,
-  3
-);
-
-
-/*
-----------------------------------------------------------
- VILLAGE TEA TERRACES
-----------------------------------------------------------
-*/
-
-teaTerrace(
-  villageGrid,
-  3,3,
-  10,7
-);
-
-teaTerrace(
-  villageGrid,
-  17,3,
-  13,6
-);
-
-teaTerrace(
-  villageGrid,
-  44,3,
-  16,8
-);
-
-teaTerrace(
-  villageGrid,
-  3,13,
-  8,7
-);
-
-teaTerrace(
-  villageGrid,
-  45,13,
-  14,5
-);
-
-teaTerrace(
-  villageGrid,
-  3,35,
-  17,7
-);
-
-teaTerrace(
-  villageGrid,
-  43,34,
-  17,8
-);
-
-
-/*
-----------------------------------------------------------
- BUILDINGS
-----------------------------------------------------------
-*/
-
-rect(
-  villageGrid,
-  14,17,
-  10,5,
-  3
-);
-
-rect(
-  villageGrid,
-  5,24,
-  8,6,
-  3
-);
-
-rect(
-  villageGrid,
-  42,20,
-  10,5,
-  3
-);
-
-rect(
-  villageGrid,
-  45,28,
-  12,5,
-  3
-);
-
-rect(
-  villageGrid,
-  18,32,
-  8,5,
-  3
-);
-
-
-/*
-----------------------------------------------------------
- WATER CHANNEL
-----------------------------------------------------------
-*/
+/* WATER */
 
 rect(
   villageGrid,
@@ -480,8 +180,7 @@ rect(
 
 
 /* =========================================================
-   FIELD Ver.5
-   龍井・段々茶畑
+   FIELD
 ========================================================= */
 
 const fieldGrid=
@@ -492,407 +191,55 @@ const fieldGrid=
   );
 
 
-/*
-==========================================================
- LEVEL 0
- 茶園入口
- y 46 - 53
-==========================================================
-*/
-
-pathV(
-  fieldGrid,
-  27,
-  46,
-  53,
-  6
-);
-
-
-pathH(
-  fieldGrid,
-  21,
-  36,
-  45,
-  4
-);
-
-
-/*
-入口広場
-*/
-
-rect(
-  fieldGrid,
-  23,
-  43,
-  14,
-  5,
-  1
-);
-
-
-/*
-入口左右の茶畑
-*/
-
-teaTerrace(
-  fieldGrid,
-  5,
-  45,
-  15,
-  5
-);
-
-teaTerrace(
-  fieldGrid,
-  40,
-  44,
-  15,
-  6
-);
-
-
-/*
-==========================================================
- FIRST CLIMB
-==========================================================
-*/
-
-stoneSteps(
-  fieldGrid,
-  23,
-  38,
-  4,
-  6
-);
-
-
-/*
-途中で左へ曲がる
-*/
-
-pathH(
-  fieldGrid,
-  15,
-  26,
-  37,
-  3
-);
-
-
-stoneSteps(
-  fieldGrid,
-  14,
-  33,
-  3,
-  7
-);
-
-
-/*
-==========================================================
- LEVEL 1
- 下段茶畑
-==========================================================
-*/
-
-pathH(
-  fieldGrid,
-  13,
-  38,
-  31,
-  4
-);
-
-
-/*
-左側の大茶畑
-*/
-
-teaTerrace(
-  fieldGrid,
-  3,
-  26,
-  10,
-  6
-);
-
-
-/*
-中央
-*/
-
-teaTerrace(
-  fieldGrid,
-  18,
-  25,
-  14,
-  6
-);
-
-
-/*
-右側
-*/
-
-teaTerrace(
-  fieldGrid,
-  39,
-  27,
-  17,
-  6
-);
-
-
-/*
-細い茶畑
-*/
-
-teaTerrace(
-  fieldGrid,
-  3,
-  35,
-  9,
-  5
-);
-
-teaTerrace(
-  fieldGrid,
-  40,
-  36,
-  15,
-  5
-);
-
-
-/*
-==========================================================
- SECOND CLIMB
- 中段への石段
-==========================================================
-*/
-
-pathV(
-  fieldGrid,
-  35,
-  25,
-  33,
-  3
-);
-
-
-pathH(
-  fieldGrid,
-  30,
-  37,
-  23,
-  4
-);
-
-
-stoneSteps(
-  fieldGrid,
-  28,
-  19,
-  3,
-  8
-);
-
-
-/*
-==========================================================
- LEVEL 2
- 茶摘みエリア
-==========================================================
-*/
-
-pathH(
-  fieldGrid,
-  12,
-  43,
-  17,
-  4
-);
-
-
-/*
-左斜面
-*/
-
-teaTerrace(
-  fieldGrid,
-  3,
-  12,
-  9,
-  6
-);
-
-
-/*
-中央巨大茶畑
-*/
-
-teaTerrace(
-  fieldGrid,
-  15,
-  10,
-  13,
-  7
-);
-
-
-/*
-右側
-*/
-
-teaTerrace(
-  fieldGrid,
-  33,
-  12,
-  11,
-  5
-);
-
-teaTerrace(
-  fieldGrid,
-  47,
-  14,
-  10,
-  6
-);
-
-
-/*
-==========================================================
- THIRD CLIMB
- 上段へ
-==========================================================
-*/
-
-pathV(
-  fieldGrid,
-  10,
-  9,
-  19,
-  3
-);
-
-
-pathH(
-  fieldGrid,
-  10,
-  22,
-  7,
-  3
-);
-
-
-stoneSteps(
-  fieldGrid,
-  20,
-  3,
-  3,
-  7
-);
-
-
-/*
-==========================================================
- LEVEL 3
- 最上段 / 見晴らし
-==========================================================
-*/
-
-pathH(
-  fieldGrid,
-  18,
-  42,
-  2,
-  4
-);
-
-
-/*
-最上段茶畑
-*/
-
-teaTerrace(
-  fieldGrid,
-  3,
-  2,
-  13,
-  5
-);
-
-teaTerrace(
-  fieldGrid,
-  25,
-  2,
-  13,
-  5
-);
-
-teaTerrace(
-  fieldGrid,
-  44,
-  3,
-  12,
-  5
-);
-
-
-/*
-展望スペース
-*/
-
-rect(
-  fieldGrid,
-  35,
-  7,
-  9,
-  5,
-  1
-);
-
-
-/*
-==========================================================
- 製茶場への分岐
-==========================================================
-*/
-
-pathH(
-  fieldGrid,
-  37,
-  57,
-  22,
-  3
-);
-
-
-pathV(
-  fieldGrid,
-  55,
-  20,
-  25,
-  3
-);
-
-
-/*
-==========================================================
- 山道への出口
-==========================================================
-*/
-
-pathV(
-  fieldGrid,
-  20,
-  0,
-  5,
-  3
-);
+pathV(fieldGrid,27,46,53,6);
+pathH(fieldGrid,21,36,45,4);
+
+rect(fieldGrid,23,43,14,5,1);
+
+teaTerrace(fieldGrid,5,45,15,5);
+teaTerrace(fieldGrid,40,44,15,6);
+
+stoneSteps(fieldGrid,23,38,4,6);
+
+pathH(fieldGrid,15,26,37,3);
+stoneSteps(fieldGrid,14,33,3,7);
+
+pathH(fieldGrid,13,38,31,4);
+
+teaTerrace(fieldGrid,3,26,10,6);
+teaTerrace(fieldGrid,18,25,14,6);
+teaTerrace(fieldGrid,39,27,17,6);
+teaTerrace(fieldGrid,3,35,9,5);
+teaTerrace(fieldGrid,40,36,15,5);
+
+pathV(fieldGrid,35,25,33,3);
+pathH(fieldGrid,30,37,23,4);
+stoneSteps(fieldGrid,28,19,3,8);
+
+pathH(fieldGrid,12,43,17,4);
+
+teaTerrace(fieldGrid,3,12,9,6);
+teaTerrace(fieldGrid,15,10,13,7);
+teaTerrace(fieldGrid,33,12,11,5);
+teaTerrace(fieldGrid,47,14,10,6);
+
+pathV(fieldGrid,10,9,19,3);
+pathH(fieldGrid,10,22,7,3);
+stoneSteps(fieldGrid,20,3,3,7);
+
+pathH(fieldGrid,18,42,2,4);
+
+teaTerrace(fieldGrid,3,2,13,5);
+teaTerrace(fieldGrid,25,2,13,5);
+teaTerrace(fieldGrid,44,3,12,5);
+
+rect(fieldGrid,35,7,9,5,1);
+
+pathH(fieldGrid,37,57,22,3);
+pathV(fieldGrid,55,20,25,3);
+
+pathV(fieldGrid,20,0,5,3);
+
 
 /* =========================================================
    WORKSHOP
@@ -906,59 +253,17 @@ const workshopGrid=
   );
 
 
-rect(
-  workshopGrid,
-  12,16,
-  20,15,
-  1
-);
+rect(workshopGrid,12,16,20,15,1);
 
+rect(workshopGrid,10,4,24,11,6);
 
-rect(
-  workshopGrid,
-  10,4,
-  24,11,
-  6
-);
+rect(workshopGrid,10,3,24,1,3);
+rect(workshopGrid,10,3,1,12,3);
+rect(workshopGrid,33,3,1,12,3);
 
+rect(workshopGrid,20,14,5,5,1);
 
-rect(
-  workshopGrid,
-  10,3,
-  24,1,
-  3
-);
-
-rect(
-  workshopGrid,
-  10,3,
-  1,12,
-  3
-);
-
-rect(
-  workshopGrid,
-  33,3,
-  1,12,
-  3
-);
-
-
-rect(
-  workshopGrid,
-  20,14,
-  5,5,
-  1
-);
-
-
-pathV(
-  workshopGrid,
-  20,
-  18,
-  33,
-  5
-);
+pathV(workshopGrid,20,18,33,5);
 
 
 /* =========================================================
@@ -973,101 +278,169 @@ const mountainGrid=
   );
 
 
-rect(
-  mountainGrid,
-  39,0,
-  5,44,
-  5
-);
+rect(mountainGrid,39,0,5,44,5);
+
+pathV(mountainGrid,25,34,43,4);
+pathH(mountainGrid,16,28,32,3);
+pathV(mountainGrid,15,22,34,3);
+pathH(mountainGrid,15,35,20,3);
+pathV(mountainGrid,33,11,22,3);
+pathH(mountainGrid,19,35,9,3);
+pathV(mountainGrid,18,3,11,3);
+
+rect(mountainGrid,36,19,9,4,6);
+
+teaTerrace(mountainGrid,4,25,9,6);
+teaTerrace(mountainGrid,22,24,9,5);
+teaTerrace(mountainGrid,5,10,10,6);
 
 
-pathV(
-  mountainGrid,
-  25,
-  34,
-  43,
-  4
-);
+/* =========================================================
+   TEAHOUSE INTERIOR
+========================================================= */
+
+const teahouseGrid=
+  createGrid(
+    30,
+    22,
+    3
+  );
 
 
-pathH(
-  mountainGrid,
-  16,
-  28,
-  32,
-  3
-);
-
-
-pathV(
-  mountainGrid,
-  15,
-  22,
-  34,
-  3
-);
-
-
-pathH(
-  mountainGrid,
-  15,
-  35,
-  20,
-  3
-);
-
-
-pathV(
-  mountainGrid,
-  33,
-  11,
-  22,
-  3
-);
-
-
-pathH(
-  mountainGrid,
-  19,
-  35,
-  9,
-  3
-);
-
-
-pathV(
-  mountainGrid,
-  18,
-  3,
-  11,
-  3
-);
-
+/*
+ * 室内の基本床
+ */
 
 rect(
-  mountainGrid,
-  36,19,
-  9,4,
+  teahouseGrid,
+  1,1,
+  28,20,
   6
 );
 
 
-teaTerrace(
-  mountainGrid,
-  4,25,
-  9,6
+/*
+ * 北壁
+ */
+
+rect(
+  teahouseGrid,
+  0,0,
+  30,2,
+  3
 );
 
-teaTerrace(
-  mountainGrid,
-  22,24,
-  9,5
+
+/*
+ * 左右壁
+ */
+
+rect(
+  teahouseGrid,
+  0,0,
+  2,22,
+  3
 );
 
-teaTerrace(
-  mountainGrid,
-  5,10,
-  10,6
+rect(
+  teahouseGrid,
+  28,0,
+  2,22,
+  3
+);
+
+
+/*
+ * 南壁
+ */
+
+rect(
+  teahouseGrid,
+  0,20,
+  30,2,
+  3
+);
+
+
+/*
+ * 出入口
+ */
+
+rect(
+  teahouseGrid,
+  13,19,
+  4,3,
+  6
+);
+
+
+/*
+ * 右奥カウンター
+ */
+
+rect(
+  teahouseGrid,
+  21,5,
+  6,2,
+  3
+);
+
+
+/*
+ * 茶棚
+ */
+
+rect(
+  teahouseGrid,
+  22,2,
+  5,2,
+  3
+);
+
+
+/*
+ * 奥座敷
+ */
+
+rect(
+  teahouseGrid,
+  4,3,
+  8,4,
+  6
+);
+
+
+/*
+ * 座敷境界
+ */
+
+rect(
+  teahouseGrid,
+  3,7,
+  10,1,
+  3
+);
+
+
+/*
+ * 茶卓の当たり判定
+ */
+
+rect(teahouseGrid,5,11,2,2,3);
+rect(teahouseGrid,11,10,2,2,3);
+rect(teahouseGrid,16,13,2,2,3);
+rect(teahouseGrid,22,11,2,2,3);
+
+
+/*
+ * 左奥の大型植物
+ */
+
+rect(
+  teahouseGrid,
+  2,3,
+  1,2,
+  3
 );
 
 
@@ -1082,1598 +455,1160 @@ const MAPS={
    VILLAGE
 ========================================================= */
 
-  village:{
+village:{
 
-    name:"龍井村・村口",
+  name:"龍井村・村口",
+  cn:"龙井村",
 
-    cn:"龙井村",
+  width:64,
+  height:46,
 
-    width:64,
-    height:46,
+  grid:villageGrid,
 
-    grid:villageGrid,
+  spawn:{
+    x:32,
+    y:42
+  },
 
-    spawn:{
-      x:32,
-      y:42
+  exits:[
+
+    {
+      x:35,
+      y:0,
+
+      width:5,
+      height:2,
+
+      target:"field",
+
+      targetX:30,
+      targetY:50
     },
 
 
-    exits:[
-
-      {
-        x:35,
-        y:0,
-
-        width:5,
-        height:2,
-
-        target:"field",
-
-        targetX:30,
-        targetY:50
-      }
-
-    ],
-
-
-    buildings:[
-
-      {
-        x:14,
-        y:17,
-        w:10,
-        h:5,
-        name:"龙井茶叶"
-      },
-
-      {
-        x:5,
-        y:24,
-        w:8,
-        h:6,
-        name:"茶农人家"
-      },
-
-      {
-        x:42,
-        y:20,
-        w:10,
-        h:5,
-        name:"村口茶馆"
-      },
-
-      {
-        x:45,
-        y:28,
-        w:12,
-        h:5,
-        name:"龙井人家"
-      },
-
-      {
-        x:18,
-        y:32,
-        w:8,
-        h:5,
-        name:"茶舍"
-      }
-
-    ],
-
-
-    props:[
-
-      {
-        type:"sign",
-        x:31,
-        y:39,
-        text:"龙井村"
-      },
-
-      {
-        type:"basket",
-        x:25,
-        y:28
-      },
-
-      {
-        type:"basket",
-        x:27,
-        y:28
-      },
-
-      {
-        type:"teaRack",
-        x:15,
-        y:23
-      },
-
-      {
-        type:"teaRack",
-        x:18,
-        y:23
-      },
-
-      {
-        type:"bench",
-        x:39,
-        y:24
-      },
-
-      {
-        type:"teaTable",
-        x:47,
-        y:26
-      },
-
-      {
-        type:"teaTable",
-        x:50,
-        y:26
-      },
-
-      {
-        type:"pot",
-        x:41,
-        y:27
-      },
-
-      {
-        type:"pot",
-        x:43,
-        y:27
-      },
-
-      {
-        type:"stone",
-        x:22,
-        y:15
-      },
-
-      {
-        type:"stone",
-        x:24,
-        y:15
-      },
+    /*
+     * NEW
+     * 村口茶館
+     */
 
-      {
-        type:"lantern",
-        x:41,
-        y:22
-      },
+    {
+      x:46,
+      y:25,
 
-      {
-        type:"lantern",
-        x:52,
-        y:22
-      },
+      width:3,
+      height:2,
 
-      {
-        type:"bambooFence",
-        x:58,
-        y:16
-      }
+      target:"teahouse",
 
-    ],
+      targetX:15,
+      targetY:18
+    }
 
+  ],
 
-    scenery:[
 
-      {type:"tree",x:2,y:25,scale:1.2},
-      {type:"tree",x:59,y:26,scale:1.15},
+  buildings:[
 
-      {type:"bamboo",x:2,y:12},
-      {type:"bamboo",x:58,y:20},
+    {
+      x:14,
+      y:17,
+      w:10,
+      h:5,
+      name:"龙井茶叶"
+    },
 
-      {type:"bush",x:28,y:25},
-      {type:"bush",x:40,y:32},
+    {
+      x:5,
+      y:24,
+      w:8,
+      h:6,
+      name:"茶农人家"
+    },
 
-      {type:"grassTuft",x:7,y:33},
-      {type:"grassTuft",x:56,y:37}
+    {
+      x:42,
+      y:20,
+      w:10,
+      h:5,
+      name:"村口茶馆"
+    },
 
-    ],
+    {
+      x:45,
+      y:28,
+      w:12,
+      h:5,
+      name:"龙井人家"
+    },
 
+    {
+      x:18,
+      y:32,
+      w:8,
+      h:5,
+      name:"茶舍"
+    }
 
-    ambientNPCs:[
+  ],
 
-      {
-        type:"farmer",
-        x:7,
-        y:7
-      },
 
-      {
-        type:"farmer",
-        x:49,
-        y:7
-      },
+  props:[
 
-      {
-        type:"tourist",
-        x:31,
-        y:34
-      },
+    {
+      type:"sign",
+      x:31,
+      y:39,
+      text:"龙井村"
+    },
 
-      {
-        type:"villager",
-        x:34,
-        y:27
-      },
+    {type:"basket",x:25,y:28},
+    {type:"basket",x:27,y:28},
 
-      {
-        type:"teaGuest",
-        x:47,
-        y:26
-      },
+    {type:"teaRack",x:15,y:23},
+    {type:"teaRack",x:18,y:23},
 
-      {
-        type:"teaGuest",
-        x:50,
-        y:26
-      }
+    {type:"bench",x:39,y:24},
 
-    ],
+    {type:"teaTable",x:47,y:26},
+    {type:"teaTable",x:50,y:26},
 
+    {type:"pot",x:41,y:27},
+    {type:"pot",x:43,y:27},
 
-    interactables:[
+    {type:"stone",x:22,y:15},
+    {type:"stone",x:24,y:15},
 
-      {
-        x:32,
-        y:39,
+    {type:"lantern",x:41,y:22},
+    {type:"lantern",x:52,y:22},
 
-        label:"龍井村の案内を見る",
+    {type:"bambooFence",x:58,y:16}
 
-        word:"longjingcun"
-      },
+  ],
 
-      {
-        x:25,
-        y:26,
 
-        label:"茶葉を見る",
+  scenery:[
 
-        word:"chaye"
-      },
+    {type:"tree",x:2,y:25,scale:1.2},
+    {type:"tree",x:59,y:26,scale:1.15},
 
-      {
-        x:39,
-        y:24,
+    {type:"bamboo",x:2,y:12},
+    {type:"bamboo",x:58,y:20},
 
-        label:"茶館を見る",
+    {type:"bush",x:28,y:25},
+    {type:"bush",x:40,y:32},
 
-        word:"chaguan"
-      },
+    {type:"grassTuft",x:7,y:33},
+    {type:"grassTuft",x:56,y:37}
 
-      {
-        x:12,
-        y:31,
+  ],
 
-        label:"茶農家を見る",
 
-        word:"chanong"
-      }
+  ambientNPCs:[
 
-    ],
+    {type:"farmer",x:7,y:7},
+    {type:"farmer",x:49,y:7},
 
+    {type:"tourist",x:31,y:34},
 
-    npcs:[
+    {type:"villager",x:34,y:27},
 
-      {
-        id:"teaAunt",
+    {type:"teaGuest",x:47,y:26},
+    {type:"teaGuest",x:50,y:26}
 
-        x:25,
-        y:30,
+  ],
 
-        name:"茶叶店老板娘",
 
-        color:"#875d47",
+  interactables:[
 
-        label:"茶",
+    {
+      x:32,
+      y:39,
+      label:"龍井村の案内を見る",
+      word:"longjingcun"
+    },
 
-        dialogue:[
-          "第一次来龙井村吗？",
-          "沿着这条路往上走，就是茶园。",
-          "春天的时候，山里到处都是茶香。"
-        ],
+    {
+      x:25,
+      y:26,
+      label:"茶葉を見る",
+      word:"chaye"
+    },
 
-        reward:"chaxiang"
-      },
+    {
+      x:39,
+      y:24,
+      label:"茶館を見る",
+      word:"chaguan"
+    },
 
+    {
+      x:12,
+      y:31,
+      label:"茶農家を見る",
+      word:"chanong"
+    }
 
-      {
-        id:"oldFarmer",
+  ],
 
-        x:16,
-        y:23,
 
-        name:"茶农",
+  npcs:[
 
-        color:"#65734e",
+    {
+      id:"teaAunt",
 
-        label:"农",
+      x:25,
+      y:30,
 
-        dialogue:[
-          "今年的新茶已经开始采了。",
-          "天气好的时候，我们一大早就上山。"
-        ],
+      name:"茶叶店老板娘",
 
-        reward:"chanong"
-      },
+      color:"#875d47",
+      label:"茶",
 
+      dialogue:[
+        "第一次来龙井村吗？",
+        "沿着这条路往上走，就是茶园。",
+        "春天的时候，山里到处都是茶香。"
+      ],
 
-      {
-        id:"tourist",
+      reward:"chaxiang"
+    },
 
-        x:37,
-        y:28,
 
-        name:"游客",
+    {
+      id:"oldFarmer",
 
-        color:"#536e83",
+      x:16,
+      y:23,
 
-        label:"旅",
+      name:"茶农",
 
-        dialogue:[
-          "这里比我想象中安静多了。",
-          "往上走，茶园会越来越漂亮。"
-        ],
+      color:"#65734e",
+      label:"农",
 
-        reward:"youke"
-      },
+      dialogue:[
+        "今年的新茶已经开始采了。",
+        "天气好的时候，我们一大早就上山。"
+      ],
 
+      reward:"chanong"
+    },
 
-      {
-        id:"teaGuest",
 
-        x:48,
-        y:25,
+    {
+      id:"tourist",
 
-        name:"茶馆客人",
+      x:37,
+      y:28,
 
-        color:"#6e6253",
+      name:"游客",
 
-        label:"客",
+      color:"#536e83",
+      label:"旅",
 
-        dialogue:[
-          "坐下来喝杯茶吧。",
-          "在龙井村，走累了就应该慢一点。"
-        ],
+      dialogue:[
+        "这里比我想象中安静多了。",
+        "往上走，茶园会越来越漂亮。"
+      ],
 
-        reward:"chaguan"
-      }
+      reward:"youke"
+    },
 
-    ]
 
-  },
+    {
+      id:"teaGuest",
 
- /* =========================================================
+      x:48,
+      y:25,
+
+      name:"茶馆客人",
+
+      color:"#6e6253",
+      label:"客",
+
+      dialogue:[
+        "坐下来喝杯茶吧。",
+        "在龙井村，走累了就应该慢一点。"
+      ],
+
+      reward:"chaguan"
+    }
+
+  ]
+
+},
+
+
+/* =========================================================
    FIELD
 ========================================================= */
 
-  field:{
+field:{
 
-    name:"龍井村・段々茶畑",
+  name:"龍井村・段々茶畑",
+  cn:"龙井茶园",
 
-    cn:"龙井茶园",
+  width:60,
+  height:54,
 
-    width:60,
-    height:54,
+  grid:fieldGrid,
 
-    grid:fieldGrid,
+  spawn:{
+    x:30,
+    y:50
+  },
 
-    spawn:{
-      x:30,
-      y:50
+  exits:[
+
+    {
+      x:27,
+      y:52,
+
+      width:6,
+      height:2,
+
+      target:"village",
+
+      targetX:37,
+      targetY:3
+    },
+
+    {
+      x:20,
+      y:0,
+
+      width:3,
+      height:3,
+
+      target:"mountain",
+
+      targetX:27,
+      targetY:39
+    },
+
+    {
+      x:55,
+      y:20,
+
+      width:3,
+      height:5,
+
+      target:"workshop",
+
+      targetX:22,
+      targetY:29
+    }
+
+  ],
+
+  buildings:[],
+
+  props:[
+
+    {
+      type:"sign",
+      x:32,
+      y:46,
+      text:"龙井茶园"
+    },
+
+    {type:"basket",x:24,y:42},
+
+    {type:"basket",x:18,y:34},
+    {type:"basket",x:32,y:31},
+
+    {type:"bambooFence",x:13,y:31},
+    {type:"bambooFence",x:39,y:31},
+
+    {type:"basket",x:14,y:19},
+    {type:"basket",x:31,y:18},
+
+    {type:"teaRack",x:41,y:18},
+
+    {type:"bench",x:38,y:9},
+
+    {
+      type:"sign",
+      x:41,
+      y:9,
+      text:"茶园观景"
+    }
+
+  ],
+
+  scenery:[
+
+    {type:"tree",x:2,y:44,scale:1.2},
+    {type:"tree",x:57,y:45,scale:1.15},
+
+    {type:"bush",x:21,y:43},
+    {type:"bush",x:38,y:43},
+
+    {type:"tree",x:2,y:32,scale:1.1},
+    {type:"tree",x:57,y:32,scale:1.15},
+
+    {type:"bamboo",x:14,y:29},
+    {type:"bamboo",x:36,y:28},
+
+    {type:"grassTuft",x:16,y:35},
+    {type:"grassTuft",x:34,y:35},
+
+    {type:"tree",x:1,y:18,scale:1.25},
+    {type:"tree",x:57,y:20,scale:1.2},
+
+    {type:"bamboo",x:13,y:15},
+    {type:"bamboo",x:45,y:17},
+
+    {type:"stoneCluster",x:30,y:22},
+
+    {type:"bamboo",x:17,y:5},
+    {type:"bamboo",x:43,y:5},
+
+    {type:"tree",x:57,y:7,scale:1.2}
+
+  ],
+
+  ambientNPCs:[
+
+    {type:"tourist",x:33,y:44},
+
+    {type:"farmer",x:7,y:29},
+    {type:"farmer",x:23,y:28},
+    {type:"farmer",x:47,y:30},
+
+    {type:"tourist",x:20,y:32},
+
+    {type:"farmer",x:7,y:15},
+    {type:"farmer",x:20,y:13},
+    {type:"farmer",x:38,y:15},
+    {type:"farmer",x:51,y:17},
+
+    {type:"tourist",x:38,y:8},
+    {type:"farmer",x:30,y:5}
+
+  ],
+
+  interactables:[
+
+    {
+      x:20,
+      y:43,
+      label:"茶園を見渡す",
+      word:"chayuan"
+    },
+
+    {
+      x:17,
+      y:34,
+      label:"茶の新芽を見る",
+      word:"nenya"
+    },
+
+    {
+      x:33,
+      y:31,
+      label:"茶の木を見る",
+      word:"chashu"
+    },
+
+    {
+      x:14,
+      y:19,
+      label:"摘みたての茶葉を見る",
+      word:"xianye"
+    },
+
+    {
+      x:34,
+      y:18,
+      label:"茶摘みを見る",
+      word:"caicha"
+    },
+
+    {
+      x:24,
+      y:7,
+      label:"茶摘み籠を見る",
+      word:"chalou"
+    },
+
+    {
+      x:40,
+      y:9,
+      label:"龍井の山々を眺める",
+      word:"chashan"
+    }
+
+  ],
+
+
+  npcs:[
+
+    /*
+     * Dialogue System Ver.2
+     * 采茶阿姨
+     */
+
+    {
+      id:"grandma",
+
+      x:23,
+      y:28,
+
+      name:"采茶阿姨",
+
+      color:"#755843",
+
+      label:"摘",
+
+      dialogueData:[
+
+        {
+          type:"text",
+          text:"你也来采茶吗？"
+        },
+
+        {
+          type:"text",
+          text:"现在正是采茶的时候。山上的茶园每天都很忙。"
+        },
+
+        {
+          type:"text",
+          condition:{word:"nenya"},
+          text:"哦，你已经看过嫩芽了吧？"
+        },
+
+        {
+          type:"text",
+          condition:{word:"nenya"},
+          text:"那我来考考你。你知道“嫩芽”是什么意思吗？"
+        },
+
+        {
+          type:"text",
+          condition:{notWord:"nenya"},
+          text:"你知道什么叫“嫩芽”吗？"
+        },
+
+        {
+          type:"choice",
+
+          speaker:"杭州探索録",
+          label:"杭",
+
+          text:"「嫩芽」の意味は？",
+
+          choices:[
+
+            {
+              jp:"まだ柔らかい若い芽のことです。",
+              cn:"是还很嫩的芽。",
+
+              setFlag:"nenyaCorrect",
+
+              reply:[
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"对，就是这个意思。"
+                },
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"采龙井茶的时候，这样的嫩芽很重要。"
+                }
+
+              ]
+            },
+
+            {
+              jp:"乾燥させた茶葉のことです。",
+              cn:"是已经干燥的茶叶。",
+
+              setFlag:"nenyaWrong",
+
+              reply:[
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"不是不是，那是已经加工过的茶叶。"
+                },
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"“嫩芽”说的是茶树上刚长出来的嫩芽。"
+                }
+
+              ]
+            },
+
+            {
+              jp:"分かりません。",
+              cn:"我不知道。",
+
+              setFlag:"nenyaUnknown",
+
+              reply:[
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"没关系。你看看茶树，很快就明白了。"
+                },
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"“嫩芽”就是茶树上刚长出来、还很嫩的芽。"
+                }
+
+              ]
+            }
+
+          ]
+        },
+
+        {
+          type:"text",
+          text:"不过，只认识“嫩芽”还不够。"
+        },
+
+        {
+          type:"text",
+          text:"采茶的时候，我们还会看芽和叶子的形状。"
+        },
+
+        {
+          type:"text",
+          text:"比如这个，你看——一个芽，一片叶。"
+        },
+
+        {
+          type:"text",
+          text:"这就叫“一芽一叶”。"
+        },
+
+        {
+          type:"word",
+          word:"yiyayiye"
+        },
+
+        {
+          type:"text",
+          text:"记住了吗？一芽一叶。"
+        },
+
+        {
+          type:"choice",
+
+          speaker:"杭州探索録",
+          label:"杭",
+
+          text:"どう答えますか？",
+
+          choices:[
+
+            {
+              jp:"はい。一つの芽と一枚の葉ですね。",
+              cn:"记住了，一个芽，一片叶。",
+
+              setFlag:"rememberedYiyayiye",
+
+              reply:[
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"对。学得挺快嘛！"
+                }
+
+              ]
+            },
+
+            {
+              jp:"もう一度教えてください。",
+              cn:"可以再说一遍吗？",
+
+              reply:[
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"当然可以。"
+                },
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"一个芽，一片叶——一芽一叶。"
+                },
+
+                {
+                  type:"text",
+                  speaker:"采茶阿姨",
+                  text:"你到茶树旁边仔细看看，就能看出来了。"
+                }
+
+              ]
+            }
+
+          ]
+        },
+
+        {
+          type:"text",
+          text:"光听我说可不够。"
+        },
+
+        {
+          type:"text",
+          text:"以后有机会，我让你自己试试采茶。"
+        }
+
+      ]
+
     },
 
 
-    exits:[
+    {
+      id:"youngFarmer",
 
-      /*
-       * 龍井村へ戻る
-       */
+      x:20,
+      y:13,
 
-      {
-        x:27,
-        y:52,
+      name:"年轻茶农",
 
-        width:6,
-        height:2,
+      color:"#536d47",
 
-        target:"village",
+      label:"农",
 
-        targetX:37,
-        targetY:3
-      },
+      dialogue:[
+        "这些都是龙井茶树。",
+        "每天的天气都会影响茶叶。",
+        "越往山上走，看到的茶园越多。"
+      ],
 
+      reward:"chashu"
+    }
 
-      /*
-       * 山道
-       */
+  ]
 
-      {
-        x:20,
-        y:0,
+},
 
-        width:3,
-        height:3,
 
-        target:"mountain",
-
-        targetX:27,
-        targetY:39
-      },
-
-
-      /*
-       * 製茶場
-       */
-
-      {
-        x:55,
-        y:20,
-
-        width:3,
-        height:5,
-
-        target:"workshop",
-
-        targetX:22,
-        targetY:29
-      }
-
-    ],
-
-
-    buildings:[],
-
-
-    props:[
-
-      /*
-       * ENTRY
-       */
-
-      {
-        type:"sign",
-        x:32,
-        y:46,
-        text:"龙井茶园"
-      },
-
-      {
-        type:"basket",
-        x:24,
-        y:42
-      },
-
-
-      /*
-       * LEVEL 1
-       */
-
-      {
-        type:"basket",
-        x:18,
-        y:34
-      },
-
-      {
-        type:"basket",
-        x:32,
-        y:31
-      },
-
-      {
-        type:"bambooFence",
-        x:13,
-        y:31
-      },
-
-      {
-        type:"bambooFence",
-        x:39,
-        y:31
-      },
-
-
-      /*
-       * LEVEL 2
-       */
-
-      {
-        type:"basket",
-        x:14,
-        y:19
-      },
-
-      {
-        type:"basket",
-        x:31,
-        y:18
-      },
-
-      {
-        type:"teaRack",
-        x:41,
-        y:18
-      },
-
-
-      /*
-       * VIEWPOINT
-       */
-
-      {
-        type:"bench",
-        x:38,
-        y:9
-      },
-
-      {
-        type:"sign",
-        x:41,
-        y:9,
-        text:"茶园观景"
-      }
-
-    ],
-
-
-    scenery:[
-
-      /*
-       * LOWER
-       */
-
-      {type:"tree",x:2,y:44,scale:1.2},
-      {type:"tree",x:57,y:45,scale:1.15},
-
-      {type:"bush",x:21,y:43},
-      {type:"bush",x:38,y:43},
-
-
-      /*
-       * LEVEL 1
-       */
-
-      {type:"tree",x:2,y:32,scale:1.1},
-      {type:"tree",x:57,y:32,scale:1.15},
-
-      {type:"bamboo",x:14,y:29},
-      {type:"bamboo",x:36,y:28},
-
-      {type:"grassTuft",x:16,y:35},
-      {type:"grassTuft",x:34,y:35},
-
-
-      /*
-       * LEVEL 2
-       */
-
-      {type:"tree",x:1,y:18,scale:1.25},
-      {type:"tree",x:57,y:20,scale:1.2},
-
-      {type:"bamboo",x:13,y:15},
-      {type:"bamboo",x:45,y:17},
-
-      {type:"stoneCluster",x:30,y:22},
-
-
-      /*
-       * TOP
-       */
-
-      {type:"bamboo",x:17,y:5},
-      {type:"bamboo",x:43,y:5},
-
-      {type:"tree",x:57,y:7,scale:1.2}
-
-    ],
-
-
-    ambientNPCs:[
-
-      /*
-       * LEVEL 0
-       */
-
-      {
-        type:"tourist",
-        x:33,
-        y:44
-      },
-
-
-      /*
-       * LEVEL 1
-       */
-
-      {
-        type:"farmer",
-        x:7,
-        y:29
-      },
-
-      {
-        type:"farmer",
-        x:23,
-        y:28
-      },
-
-      {
-        type:"farmer",
-        x:47,
-        y:30
-      },
-
-      {
-        type:"tourist",
-        x:20,
-        y:32
-      },
-
-
-      /*
-       * LEVEL 2
-       */
-
-      {
-        type:"farmer",
-        x:7,
-        y:15
-      },
-
-      {
-        type:"farmer",
-        x:20,
-        y:13
-      },
-
-      {
-        type:"farmer",
-        x:38,
-        y:15
-      },
-
-      {
-        type:"farmer",
-        x:51,
-        y:17
-      },
-
-
-      /*
-       * TOP
-       */
-
-      {
-        type:"tourist",
-        x:38,
-        y:8
-      },
-
-      {
-        type:"farmer",
-        x:30,
-        y:5
-      }
-
-    ],
-
-
-    interactables:[
-
-      /*
-       * 下段
-       */
-
-      {
-        x:20,
-        y:43,
-
-        label:"茶園を見渡す",
-
-        word:"chayuan"
-      },
-
-
-      /*
-       * 第1段
-       */
-
-      {
-        x:17,
-        y:34,
-
-        label:"茶の新芽を見る",
-
-        word:"nenya"
-      },
-
-      {
-        x:33,
-        y:31,
-
-        label:"茶の木を見る",
-
-        word:"chashu"
-      },
-
-
-      /*
-       * 第2段
-       */
-
-      {
-        x:14,
-        y:19,
-
-        label:"摘みたての茶葉を見る",
-
-        word:"xianye"
-      },
-
-      {
-        x:34,
-        y:18,
-
-        label:"茶摘みを見る",
-
-        word:"caicha"
-      },
-
-
-      /*
-       * 最上段
-       */
-
-      {
-        x:24,
-        y:7,
-
-        label:"茶摘み籠を見る",
-
-        word:"chalou"
-      },
-
-      {
-        x:40,
-        y:9,
-
-        label:"龍井の山々を眺める",
-
-        word:"chashan"
-      }
-
-    ],
-
-
-    npcs:[
-
-      /*
-      ========================================================
-       茶摘みのおばさん
-       Dialogue Ver.2.0
-      ========================================================
-      */
-
-      {
-        id:"grandma",
-
-        x:23,
-        y:28,
-
-        name:"采茶阿姨",
-
-        color:"#755843",
-
-        label:"摘",
-
-
-        dialogueData:[
-
-          /*
-          ------------------------------------------------------
-           導入
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            text:
-              "你也来采茶吗？"
-          },
-
-
-          {
-            type:"text",
-
-            text:
-              "现在正是采茶的时候。山上的茶园每天都很忙。"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           嫩芽を発見済み
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            condition:{
-              word:"nenya"
-            },
-
-            text:
-              "哦，你已经看过嫩芽了吧？"
-          },
-
-
-          {
-            type:"text",
-
-            condition:{
-              word:"nenya"
-            },
-
-            text:
-              "那我来考考你。你知道“嫩芽”是什么意思吗？"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           嫩芽をまだ発見していない
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            condition:{
-              notWord:"nenya"
-            },
-
-            text:
-              "你知道什么叫“嫩芽”吗？"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           主人公の選択肢
-          ------------------------------------------------------
-          */
-
-          {
-            type:"choice",
-
-            speaker:"杭州探索録",
-
-            label:"杭",
-
-            text:
-              "「嫩芽」の意味は？",
-
-            choices:[
-
-              /*
-              ==========================
-               正解
-              ==========================
-              */
-
-              {
-                jp:
-                  "まだ柔らかい若い芽のことです。",
-
-                cn:
-                  "是还很嫩的芽。",
-
-                setFlag:
-                  "nenyaCorrect",
-
-                reply:[
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "对，就是这个意思。"
-                  },
-
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "采龙井茶的时候，这样的嫩芽很重要。"
-                  }
-
-                ]
-
-              },
-
-
-              /*
-              ==========================
-               不正解
-              ==========================
-              */
-
-              {
-                jp:
-                  "乾燥させた茶葉のことです。",
-
-                cn:
-                  "是已经干燥的茶叶。",
-
-                setFlag:
-                  "nenyaWrong",
-
-                reply:[
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "不是不是，那是已经加工过的茶叶。"
-                  },
-
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "“嫩芽”说的是茶树上刚长出来的嫩芽。"
-                  }
-
-                ]
-
-              },
-
-
-              /*
-              ==========================
-               分からない
-              ==========================
-              */
-
-              {
-                jp:
-                  "分かりません。",
-
-                cn:
-                  "我不知道。",
-
-                setFlag:
-                  "nenyaUnknown",
-
-                reply:[
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "没关系。你看看茶树，很快就明白了。"
-                  },
-
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "“嫩芽”就是茶树上刚长出来、还很嫩的芽。"
-                  }
-
-                ]
-
-              }
-
-            ]
-
-          },
-
-
-          /*
-          ------------------------------------------------------
-           一芽一葉へ
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            text:
-              "不过，只认识“嫩芽”还不够。"
-          },
-
-
-          {
-            type:"text",
-
-            text:
-              "采茶的时候，我们还会看芽和叶子的形状。"
-          },
-
-
-          {
-            type:"text",
-
-            text:
-              "比如这个，你看——一个芽，一片叶。"
-          },
-
-
-          {
-            type:"text",
-
-            text:
-              "这就叫“一芽一叶”。"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           一芽一葉を手帖へ登録
-          ------------------------------------------------------
-          */
-
-          {
-            type:"word",
-
-            word:"yiyayiye"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           単語画面を閉じた後にここへ復帰
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            text:
-              "记住了吗？一芽一叶。"
-          },
-
-
-          /*
-          ------------------------------------------------------
-           主人公が実際に中国語を使う
-          ------------------------------------------------------
-          */
-
-          {
-            type:"choice",
-
-            speaker:"杭州探索録",
-
-            label:"杭",
-
-            text:
-              "どう答えますか？",
-
-            choices:[
-
-              {
-                jp:
-                  "はい。一つの芽と一枚の葉ですね。",
-
-                cn:
-                  "记住了，一个芽，一片叶。",
-
-                setFlag:
-                  "rememberedYiyayiye",
-
-                reply:[
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "对。学得挺快嘛！"
-                  }
-
-                ]
-
-              },
-
-
-              {
-                jp:
-                  "もう一度教えてください。",
-
-                cn:
-                  "可以再说一遍吗？",
-
-                reply:[
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "当然可以。"
-                  },
-
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "一个芽，一片叶——一芽一叶。"
-                  },
-
-
-                  {
-                    type:"text",
-
-                    speaker:"采茶阿姨",
-
-                    text:
-                      "你到茶树旁边仔细看看，就能看出来了。"
-                  }
-
-                ]
-
-              }
-
-            ]
-
-          },
-
-
-          /*
-          ------------------------------------------------------
-           将来の茶摘みミニゲームへの伏線
-          ------------------------------------------------------
-          */
-
-          {
-            type:"text",
-
-            text:
-              "光听我说可不够。"
-          },
-
-
-          {
-            type:"text",
-
-            text:
-              "以后有机会，我让你自己试试采茶。"
-          }
-
-        ]
-
-      },
-
-
-      /*
-      ========================================================
-       若い茶農
-       従来会話
-      ========================================================
-      */
-
-      {
-        id:"youngFarmer",
-
-        x:20,
-        y:13,
-
-        name:"年轻茶农",
-
-        color:"#536d47",
-
-        label:"农",
-
-        dialogue:[
-          "这些都是龙井茶树。",
-          "每天的天气都会影响茶叶。",
-          "越往山上走，看到的茶园越多。"
-        ],
-
-        reward:"chashu"
-      }
-
-    ]
-
-  },
-
- /* =========================================================
+/* =========================================================
    WORKSHOP
 ========================================================= */
 
-  workshop:{
+workshop:{
 
-    name:"茶農家・製茶場",
+  name:"茶農家・製茶場",
+  cn:"炒茶作坊",
 
-    cn:"炒茶作坊",
+  width:44,
+  height:34,
 
-    width:44,
-    height:34,
+  grid:workshopGrid,
 
-    grid:workshopGrid,
+  spawn:{
+    x:22,
+    y:29
+  },
 
-    spawn:{
-      x:22,
-      y:29
+  exits:[
+
+    {
+      x:20,
+      y:31,
+
+      width:5,
+      height:3,
+
+      target:"field",
+
+      targetX:53,
+      targetY:23
+    }
+
+  ],
+
+  buildings:[],
+
+  props:[
+
+    {type:"teaRack",x:15,y:12},
+    {type:"teaRack",x:29,y:12},
+
+    {type:"basket",x:18,y:18},
+    {type:"basket",x:27,y:18},
+
+    {type:"woodPile",x:13,y:17},
+    {type:"stool",x:29,y:18}
+
+  ],
+
+  scenery:[],
+
+  ambientNPCs:[
+
+    {type:"worker",x:16,y:9},
+    {type:"worker",x:28,y:9}
+
+  ],
+
+  interactables:[
+
+    {
+      x:14,
+      y:8,
+      label:"炒茶鍋を見る",
+      word:"chaoguo"
     },
 
+    {
+      x:18,
+      y:8,
+      label:"炒茶を見る",
+      word:"chaocha"
+    },
 
-    exits:[
+    {
+      x:27,
+      y:8,
+      label:"茶葉を広げている",
+      word:"tanfang"
+    },
 
-      {
-        x:20,
-        y:31,
+    {
+      x:30,
+      y:12,
+      label:"乾いた茶葉を見る",
+      word:"gancha"
+    },
 
-        width:5,
-        height:3,
+    {
+      x:25,
+      y:12,
+      label:"火加減を見る",
+      word:"huohou"
+    }
 
-        target:"field",
+  ],
 
-        targetX:53,
-        targetY:23
-      }
+  npcs:[
 
-    ],
+    {
+      id:"teaMaster",
 
+      x:22,
+      y:10,
 
-    buildings:[],
+      name:"炒茶师傅",
 
+      color:"#68503e",
 
-    props:[
+      label:"师",
 
-      {
-        type:"teaRack",
-        x:15,
-        y:12
-      },
+      dialogue:[
+        "刚摘下来的鲜叶不能马上乱炒。",
+        "做龙井茶，要看叶子，也要看火候。",
+        "手上的感觉很重要。"
+      ],
 
-      {
-        type:"teaRack",
-        x:29,
-        y:12
-      },
+      reward:"chaocha"
+    }
 
-      {
-        type:"basket",
-        x:18,
-        y:18
-      },
+  ]
 
-      {
-        type:"basket",
-        x:27,
-        y:18
-      },
-
-      {
-        type:"woodPile",
-        x:13,
-        y:17
-      },
-
-      {
-        type:"stool",
-        x:29,
-        y:18
-      }
-
-    ],
-
-
-    scenery:[],
-
-
-    ambientNPCs:[
-
-      {
-        type:"worker",
-        x:16,
-        y:9
-      },
-
-      {
-        type:"worker",
-        x:28,
-        y:9
-      }
-
-    ],
-
-
-    interactables:[
-
-      {
-        x:14,
-        y:8,
-
-        label:"炒茶鍋を見る",
-
-        word:"chaoguo"
-      },
-
-      {
-        x:18,
-        y:8,
-
-        label:"炒茶を見る",
-
-        word:"chaocha"
-      },
-
-      {
-        x:27,
-        y:8,
-
-        label:"茶葉を広げている",
-
-        word:"tanfang"
-      },
-
-      {
-        x:30,
-        y:12,
-
-        label:"乾いた茶葉を見る",
-
-        word:"gancha"
-      },
-
-      {
-        x:25,
-        y:12,
-
-        label:"火加減を見る",
-
-        word:"huohou"
-      }
-
-    ],
-
-
-    npcs:[
-
-      {
-        id:"teaMaster",
-
-        x:22,
-        y:10,
-
-        name:"炒茶师傅",
-
-        color:"#68503e",
-
-        label:"师",
-
-        dialogue:[
-          "刚摘下来的鲜叶不能马上乱炒。",
-          "做龙井茶，要看叶子，也要看火候。",
-          "手上的感觉很重要。"
-        ],
-
-        reward:"chaocha"
-      }
-
-    ]
-
-  },
+},
 
 
 /* =========================================================
    MOUNTAIN
 ========================================================= */
 
-  mountain:{
+mountain:{
 
-    name:"龍井・山道",
+  name:"龍井・山道",
+  cn:"龙井山路",
 
-    cn:"龙井山路",
+  width:54,
+  height:44,
 
-    width:54,
-    height:44,
+  grid:mountainGrid,
 
-    grid:mountainGrid,
+  spawn:{
+    x:27,
+    y:39
+  },
 
-    spawn:{
+  exits:[
+
+    {
+      x:25,
+      y:40,
+
+      width:5,
+      height:4,
+
+      target:"field",
+
+      targetX:21,
+      targetY:4
+    }
+
+  ],
+
+  buildings:[],
+
+  props:[
+
+    {type:"bench",x:27,y:29},
+
+    {
+      type:"sign",
+      x:19,
+      y:19,
+      text:"龙井山路"
+    },
+
+    {type:"bambooFence",x:34,y:18}
+
+  ],
+
+  scenery:[
+
+    {type:"bamboo",x:12,y:35},
+    {type:"bamboo",x:35,y:34},
+
+    {type:"tree",x:8,y:32,scale:1.2},
+    {type:"tree",x:46,y:30,scale:1.2},
+
+    {type:"bamboo",x:10,y:21},
+    {type:"bamboo",x:37,y:17},
+
+    {type:"tree",x:6,y:17,scale:1.25},
+
+    {type:"bamboo",x:16,y:8},
+    {type:"bamboo",x:23,y:7},
+
+    {type:"tree",x:47,y:10,scale:1.25},
+
+    {type:"stoneCluster",x:13,y:26},
+    {type:"stoneCluster",x:31,y:23}
+
+  ],
+
+  ambientNPCs:[
+
+    {type:"tourist",x:19,y:31},
+    {type:"villager",x:31,y:20}
+
+  ],
+
+  interactables:[
+
+    {
+      x:18,
+      y:27,
+      label:"山道を見る",
+      word:"shanlu"
+    },
+
+    {
+      x:37,
+      y:21,
+      label:"橋を見る",
+      word:"xiaoqiao"
+    },
+
+    {
+      x:38,
+      y:15,
+      label:"小川を見る",
+      word:"xiaoxi"
+    },
+
+    {
+      x:20,
+      y:7,
+      label:"竹林を見る",
+      word:"zhulin"
+    },
+
+    {
+      x:14,
+      y:12,
+      label:"山の茶畑を見る",
+      word:"chashan"
+    }
+
+  ],
+
+  npcs:[
+
+    {
+      id:"walker",
+
       x:27,
-      y:39
+      y:20,
+
+      name:"登山游客",
+
+      color:"#596b73",
+
+      label:"山",
+
+      dialogue:[
+        "这条路很安静。",
+        "走累了就坐下来休息一下吧。"
+      ],
+
+      reward:"shanlu"
+    }
+
+  ]
+
+},
+
+
+/* =========================================================
+   NEW
+   MURAGUCHI TEAHOUSE
+========================================================= */
+
+teahouse:{
+
+  name:"村口茶館",
+  cn:"村口茶馆",
+
+  width:30,
+  height:22,
+
+  grid:teahouseGrid,
+
+  spawn:{
+    x:15,
+    y:18
+  },
+
+  exits:[
+
+    {
+      x:13,
+      y:20,
+
+      width:4,
+      height:2,
+
+      target:"village",
+
+      targetX:47,
+      targetY:27
+    }
+
+  ],
+
+  buildings:[],
+
+  props:[],
+
+  scenery:[],
+
+  ambientNPCs:[
+
+    {
+      type:"teaGuest",
+      x:6,
+      y:14
+    },
+
+    {
+      type:"teaGuest",
+      x:12,
+      y:13
+    },
+
+    {
+      type:"teaGuest",
+      x:17,
+      y:16
+    },
+
+    {
+      type:"villager",
+      x:8,
+      y:5
+    }
+
+  ],
+
+  interactables:[],
+
+  npcs:[
+
+    {
+      id:"teahouseOwner",
+
+      x:24,
+      y:8,
+
+      name:"茶馆老板",
+
+      color:"#74543e",
+
+      label:"茶",
+
+      dialogue:[
+
+        "欢迎，里面坐吧。",
+
+        "我们这里喝的当然是龙井茶。",
+
+        "窗边的位置可以看到外面的茶山。",
+
+        "慢慢喝，不用着急。"
+
+      ]
+
     },
 
 
-    exits:[
+    {
+      id:"oldTeaGuest",
 
-      {
-        x:25,
-        y:40,
+      x:11,
+      y:14,
 
-        width:5,
-        height:4,
+      name:"喝茶的老人",
 
-        target:"field",
+      color:"#686052",
 
-        targetX:21,
-        targetY:4
-      }
+      label:"客",
 
-    ],
+      dialogue:[
 
+        "我每天都来这里喝茶。",
 
-    buildings:[],
+        "喝茶嘛，最重要的就是慢。",
 
+        "外面游客多的时候，我还是喜欢坐在窗边。"
 
-    props:[
+      ]
 
-      {
-        type:"bench",
-        x:27,
-        y:29
-      },
+    }
 
-      {
-        type:"sign",
-        x:19,
-        y:19,
+  ]
 
-        text:"龙井山路"
-      },
-
-      {
-        type:"bambooFence",
-        x:34,
-        y:18
-      }
-
-    ],
-
-
-    scenery:[
-
-      {type:"bamboo",x:12,y:35},
-      {type:"bamboo",x:35,y:34},
-
-      {type:"tree",x:8,y:32,scale:1.2},
-      {type:"tree",x:46,y:30,scale:1.2},
-
-      {type:"bamboo",x:10,y:21},
-      {type:"bamboo",x:37,y:17},
-
-      {type:"tree",x:6,y:17,scale:1.25},
-
-      {type:"bamboo",x:16,y:8},
-      {type:"bamboo",x:23,y:7},
-
-      {type:"tree",x:47,y:10,scale:1.25},
-
-      {type:"stoneCluster",x:13,y:26},
-      {type:"stoneCluster",x:31,y:23}
-
-    ],
-
-
-    ambientNPCs:[
-
-      {
-        type:"tourist",
-        x:19,
-        y:31
-      },
-
-      {
-        type:"villager",
-        x:31,
-        y:20
-      }
-
-    ],
-
-
-    interactables:[
-
-      {
-        x:18,
-        y:27,
-
-        label:"山道を見る",
-
-        word:"shanlu"
-      },
-
-      {
-        x:37,
-        y:21,
-
-        label:"橋を見る",
-
-        word:"xiaoqiao"
-      },
-
-      {
-        x:38,
-        y:15,
-
-        label:"小川を見る",
-
-        word:"xiaoxi"
-      },
-
-      {
-        x:20,
-        y:7,
-
-        label:"竹林を見る",
-
-        word:"zhulin"
-      },
-
-      {
-        x:14,
-        y:12,
-
-        label:"山の茶畑を見る",
-
-        word:"chashan"
-      }
-
-    ],
-
-
-    npcs:[
-
-      {
-        id:"walker",
-
-        x:27,
-        y:20,
-
-        name:"登山游客",
-
-        color:"#596b73",
-
-        label:"山",
-
-        dialogue:[
-          "这条路很安静。",
-          "走累了就坐下来休息一下吧。"
-        ],
-
-        reward:"shanlu"
-      }
-
-    ]
-
-  }
+}
 
 };
 
 
 console.log(
-  "杭州探索録2 Map System Ver.5.1 - DIALOGUE EXPANSION loaded"
+  "杭州探索録2 Map System Ver.5.2 - TEAHOUSE INTERIOR loaded"
 );
