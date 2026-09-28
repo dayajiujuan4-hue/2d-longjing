@@ -3,10 +3,12 @@
 /*
 ==========================================================
  杭州探索録2
- MAP SYSTEM Ver.5.2
+ MAP SYSTEM Ver.5.3
 
  LONGJING TERRACED LANDSCAPE
- + MURAGUCHI TEAHOUSE INTERIOR
+ + MURAGUCHI TEAHOUSE
+ + LONGJING TEA SHOP
+ + 30 INDOOR VOCABULARY POINTS
 ==========================================================
 */
 
@@ -24,81 +26,44 @@ function createGrid(width,height,fill=0){
   );
 }
 
-
 function rect(grid,x,y,w,h,tile){
-
   for(let yy=y;yy<y+h;yy++){
-
     for(let xx=x;xx<x+w;xx++){
-
       if(
         grid[yy] &&
         grid[yy][xx]!==undefined
       ){
         grid[yy][xx]=tile;
       }
-
     }
-
   }
-
 }
-
 
 function pathH(grid,x1,x2,y,width=3){
-
   rect(
     grid,
-    x1,
-    y,
-    x2-x1+1,
-    width,
+    x1,y,
+    x2-x1+1,width,
     1
   );
-
 }
-
 
 function pathV(grid,x,y1,y2,width=3){
-
   rect(
     grid,
-    x,
-    y1,
-    width,
-    y2-y1+1,
+    x,y1,
+    width,y2-y1+1,
     1
   );
-
 }
-
 
 function teaTerrace(grid,x,y,w,h){
-
-  rect(
-    grid,
-    x,y,w,h,
-    2
-  );
-
-  rect(
-    grid,
-    x,y+h,w,1,
-    4
-  );
-
+  rect(grid,x,y,w,h,2);
+  rect(grid,x,y+h,w,1,4);
 }
 
-
 function stoneSteps(grid,x,y,width,height){
-
-  rect(
-    grid,
-    x,y,
-    width,height,
-    1
-  );
-
+  rect(grid,x,y,width,height,1);
 }
 
 
@@ -107,65 +72,135 @@ function stoneSteps(grid,x,y,width,height){
 ========================================================= */
 
 const villageGrid=
-  createGrid(
-    64,
-    46,
-    0
-  );
+  createGrid(64,46,0);
 
+
+/* MAIN ROADS */
 
 pathV(villageGrid,29,37,45,6);
 
 pathH(villageGrid,25,34,35,5);
 pathV(villageGrid,24,29,37,5);
+
 pathH(villageGrid,24,40,27,5);
 pathV(villageGrid,37,21,31,5);
+
 pathH(villageGrid,30,41,19,5);
 pathV(villageGrid,28,13,23,5);
+
 pathH(villageGrid,28,37,11,5);
 pathV(villageGrid,35,0,15,5);
+
+
+/* WEST AREA */
 
 pathH(villageGrid,10,27,30,3);
 pathV(villageGrid,10,24,32,3);
 pathH(villageGrid,10,21,22,3);
 
+
+/* EAST AREA */
+
 pathH(villageGrid,40,55,25,3);
 pathV(villageGrid,53,19,27,3);
+
+
+/* NORTHWEST ROAD */
 
 pathH(villageGrid,14,30,14,3);
 pathV(villageGrid,14,8,16,3);
 
 
+/* TEA TERRACES */
+
 teaTerrace(villageGrid,3,3,10,7);
 teaTerrace(villageGrid,17,3,13,6);
 teaTerrace(villageGrid,44,3,16,8);
+
 teaTerrace(villageGrid,3,13,8,7);
 teaTerrace(villageGrid,45,13,14,5);
+
 teaTerrace(villageGrid,3,35,17,7);
 teaTerrace(villageGrid,43,34,17,8);
 
 
-/* BUILDINGS */
+/* =========================================================
+   VILLAGE BUILDINGS
+========================================================= */
 
-rect(villageGrid,14,17,10,5,3);
-rect(villageGrid,5,24,8,6,3);
-rect(villageGrid,42,20,10,5,3);
-rect(villageGrid,45,28,12,5,3);
-rect(villageGrid,18,32,8,5,3);
+/* 龙井茶叶 */
+
+rect(
+  villageGrid,
+  14,17,
+  10,5,
+  3
+);
 
 
 /*
- * 村口茶館の正面。
- * 建物中央の扉前を通行可能にする。
+ * 龙井茶叶入口
+ *
+ * 建物南側中央を開ける。
  */
 
 rect(
   villageGrid,
-  46,
-  24,
-  3,
-  3,
+  17,21,
+  4,3,
   1
+);
+
+
+/* 茶农人家 */
+
+rect(
+  villageGrid,
+  5,24,
+  8,6,
+  3
+);
+
+
+/* 村口茶馆 */
+
+rect(
+  villageGrid,
+  42,20,
+  10,5,
+  3
+);
+
+
+/*
+ * 村口茶館入口
+ */
+
+rect(
+  villageGrid,
+  46,24,
+  3,3,
+  1
+);
+
+
+/* 龙井人家 */
+
+rect(
+  villageGrid,
+  45,28,
+  12,5,
+  3
+);
+
+
+/* 茶舍 */
+
+rect(
+  villageGrid,
+  18,32,
+  8,5,
+  3
 );
 
 
@@ -184,17 +219,18 @@ rect(
 ========================================================= */
 
 const fieldGrid=
-  createGrid(
-    60,
-    54,
-    0
-  );
+  createGrid(60,54,0);
 
 
 pathV(fieldGrid,27,46,53,6);
 pathH(fieldGrid,21,36,45,4);
 
-rect(fieldGrid,23,43,14,5,1);
+rect(
+  fieldGrid,
+  23,43,
+  14,5,
+  1
+);
 
 teaTerrace(fieldGrid,5,45,15,5);
 teaTerrace(fieldGrid,40,44,15,6);
@@ -209,11 +245,13 @@ pathH(fieldGrid,13,38,31,4);
 teaTerrace(fieldGrid,3,26,10,6);
 teaTerrace(fieldGrid,18,25,14,6);
 teaTerrace(fieldGrid,39,27,17,6);
+
 teaTerrace(fieldGrid,3,35,9,5);
 teaTerrace(fieldGrid,40,36,15,5);
 
 pathV(fieldGrid,35,25,33,3);
 pathH(fieldGrid,30,37,23,4);
+
 stoneSteps(fieldGrid,28,19,3,8);
 
 pathH(fieldGrid,12,43,17,4);
@@ -225,6 +263,7 @@ teaTerrace(fieldGrid,47,14,10,6);
 
 pathV(fieldGrid,10,9,19,3);
 pathH(fieldGrid,10,22,7,3);
+
 stoneSteps(fieldGrid,20,3,3,7);
 
 pathH(fieldGrid,18,42,2,4);
@@ -233,10 +272,24 @@ teaTerrace(fieldGrid,3,2,13,5);
 teaTerrace(fieldGrid,25,2,13,5);
 teaTerrace(fieldGrid,44,3,12,5);
 
-rect(fieldGrid,35,7,9,5,1);
+
+/* VIEWPOINT */
+
+rect(
+  fieldGrid,
+  35,7,
+  9,5,
+  1
+);
+
+
+/* WORKSHOP ROUTE */
 
 pathH(fieldGrid,37,57,22,3);
 pathV(fieldGrid,55,20,25,3);
+
+
+/* MOUNTAIN ROUTE */
 
 pathV(fieldGrid,20,0,5,3);
 
@@ -246,24 +299,38 @@ pathV(fieldGrid,20,0,5,3);
 ========================================================= */
 
 const workshopGrid=
-  createGrid(
-    44,
-    34,
-    0
-  );
+  createGrid(44,34,0);
 
 
-rect(workshopGrid,12,16,20,15,1);
+rect(
+  workshopGrid,
+  12,16,
+  20,15,
+  1
+);
 
-rect(workshopGrid,10,4,24,11,6);
+rect(
+  workshopGrid,
+  10,4,
+  24,11,
+  6
+);
 
 rect(workshopGrid,10,3,24,1,3);
 rect(workshopGrid,10,3,1,12,3);
 rect(workshopGrid,33,3,1,12,3);
 
-rect(workshopGrid,20,14,5,5,1);
+rect(
+  workshopGrid,
+  20,14,
+  5,5,
+  1
+);
 
-pathV(workshopGrid,20,18,33,5);
+pathV(
+  workshopGrid,
+  20,18,33,5
+);
 
 
 /* =========================================================
@@ -271,24 +338,33 @@ pathV(workshopGrid,20,18,33,5);
 ========================================================= */
 
 const mountainGrid=
-  createGrid(
-    54,
-    44,
-    0
-  );
+  createGrid(54,44,0);
 
 
-rect(mountainGrid,39,0,5,44,5);
+rect(
+  mountainGrid,
+  39,0,
+  5,44,
+  5
+);
 
 pathV(mountainGrid,25,34,43,4);
+
 pathH(mountainGrid,16,28,32,3);
 pathV(mountainGrid,15,22,34,3);
+
 pathH(mountainGrid,15,35,20,3);
 pathV(mountainGrid,33,11,22,3);
+
 pathH(mountainGrid,19,35,9,3);
 pathV(mountainGrid,18,3,11,3);
 
-rect(mountainGrid,36,19,9,4,6);
+rect(
+  mountainGrid,
+  36,19,
+  9,4,
+  6
+);
 
 teaTerrace(mountainGrid,4,25,9,6);
 teaTerrace(mountainGrid,22,24,9,5);
@@ -300,16 +376,10 @@ teaTerrace(mountainGrid,5,10,10,6);
 ========================================================= */
 
 const teahouseGrid=
-  createGrid(
-    30,
-    22,
-    3
-  );
+  createGrid(30,22,3);
 
 
-/*
- * 室内の基本床
- */
+/* FLOOR */
 
 rect(
   teahouseGrid,
@@ -319,52 +389,15 @@ rect(
 );
 
 
-/*
- * 北壁
- */
+/* WALLS */
 
-rect(
-  teahouseGrid,
-  0,0,
-  30,2,
-  3
-);
+rect(teahouseGrid,0,0,30,2,3);
+rect(teahouseGrid,0,0,2,22,3);
+rect(teahouseGrid,28,0,2,22,3);
+rect(teahouseGrid,0,20,30,2,3);
 
 
-/*
- * 左右壁
- */
-
-rect(
-  teahouseGrid,
-  0,0,
-  2,22,
-  3
-);
-
-rect(
-  teahouseGrid,
-  28,0,
-  2,22,
-  3
-);
-
-
-/*
- * 南壁
- */
-
-rect(
-  teahouseGrid,
-  0,20,
-  30,2,
-  3
-);
-
-
-/*
- * 出入口
- */
+/* ENTRANCE */
 
 rect(
   teahouseGrid,
@@ -374,9 +407,7 @@ rect(
 );
 
 
-/*
- * 右奥カウンター
- */
+/* COUNTER */
 
 rect(
   teahouseGrid,
@@ -386,9 +417,7 @@ rect(
 );
 
 
-/*
- * 茶棚
- */
+/* TEA SHELF */
 
 rect(
   teahouseGrid,
@@ -398,9 +427,7 @@ rect(
 );
 
 
-/*
- * 奥座敷
- */
+/* RAISED AREA */
 
 rect(
   teahouseGrid,
@@ -408,11 +435,6 @@ rect(
   8,4,
   6
 );
-
-
-/*
- * 座敷境界
- */
 
 rect(
   teahouseGrid,
@@ -422,9 +444,7 @@ rect(
 );
 
 
-/*
- * 茶卓の当たり判定
- */
+/* TABLE COLLISION */
 
 rect(teahouseGrid,5,11,2,2,3);
 rect(teahouseGrid,11,10,2,2,3);
@@ -432,14 +452,126 @@ rect(teahouseGrid,16,13,2,2,3);
 rect(teahouseGrid,22,11,2,2,3);
 
 
-/*
- * 左奥の大型植物
- */
+/* PLANT */
 
 rect(
   teahouseGrid,
   2,3,
   1,2,
+  3
+);
+
+
+/* =========================================================
+   NEW
+   LONGJING TEA SHOP INTERIOR
+========================================================= */
+
+const teashopGrid=
+  createGrid(30,22,3);
+
+
+/* FLOOR */
+
+rect(
+  teashopGrid,
+  1,1,
+  28,19,
+  6
+);
+
+
+/* WALLS */
+
+rect(teashopGrid,0,0,30,2,3);
+rect(teashopGrid,0,0,2,22,3);
+rect(teashopGrid,28,0,2,22,3);
+rect(teashopGrid,0,20,30,2,3);
+
+
+/* ENTRANCE */
+
+rect(
+  teashopGrid,
+  13,19,
+  4,3,
+  6
+);
+
+
+/* LEFT PRODUCT SHELF */
+
+rect(
+  teashopGrid,
+  3,3,
+  5,5,
+  3
+);
+
+
+/* REAR PRODUCT SHELF */
+
+rect(
+  teashopGrid,
+  10,2,
+  10,2,
+  3
+);
+
+
+/* RIGHT PRODUCT SHELF */
+
+rect(
+  teashopGrid,
+  24,3,
+  3,6,
+  3
+);
+
+
+/* SALES COUNTER */
+
+rect(
+  teashopGrid,
+  19,7,
+  7,2,
+  3
+);
+
+
+/* CENTRAL DISPLAY */
+
+rect(
+  teashopGrid,
+  9,10,
+  4,2,
+  3
+);
+
+rect(
+  teashopGrid,
+  15,13,
+  4,2,
+  3
+);
+
+
+/* TASTING TABLE */
+
+rect(
+  teashopGrid,
+  5,14,
+  3,2,
+  3
+);
+
+
+/* PACKING TABLE */
+
+rect(
+  teashopGrid,
+  22,13,
+  4,2,
   3
 );
 
@@ -472,6 +604,8 @@ village:{
 
   exits:[
 
+    /* 茶畑 */
+
     {
       x:35,
       y:0,
@@ -486,10 +620,7 @@ village:{
     },
 
 
-    /*
-     * NEW
-     * 村口茶館
-     */
+    /* 村口茶館 */
 
     {
       x:46,
@@ -499,6 +630,22 @@ village:{
       height:2,
 
       target:"teahouse",
+
+      targetX:15,
+      targetY:18
+    },
+
+
+    /* 龙井茶叶 */
+
+    {
+      x:17,
+      y:22,
+
+      width:4,
+      height:2,
+
+      target:"teashop",
 
       targetX:15,
       targetY:18
@@ -942,11 +1089,6 @@ field:{
 
 
   npcs:[
-
-    /*
-     * Dialogue System Ver.2
-     * 采茶阿姨
-     */
 
     {
       id:"grandma",
@@ -1477,7 +1619,6 @@ mountain:{
 
 
 /* =========================================================
-   NEW
    MURAGUCHI TEAHOUSE
 ========================================================= */
 
@@ -1547,19 +1688,12 @@ teahouse:{
 
   ],
 
-   /* ======================================================
+
+  /* ======================================================
      TEAHOUSE VOCABULARY
-     茶館内の家具・人物・動作に47語版の単語を割り当て
   ====================================================== */
 
   interactables:[
-
-
-    /* --------------------------------------------------
-       窓
-       interiors.js:
-       drawWindowView(14,2,4,3)
-    -------------------------------------------------- */
 
     {
       x:16,
@@ -1568,25 +1702,12 @@ teahouse:{
       word:"chuanghu"
     },
 
-
-    /* --------------------------------------------------
-       茶罐
-       interiors.js:
-       drawTeaShelf(22,2,5)
-    -------------------------------------------------- */
-
     {
       x:23,
       y:5,
       label:"茶葉の容器を見る",
       word:"chaguan_tin"
     },
-
-
-    /* --------------------------------------------------
-       茶具
-       カウンター上の茶器セット
-    -------------------------------------------------- */
 
     {
       x:23,
@@ -1595,24 +1716,12 @@ teahouse:{
       word:"chaju"
     },
 
-
-    /* --------------------------------------------------
-       柜台
-    -------------------------------------------------- */
-
     {
       x:21,
       y:8,
       label:"カウンターを見る",
       word:"guitai"
     },
-
-
-    /* --------------------------------------------------
-       菜单
-       interiors.js:
-       drawTeaMenu()
-    -------------------------------------------------- */
 
     {
       x:20,
@@ -1621,23 +1730,12 @@ teahouse:{
       word:"caidan"
     },
 
-
-    /* --------------------------------------------------
-       茶桌
-       左側の茶卓
-    -------------------------------------------------- */
-
     {
       x:6,
       y:12,
       label:"茶卓を見る",
       word:"chazhuo"
     },
-
-
-    /* --------------------------------------------------
-       椅子
-    -------------------------------------------------- */
 
     {
       x:4,
@@ -1646,24 +1744,12 @@ teahouse:{
       word:"yizi"
     },
 
-
-    /* --------------------------------------------------
-       茶壶
-       中央の茶卓上
-    -------------------------------------------------- */
-
     {
       x:12,
       y:11,
       label:"茶壺を見る",
       word:"chahu"
     },
-
-
-    /* --------------------------------------------------
-       茶杯
-       右側の茶卓
-    -------------------------------------------------- */
 
     {
       x:17,
@@ -1672,24 +1758,12 @@ teahouse:{
       word:"chabei"
     },
 
-
-    /* --------------------------------------------------
-       开水
-       厨房のやかん
-    -------------------------------------------------- */
-
     {
       x:25,
       y:16,
       label:"沸かしたお湯を見る",
       word:"kaishui"
     },
-
-
-    /* --------------------------------------------------
-       泡茶
-       老板の作業場所
-    -------------------------------------------------- */
 
     {
       x:25,
@@ -1698,24 +1772,12 @@ teahouse:{
       word:"paocha"
     },
 
-
-    /* --------------------------------------------------
-       倒茶
-       右側の茶卓
-    -------------------------------------------------- */
-
     {
       x:22,
       y:12,
       label:"お茶を注ぐ様子を見る",
       word:"daocha"
     },
-
-
-    /* --------------------------------------------------
-       喝茶
-       常連客の茶卓
-    -------------------------------------------------- */
 
     {
       x:11,
@@ -1724,24 +1786,12 @@ teahouse:{
       word:"hecha"
     },
 
-
-    /* --------------------------------------------------
-       老板
-       茶館老板の近く
-    -------------------------------------------------- */
-
     {
       x:25,
       y:8,
       label:"茶館の店主を見る",
       word:"laoban"
     },
-
-
-    /* --------------------------------------------------
-       客人
-       茶館の客を見る
-    -------------------------------------------------- */
 
     {
       x:12,
@@ -1751,6 +1801,7 @@ teahouse:{
     }
 
   ],
+
 
   npcs:[
 
@@ -1807,11 +1858,259 @@ teahouse:{
 
   ]
 
+},
+
+
+/* =========================================================
+   NEW
+   LONGJING TEA SHOP
+========================================================= */
+
+teashop:{
+
+  name:"龍井茶葉店",
+  cn:"龙井茶叶",
+
+  width:30,
+  height:22,
+
+  grid:teashopGrid,
+
+  spawn:{
+    x:15,
+    y:18
+  },
+
+  exits:[
+
+    {
+      x:13,
+      y:20,
+
+      width:4,
+      height:2,
+
+      target:"village",
+
+      targetX:19,
+      targetY:24
+    }
+
+  ],
+
+  buildings:[],
+
+  props:[],
+
+  scenery:[],
+
+
+  /* ======================================================
+     PEOPLE
+  ====================================================== */
+
+  ambientNPCs:[
+
+    {
+      type:"villager",
+      x:7,
+      y:17
+    },
+
+    {
+      type:"tourist",
+      x:11,
+      y:7
+    },
+
+    {
+      type:"tourist",
+      x:16,
+      y:9
+    }
+
+  ],
+
+
+  /* ======================================================
+     TEA SHOP VOCABULARY
+     15 NEW WORDS
+  ====================================================== */
+
+  interactables:[
+
+    {
+      x:5,
+      y:5,
+      label:"緑茶を見る",
+      word:"lvcha"
+    },
+
+    {
+      x:11,
+      y:4,
+      label:"龍井茶を見る",
+      word:"longjingcha"
+    },
+
+    {
+      x:14,
+      y:4,
+      label:"新茶を見る",
+      word:"xincha"
+    },
+
+    {
+      x:17,
+      y:4,
+      label:"春茶を見る",
+      word:"chuncha"
+    },
+
+    {
+      x:20,
+      y:10,
+      label:"価格札を見る",
+      word:"jiage"
+    },
+
+    {
+      x:21,
+      y:11,
+      label:"値段を尋ねる表現を見る",
+      word:"duoshaoqian"
+    },
+
+    {
+      x:24,
+      y:12,
+      label:"秤を見る",
+      word:"chengzhong"
+    },
+
+    {
+      x:25,
+      y:15,
+      label:"重量表示を見る",
+      word:"ke"
+    },
+
+    {
+      x:23,
+      y:16,
+      label:"茶葉の重量表示を見る",
+      word:"yijin"
+    },
+
+    {
+      x:23,
+      y:13,
+      label:"包装台を見る",
+      word:"baozhuang"
+    },
+
+    {
+      x:17,
+      y:14,
+      label:"贈答用の茶箱を見る",
+      word:"lihe"
+    },
+
+    {
+      x:11,
+      y:12,
+      label:"茶葉を買う場所を見る",
+      word:"maicha"
+    },
+
+    {
+      x:6,
+      y:16,
+      label:"試飲席を見る",
+      word:"shihe"
+    },
+
+    {
+      x:19,
+      y:6,
+      label:"おすすめの商品を見る",
+      word:"tuijian"
+    },
+
+    {
+      x:8,
+      y:8,
+      label:"茶葉の品質表示を見る",
+      word:"pinzhi"
+    }
+
+  ],
+
+
+  /* ======================================================
+     TEA SHOP NPC
+  ====================================================== */
+
+  npcs:[
+
+    {
+      id:"teaShopOwner",
+
+      x:22,
+      y:10,
+
+      name:"茶叶店老板",
+
+      color:"#765039",
+
+      label:"茶",
+
+      dialogue:[
+
+        "欢迎，随便看看。",
+
+        "今年的新茶已经到了。",
+
+        "不同时间采的龙井茶，味道也不太一样。",
+
+        "如果不知道选哪一种，我可以给你推荐。"
+
+      ]
+
+    },
+
+
+    {
+      id:"teaShopCustomer",
+
+      x:12,
+      y:16,
+
+      name:"买茶的游客",
+
+      color:"#61717a",
+
+      label:"客",
+
+      dialogue:[
+
+        "我想买一点龙井茶带回去。",
+
+        "这里还可以试喝。",
+
+        "我正在看看哪一种比较适合送人。"
+
+      ]
+
+    }
+
+  ]
+
 }
 
 };
 
 
 console.log(
-  "杭州探索録2 Map System Ver.5.2 - TEAHOUSE INTERIOR loaded"
+  "杭州探索録2 Map System Ver.5.3 - TEAHOUSE + TEA SHOP loaded"
 );
