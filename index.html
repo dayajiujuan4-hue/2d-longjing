@@ -10,24 +10,31 @@
 
   <title>杭州探索録2 龍井茶郷</title>
 
-  <link
-    rel="stylesheet"
-    href="./style.css"
-  >
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
   <!-- ===================================================
-       TITLE SCREEN
+       TITLE
   ==================================================== -->
 
   <div id="titleScreen">
 
-    <div class="title-background">
-      <div class="mountain mountain-back"></div>
-      <div class="mountain mountain-front"></div>
+    <div class="title-scenery">
+
+      <div class="title-sun"></div>
+
+      <div class="title-mountain mountain-a"></div>
+      <div class="title-mountain mountain-b"></div>
+      <div class="title-mountain mountain-c"></div>
+
+      <div class="title-tea tea-a"></div>
+      <div class="title-tea tea-b"></div>
+      <div class="title-tea tea-c"></div>
+
     </div>
+
 
     <div class="title-panel">
 
@@ -47,30 +54,120 @@
         LONGJING TEA VILLAGE
       </div>
 
-      <div class="title-line"></div>
+      <div class="title-divider"></div>
 
       <p class="title-copy">
-        杭州の山里を歩き、<br>
-        中国語と龍井茶を知る。
+        武林の夜から、山里の朝へ。<br>
+        杭州の茶郷を歩き、中国語と龍井茶を知る。
       </p>
 
-      <button
-        id="startButton"
-        class="main-button"
-      >
-        龍井村へ
-      </button>
+
+      <div class="mode-select">
+
+        <button
+          id="exploreModeButton"
+          class="mode-button explore-button"
+        >
+
+          <span class="mode-number">
+            01
+          </span>
+
+          <span class="mode-main">
+            龍井村を歩く
+          </span>
+
+          <span class="mode-sub">
+            中国語単語探索
+          </span>
+
+        </button>
+
+
+        <button
+          id="storyModeButton"
+          class="mode-button story-button"
+        >
+
+          <span class="mode-number">
+            02
+          </span>
+
+          <span class="mode-main">
+            STORY MODE
+          </span>
+
+          <span class="mode-sub">
+            龍井茶郷・物語編
+          </span>
+
+        </button>
+
+      </div>
+
 
       <button
         id="titleNotebookButton"
-        class="sub-button"
+        class="notebook-title-button"
       >
         龍井茶手帖
       </button>
 
+
       <div id="titleProgress">
         発見したことば　0 / 32
       </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================
+       STORY PREVIEW
+  ==================================================== -->
+
+  <div
+    id="storyPreview"
+    class="hidden"
+  >
+
+    <div class="story-preview-card">
+
+      <div class="story-preview-small">
+        杭州探索録 2
+      </div>
+
+      <div class="story-preview-title">
+        龍井茶郷
+      </div>
+
+      <div class="story-preview-cn">
+        龙井茶乡
+      </div>
+
+      <div class="story-preview-line"></div>
+
+      <p>
+        武林の夜から、山里の朝へ。
+      </p>
+
+      <div class="story-preview-dialogue">
+        小雨「你来杭州这么久，还没去过龙井村？」
+      </div>
+
+      <div class="story-preview-dialogue">
+        小雨「那不行。走，我带你去。」
+      </div>
+
+      <div class="story-coming">
+        STORY MODE<br>
+        ―― 準備中 ――
+      </div>
+
+      <button id="storyPreviewBack">
+        タイトルへ戻る
+      </button>
 
     </div>
 
@@ -90,8 +187,6 @@
     ></canvas>
 
 
-    <!-- MAP NAME -->
-
     <div id="mapLabel">
 
       <div id="mapName">
@@ -105,14 +200,15 @@
     </div>
 
 
-    <!-- WORD COUNTER -->
+    <div id="modeLabel">
+      WORD EXPLORATION
+    </div>
+
 
     <div id="wordCounter">
       ことば 0 / 32
     </div>
 
-
-    <!-- CONTROL -->
 
     <div id="controlHint">
       WASD / 矢印：移動　
@@ -120,8 +216,6 @@
       L：龍井茶手帖
     </div>
 
-
-    <!-- INTERACTION -->
 
     <div
       id="interactionHint"
@@ -131,9 +225,7 @@
     </div>
 
 
-    <!-- =================================================
-         DIALOGUE
-    ================================================== -->
+    <!-- DIALOGUE -->
 
     <div
       id="dialogueBox"
@@ -161,9 +253,7 @@
     </div>
 
 
-    <!-- =================================================
-         WORD POPUP
-    ================================================== -->
+    <!-- WORD -->
 
     <div
       id="wordPopup"
@@ -176,17 +266,11 @@
           中国語を発見！
         </div>
 
-        <div id="wordChinese">
-          茶园
-        </div>
+        <div id="wordChinese"></div>
 
-        <div id="wordPinyin">
-          cháyuán
-        </div>
+        <div id="wordPinyin"></div>
 
-        <div id="wordJapanese">
-          茶畑
-        </div>
+        <div id="wordJapanese"></div>
 
         <div id="wordDescription"></div>
 
@@ -199,9 +283,7 @@
     </div>
 
 
-    <!-- =================================================
-         NOTEBOOK
-    ================================================== -->
+    <!-- NOTEBOOK -->
 
     <div
       id="notebook"
@@ -242,7 +324,7 @@
 
 
   <!-- ===================================================
-       SCRIPT ORDER
+       SCRIPT
   ==================================================== -->
 
   <script src="./map.js"></script>
