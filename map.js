@@ -3,7 +3,9 @@
 /*
 ==========================================================
  杭州探索録2
- MAP SYSTEM Ver.1.1
+ MAP SYSTEM Ver.2.0
+
+ LONGJING VILLAGE
 ==========================================================
 */
 
@@ -15,12 +17,13 @@ const TILE=32;
   TILE
 
   0 = grass
-  1 = path
+  1 = stone path
   2 = tea field
   3 = building / wall
-  4 = stone wall
+  4 = stone terrace
   5 = water
-  6 = wooden bridge / floor
+  6 = wood
+  7 = earth
 */
 
 
@@ -116,114 +119,350 @@ function pathV(
 
 
 /* =========================================================
-   MAP 1
-   龍井村・村口
+   VILLAGE
 ========================================================= */
 
 const villageGrid=
   createGrid(
-    54,
-    38,
+    64,
+    46,
     0
   );
 
 
-/* central road */
+/*
+----------------------------------------------------------
+ SOUTH ENTRANCE
+----------------------------------------------------------
+*/
 
 pathV(
   villageGrid,
-  24,
-  0,
+  29,
   37,
+  45,
   6
 );
 
 
-/* side roads */
+/*
+----------------------------------------------------------
+ MAIN WINDING STREET
+----------------------------------------------------------
+*/
 
 pathH(
   villageGrid,
-  8,
+  25,
+  34,
+  35,
+  5
+);
+
+pathV(
+  villageGrid,
+  24,
   29,
-  11,
-  4
+  37,
+  5
 );
 
 pathH(
   villageGrid,
+  24,
+  40,
   27,
-  45,
-  20,
-  4
+  5
+);
+
+pathV(
+  villageGrid,
+  37,
+  21,
+  31,
+  5
 );
 
 pathH(
   villageGrid,
+  30,
+  41,
+  19,
+  5
+);
+
+pathV(
+  villageGrid,
+  28,
   13,
+  23,
+  5
+);
+
+pathH(
+  villageGrid,
+  28,
+  37,
+  11,
+  5
+);
+
+pathV(
+  villageGrid,
+  35,
+  0,
+  15,
+  5
+);
+
+
+/*
+----------------------------------------------------------
+ WEST ALLEY
+----------------------------------------------------------
+*/
+
+pathH(
+  villageGrid,
+  10,
   27,
-  29,
+  30,
+  3
+);
+
+pathV(
+  villageGrid,
+  10,
+  24,
+  32,
+  3
+);
+
+pathH(
+  villageGrid,
+  10,
+  21,
+  22,
   3
 );
 
 
-/* tea */
+/*
+----------------------------------------------------------
+ EAST TEA HOUSE ALLEY
+----------------------------------------------------------
+*/
+
+pathH(
+  villageGrid,
+  40,
+  55,
+  25,
+  3
+);
+
+pathV(
+  villageGrid,
+  53,
+  19,
+  27,
+  3
+);
+
+
+/*
+----------------------------------------------------------
+ NORTHWEST PATH
+----------------------------------------------------------
+*/
+
+pathH(
+  villageGrid,
+  14,
+  30,
+  14,
+  3
+);
+
+pathV(
+  villageGrid,
+  14,
+  8,
+  16,
+  3
+);
+
+
+/*
+----------------------------------------------------------
+ TEA TERRACES
+----------------------------------------------------------
+*/
 
 rect(
   villageGrid,
   3,3,
-  15,6,
+  10,7,
   2
 );
 
 rect(
   villageGrid,
-  36,4,
-  14,8,
-  2
-);
-
-rect(
-  villageGrid,
-  4,20,
-  12,6,
-  2
-);
-
-rect(
-  villageGrid,
-  38,27,
-  12,6,
-  2
-);
-
-
-/* buildings */
-
-rect(
-  villageGrid,
-  5,13,
-  12,6,
-  3
-);
-
-rect(
-  villageGrid,
-  36,14,
+  17,3,
   13,6,
+  2
+);
+
+rect(
+  villageGrid,
+  44,3,
+  16,8,
+  2
+);
+
+rect(
+  villageGrid,
+  3,13,
+  8,7,
+  2
+);
+
+rect(
+  villageGrid,
+  45,13,
+  14,5,
+  2
+);
+
+rect(
+  villageGrid,
+  3,35,
+  17,7,
+  2
+);
+
+rect(
+  villageGrid,
+  43,34,
+  17,8,
+  2
+);
+
+
+/*
+----------------------------------------------------------
+ STONE TERRACES
+----------------------------------------------------------
+*/
+
+rect(
+  villageGrid,
+  3,10,
+  10,1,
+  4
+);
+
+rect(
+  villageGrid,
+  17,9,
+  13,1,
+  4
+);
+
+rect(
+  villageGrid,
+  44,11,
+  16,1,
+  4
+);
+
+rect(
+  villageGrid,
+  3,20,
+  8,1,
+  4
+);
+
+rect(
+  villageGrid,
+  45,18,
+  14,1,
+  4
+);
+
+rect(
+  villageGrid,
+  3,42,
+  17,1,
+  4
+);
+
+rect(
+  villageGrid,
+  43,42,
+  17,1,
+  4
+);
+
+
+/*
+----------------------------------------------------------
+ BUILDINGS
+----------------------------------------------------------
+*/
+
+rect(
+  villageGrid,
+  14,17,
+  10,5,
   3
 );
 
 rect(
   villageGrid,
-  7,31,
-  11,5,
+  5,24,
+  8,6,
   3
+);
+
+rect(
+  villageGrid,
+  42,20,
+  10,5,
+  3
+);
+
+rect(
+  villageGrid,
+  45,28,
+  12,5,
+  3
+);
+
+rect(
+  villageGrid,
+  18,32,
+  8,5,
+  3
+);
+
+
+/*
+----------------------------------------------------------
+ SMALL WATER CHANNEL
+----------------------------------------------------------
+*/
+
+rect(
+  villageGrid,
+  61,0,
+  2,46,
+  5
 );
 
 
 /* =========================================================
-   MAP 2
-   茶畑
+   FIELD
 ========================================================= */
 
 const fieldGrid=
@@ -234,8 +473,6 @@ const fieldGrid=
   );
 
 
-/* south entrance */
-
 pathV(
   fieldGrid,
   25,
@@ -243,9 +480,6 @@ pathV(
   41,
   5
 );
-
-
-/* winding path */
 
 pathH(
   fieldGrid,
@@ -304,8 +538,6 @@ pathH(
 );
 
 
-/* tea terraces */
-
 rect(
   fieldGrid,
   4,28,
@@ -356,8 +588,6 @@ rect(
 );
 
 
-/* stone terrace walls */
-
 rect(
   fieldGrid,
   4,33,
@@ -395,8 +625,7 @@ rect(
 
 
 /* =========================================================
-   MAP 3
-   製茶場
+   WORKSHOP
 ========================================================= */
 
 const workshopGrid=
@@ -407,8 +636,6 @@ const workshopGrid=
   );
 
 
-/* courtyard */
-
 rect(
   workshopGrid,
   12,16,
@@ -417,8 +644,6 @@ rect(
 );
 
 
-/* workshop floor */
-
 rect(
   workshopGrid,
   10,4,
@@ -426,8 +651,6 @@ rect(
   6
 );
 
-
-/* walls */
 
 rect(
   workshopGrid,
@@ -451,8 +674,6 @@ rect(
 );
 
 
-/* entrance */
-
 rect(
   workshopGrid,
   20,14,
@@ -460,8 +681,6 @@ rect(
   1
 );
 
-
-/* road */
 
 pathV(
   workshopGrid,
@@ -473,8 +692,7 @@ pathV(
 
 
 /* =========================================================
-   MAP 4
-   山道
+   MOUNTAIN
 ========================================================= */
 
 const mountainGrid=
@@ -485,8 +703,6 @@ const mountainGrid=
   );
 
 
-/* stream */
-
 rect(
   mountainGrid,
   39,0,
@@ -494,8 +710,6 @@ rect(
   5
 );
 
-
-/* paths */
 
 pathV(
   mountainGrid,
@@ -554,8 +768,6 @@ pathV(
 );
 
 
-/* bridge */
-
 rect(
   mountainGrid,
   36,19,
@@ -563,8 +775,6 @@ rect(
   6
 );
 
-
-/* tea */
 
 rect(
   mountainGrid,
@@ -601,22 +811,24 @@ const MAPS={
 
     cn:"龙井村",
 
-    width:54,
-    height:38,
+    width:64,
+    height:46,
 
     grid:villageGrid,
 
     spawn:{
-      x:27,
-      y:34
+      x:32,
+      y:42
     },
+
 
     exits:[
 
       {
-        x:24,
+        x:35,
         y:0,
-        width:6,
+
+        width:5,
         height:2,
 
         target:"field",
@@ -627,42 +839,140 @@ const MAPS={
 
     ],
 
+
     buildings:[
 
       {
-        x:5,
-        y:13,
-        w:12,
-        h:6,
+        x:14,
+        y:17,
+        w:10,
+        h:5,
 
         name:"龙井茶叶"
       },
 
       {
-        x:36,
-        y:14,
-        w:13,
+        x:5,
+        y:24,
+        w:8,
         h:6,
+
+        name:"茶农人家"
+      },
+
+      {
+        x:42,
+        y:20,
+        w:10,
+        h:5,
 
         name:"村口茶馆"
       },
 
       {
-        x:7,
-        y:31,
-        w:11,
+        x:45,
+        y:28,
+        w:12,
         h:5,
 
-        name:"茶农人家"
+        name:"龙井人家"
+      },
+
+      {
+        x:18,
+        y:32,
+        w:8,
+        h:5,
+
+        name:"茶舍"
       }
 
     ],
 
+
+    props:[
+
+      {
+        type:"sign",
+        x:31,
+        y:39,
+        text:"龙井村"
+      },
+
+      {
+        type:"basket",
+        x:25,
+        y:28
+      },
+
+      {
+        type:"basket",
+        x:27,
+        y:28
+      },
+
+      {
+        type:"teaRack",
+        x:15,
+        y:23
+      },
+
+      {
+        type:"teaRack",
+        x:18,
+        y:23
+      },
+
+      {
+        type:"bench",
+        x:39,
+        y:24
+      },
+
+      {
+        type:"pot",
+        x:41,
+        y:27
+      },
+
+      {
+        type:"pot",
+        x:43,
+        y:27
+      },
+
+      {
+        type:"stone",
+        x:22,
+        y:15
+      },
+
+      {
+        type:"stone",
+        x:24,
+        y:15
+      },
+
+      {
+        type:"lantern",
+        x:41,
+        y:22
+      },
+
+      {
+        type:"lantern",
+        x:52,
+        y:22
+      }
+
+    ],
+
+
     interactables:[
 
       {
-        x:27,
-        y:7,
+        x:32,
+        y:39,
 
         label:"龍井村の案内を見る",
 
@@ -670,8 +980,8 @@ const MAPS={
       },
 
       {
-        x:19,
-        y:12,
+        x:25,
+        y:26,
 
         label:"茶葉を見る",
 
@@ -679,8 +989,8 @@ const MAPS={
       },
 
       {
-        x:34,
-        y:21,
+        x:39,
+        y:24,
 
         label:"茶館を見る",
 
@@ -688,8 +998,8 @@ const MAPS={
       },
 
       {
-        x:19,
-        y:29,
+        x:12,
+        y:31,
 
         label:"茶農家を見る",
 
@@ -698,13 +1008,14 @@ const MAPS={
 
     ],
 
+
     npcs:[
 
       {
         id:"teaAunt",
 
-        x:22,
-        y:14,
+        x:25,
+        y:30,
 
         name:"茶叶店老板娘",
 
@@ -714,18 +1025,40 @@ const MAPS={
 
         dialogue:[
           "第一次来龙井村吗？",
-          "前面就是茶园。",
-          "春天的时候，这里到处都是茶香。"
+          "沿着这条路往上走，就是茶园。",
+          "春天的时候，山里到处都是茶香。"
         ],
 
         reward:"chaxiang"
       },
 
+
+      {
+        id:"oldFarmer",
+
+        x:16,
+        y:23,
+
+        name:"茶农",
+
+        color:"#65734e",
+
+        label:"农",
+
+        dialogue:[
+          "今年的新茶已经开始采了。",
+          "天气好的时候，我们一大早就上山。"
+        ],
+
+        reward:"chanong"
+      },
+
+
       {
         id:"tourist",
 
-        x:31,
-        y:23,
+        x:37,
+        y:28,
 
         name:"游客",
 
@@ -734,11 +1067,32 @@ const MAPS={
         label:"旅",
 
         dialogue:[
-          "这里拍照很好看。",
-          "再往山上走就是茶园。"
+          "这里比我想象中安静多了。",
+          "往上走，茶园会越来越漂亮。"
         ],
 
         reward:"youke"
+      },
+
+
+      {
+        id:"teaGuest",
+
+        x:48,
+        y:25,
+
+        name:"茶馆客人",
+
+        color:"#6e6253",
+
+        label:"客",
+
+        dialogue:[
+          "坐下来喝杯茶吧。",
+          "在龙井村，走累了就应该慢一点。"
+        ],
+
+        reward:"chaguan"
       }
 
     ]
@@ -767,18 +1121,20 @@ const MAPS={
       {
         x:25,
         y:40,
+
         width:5,
         height:2,
 
         target:"village",
 
-        targetX:27,
+        targetX:37,
         targetY:3
       },
 
       {
         x:11,
         y:3,
+
         width:4,
         height:4,
 
@@ -791,6 +1147,7 @@ const MAPS={
       {
         x:36,
         y:12,
+
         width:5,
         height:4,
 
@@ -804,59 +1161,49 @@ const MAPS={
 
     buildings:[],
 
+    props:[],
+
     interactables:[
 
       {
         x:16,
         y:30,
-
         label:"茶畑を見る",
-
         word:"chayuan"
       },
 
       {
         x:20,
         y:24,
-
         label:"新芽を見る",
-
         word:"nenya"
       },
 
       {
         x:35,
         y:22,
-
         label:"茶の木を見る",
-
         word:"chashu"
       },
 
       {
         x:16,
         y:12,
-
         label:"摘みたての茶葉を見る",
-
         word:"xianye"
       },
 
       {
         x:33,
         y:25,
-
         label:"茶摘みを見る",
-
         word:"caicha"
       },
 
       {
         x:14,
         y:8,
-
         label:"茶摘み籠を見る",
-
         word:"chalou"
       }
 
@@ -931,6 +1278,7 @@ const MAPS={
       {
         x:20,
         y:31,
+
         width:5,
         height:3,
 
@@ -944,50 +1292,42 @@ const MAPS={
 
     buildings:[],
 
+    props:[],
+
     interactables:[
 
       {
         x:14,
         y:8,
-
         label:"炒茶鍋を見る",
-
         word:"chaoguo"
       },
 
       {
         x:18,
         y:8,
-
         label:"炒茶を見る",
-
         word:"chaocha"
       },
 
       {
         x:27,
         y:8,
-
         label:"茶葉を広げている",
-
         word:"tanfang"
       },
 
       {
         x:30,
         y:12,
-
         label:"乾いた茶葉を見る",
-
         word:"gancha"
       },
 
       {
         x:25,
         y:12,
-
         label:"火加減を見る",
-
         word:"huohou"
       }
 
@@ -1042,6 +1382,7 @@ const MAPS={
       {
         x:25,
         y:40,
+
         width:5,
         height:4,
 
@@ -1055,50 +1396,42 @@ const MAPS={
 
     buildings:[],
 
+    props:[],
+
     interactables:[
 
       {
         x:18,
         y:27,
-
         label:"山道を見る",
-
         word:"shanlu"
       },
 
       {
         x:37,
         y:21,
-
         label:"橋を見る",
-
         word:"xiaoqiao"
       },
 
       {
         x:38,
         y:15,
-
         label:"小川を見る",
-
         word:"xiaoxi"
       },
 
       {
         x:20,
         y:7,
-
         label:"竹林を見る",
-
         word:"zhulin"
       },
 
       {
         x:14,
         y:12,
-
         label:"山の茶畑を見る",
-
         word:"chashan"
       }
 
@@ -1134,5 +1467,5 @@ const MAPS={
 
 
 console.log(
-  "杭州探索録2 Map System Ver.1.1 loaded"
+  "杭州探索録2 Map System Ver.2.0 loaded"
 );
