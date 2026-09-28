@@ -811,6 +811,162 @@ button{
   color:#778273;
 }
 
+/* =========================================================
+   DIALOGUE CHOICES
+========================================================= */
+
+.dialogue-choices{
+  margin-top:14px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:7px;
+}
+
+
+.dialogue-choice{
+  position:relative;
+
+  width:100%;
+
+  padding:
+    9px 12px
+    9px 34px;
+
+  border:
+    1px solid
+    rgba(205,190,127,.42);
+
+  background:
+    rgba(255,255,255,.045);
+
+  color:#eee9d9;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  transition:
+    background .12s,
+    border-color .12s,
+    transform .12s;
+}
+
+
+.dialogue-choice:hover,
+.dialogue-choice.selected{
+
+  background:
+    rgba(198,174,104,.15);
+
+  border-color:
+    #c6ae68;
+
+  transform:
+    translateX(3px);
+}
+
+
+.dialogue-choice.selected::before{
+
+  content:"▶";
+
+  position:absolute;
+
+  left:11px;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  font-size:9px;
+
+  color:#dfc77d;
+}
+
+
+.dialogue-choice-jp{
+
+  display:block;
+
+  font-size:13px;
+
+  line-height:1.45;
+}
+
+
+.dialogue-choice-cn{
+
+  display:block;
+
+  margin-top:3px;
+
+  font-size:11px;
+
+  line-height:1.4;
+
+  color:#aebda4;
+}
+
+
+.dialogue-choice-number{
+
+  position:absolute;
+
+  right:10px;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  font-size:9px;
+
+  color:#727e6f;
+}
+
+
+/*
+ * 選択肢表示中は
+ * 会話欄を少しだけ高くできる
+ */
+
+#dialogueBox.has-choices{
+
+  min-height:190px;
+}
+
+
+#dialogueBox.has-choices
+.dialogue-next{
+
+  display:none;
+}
+
+
+@media(max-width:650px){
+
+  .dialogue-choice{
+
+    padding:
+      8px 10px
+      8px 28px;
+  }
+
+
+  .dialogue-choice-jp{
+
+    font-size:12px;
+  }
+
+
+  .dialogue-choice-cn{
+
+    font-size:10px;
+  }
+
+}
+
 
 /* =========================================================
    WORD POPUP
