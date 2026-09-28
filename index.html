@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>杭州探索録2 龍井茶郷</title>
+
+  <link
+    rel="stylesheet"
+    href="longjing-style.css"
+  >
+</head>
+
+<body>
+
+  <!-- ===================================================
+       TITLE
+  ==================================================== -->
+
+  <div id="titleScreen">
+
+    <div class="title-panel">
+
+      <div class="series-name">
+        杭州探索録 2
+      </div>
+
+      <h1>
+        龍井茶郷
+      </h1>
+
+      <div class="title-cn">
+        龙井茶乡
+      </div>
+
+      <div class="title-en">
+        LONGJING TEA VILLAGE
+      </div>
+
+      <div class="title-line"></div>
+
+      <p class="title-copy">
+        杭州の山里を歩き、<br>
+        中国語と龍井茶を知る。
+      </p>
+
+      <button id="startButton">
+        龍井村へ
+      </button>
+
+      <button
+        id="titleNotebookButton"
+        class="sub-button"
+      >
+        龍井茶手帖
+      </button>
+
+      <div id="titleProgress">
+        発見したことば　0 / 32
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================
+       GAME
+  ==================================================== -->
+
+  <div id="game">
+
+    <canvas
+      id="gameCanvas"
+      width="960"
+      height="576"
+    ></canvas>
+
+
+    <!-- MAP NAME -->
+
+    <div id="mapLabel">
+
+      <div id="mapName">
+        龍井村・村口
+      </div>
+
+      <div id="mapNameCN">
+        龙井村
+      </div>
+
+    </div>
+
+
+    <!-- WORD COUNTER -->
+
+    <div id="wordCounter">
+      ことば 0 / 32
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div id="controlHint">
+      WASD / 矢印：移動　
+      E / Enter：調べる　
+      L：龍井茶手帖
+    </div>
+
+
+    <!-- INTERACTION -->
+
+    <div
+      id="interactionHint"
+      class="hidden"
+    >
+      E　調べる
+    </div>
+
+
+    <!-- =================================================
+         DIALOGUE
+    ================================================== -->
+
+    <div
+      id="dialogueBox"
+      class="hidden"
+    >
+
+      <div id="portraitFace">
+        茶
+      </div>
+
+      <div class="dialogue-main">
+
+        <div id="speakerName">
+          杭州探索録
+        </div>
+
+        <div id="dialogueText">
+        </div>
+
+        <div class="dialogue-next">
+          E / Enter
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         WORD DISCOVERY
+    ================================================== -->
+
+    <div
+      id="wordPopup"
+      class="hidden"
+    >
+
+      <div class="word-popup-card">
+
+        <div class="word-found">
+          中国語を発見！
+        </div>
+
+        <div id="wordChinese">
+          茶园
+        </div>
+
+        <div id="wordPinyin">
+          cháyuán
+        </div>
+
+        <div id="wordJapanese">
+          茶畑
+        </div>
+
+        <div id="wordDescription">
+        </div>
+
+        <button id="wordCloseButton">
+          手帖に登録
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =================================================
+         NOTEBOOK
+    ================================================== -->
+
+    <div
+      id="notebook"
+      class="hidden"
+    >
+
+      <div class="notebook-panel">
+
+        <div class="notebook-header">
+
+          <div>
+            <div class="notebook-small">
+              杭州探索録2
+            </div>
+
+            <h2>
+              龍井茶手帖
+            </h2>
+          </div>
+
+          <button id="notebookClose">
+            ×
+          </button>
+
+        </div>
+
+        <div id="notebookStats">
+        </div>
+
+        <div id="notebookWords">
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script src="longjing-map.js"></script>
+  <script src="longjing-vocabulary.js"></script>
+  <script src="longjing-dialogue.js"></script>
+  <script src="longjing-game.js"></script>
+  <script src="longjing-visuals.js"></script>
+
+</body>
+</html>
