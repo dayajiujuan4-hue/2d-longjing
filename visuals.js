@@ -3,1226 +3,488 @@
 /*
 ==========================================================
  杭州探索録2
- VISUAL SYSTEM Ver.3.0
+ VISUAL SYSTEM Ver.4.0
 
- "LIVING LONGJING"
-
- 龍井村ビジュアル強化版
- ・外部画像不要
- ・map.js Ver.2.0 対応
- ・game.js Ver.2.0 対応
+ LIVING LONGJING
 ==========================================================
 */
 
+const V={
+  grass:"#6f8e55",
+  grass2:"#79995c",
+  grassDark:"#526f43",
 
-/* =========================================================
-   COLOR PALETTE
-========================================================= */
+  path:"#a99370",
+  path2:"#c0ad86",
+  pathDark:"#806d54",
 
-const COLORS={
+  tea:"#376b38",
+  tea2:"#4d8445",
+  tea3:"#72a255",
+  teaDark:"#244c2b",
+  newLeaf:"#a8c96b",
 
-  grass:"#78945d",
-  grassDark:"#617d4b",
-  grassLight:"#9bb37a",
+  wall:"#e1d8bb",
+  wall2:"#c5b995",
 
-  path:"#b9a47e",
-  pathLight:"#d1c09a",
-  pathDark:"#8f7c5f",
+  roof:"#313d37",
+  roof2:"#46554c",
+  roofDark:"#202a26",
 
-  tea:"#3f733c",
-  teaMid:"#568b48",
-  teaLight:"#79a85c",
-  teaDark:"#294f2c",
-  teaNew:"#a6c96f",
+  wood:"#76583b",
+  wood2:"#9a774d",
+  woodDark:"#4b3829",
 
-  stone:"#77766c",
-  stoneDark:"#5d5d56",
-  stoneLight:"#aaa696",
+  stone:"#77776d",
+  stone2:"#a09d8c",
 
-  water:"#5c98a1",
-  waterDark:"#467c86",
-  waterLight:"#9bcac5",
-
-  wood:"#755538",
-  woodLight:"#9b744b",
-  woodDark:"#4e3828",
-
-  roof:"#39473f",
-  roofDark:"#26322d",
-  roofLight:"#56645b",
-
-  wall:"#ddd0ad",
-  wallLight:"#eee4ca",
-  wallShade:"#b8a989",
-
-  bamboo:"#4d773f",
-  bambooLight:"#7aa05d",
-
-  shadow:"rgba(32,46,31,.18)"
+  water:"#55939b",
+  water2:"#91c2bc"
 };
 
 
-/* =========================================================
-   TIME
-========================================================= */
-
-function visualTime(){
-
+function vt(){
   return performance.now()/1000;
-
 }
 
 
-/* =========================================================
-   SMALL HELPERS
-========================================================= */
-
-function noiseValue(
-  x,
-  y,
-  salt=0
-){
-
+function vrand(x,y,s=0){
   const n=
     Math.sin(
       x*12.9898+
       y*78.233+
-      salt*37.719
+      s*41.73
     )*43758.5453;
 
-  return n-
-    Math.floor(n);
-
+  return n-Math.floor(n);
 }
 
 
-function visibleOnScreen(
-  x,
-  y,
-  margin=80
-){
-
+function onScreen(x,y,m=100){
   return !(
-    x < -margin ||
-    y < -margin ||
-    x > canvas.width+margin ||
-    y > canvas.height+margin
+    x < -m ||
+    y < -m ||
+    x > canvas.width+m ||
+    y > canvas.height+m
   );
-
 }
 
 
 /* =========================================================
-   GRASS
+   GROUND
 ========================================================= */
 
-function drawGrassTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+function grassTile(x,y,tx,ty){
 
   ctx.fillStyle=
-    (
-      (tx+ty)%2===0
-    )
-      ? COLORS.grass
-      : "#728e58";
+    (tx+ty)%2
+      ? V.grass
+      : V.grass2;
 
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
+  for(let i=0;i<5;i++){
 
-
-  /*
-   * 地面の細かな色むら
-   */
-
-  for(
-    let i=0;
-    i<4;
-    i++
-  ){
-
-    const n1=
-      noiseValue(
-        tx,
-        ty,
-        i
+    const px=
+      x+3+
+      Math.floor(
+        vrand(tx,ty,i)*26
       );
 
-
-    const n2=
-      noiseValue(
-        tx+4,
-        ty+7,
-        i
+    const py=
+      y+3+
+      Math.floor(
+        vrand(ty,tx,i+9)*25
       );
 
-
-    const gx=
-      sx+
-      Math.floor(
-        n1*27
-      )+2;
-
-
-    const gy=
-      sy+
-      Math.floor(
-        n2*25
-      )+3;
-
-
     ctx.fillStyle=
-      i%2===0
-        ? COLORS.grassDark
-        : COLORS.grassLight;
-
+      i%2
+        ? V.grassDark
+        : "#8ba76b";
 
     ctx.fillRect(
-      gx,
-      gy,
+      px,
+      py,
       2,
-      4
+      3+
+      (i%2)
     );
-
   }
 
+  if(vrand(tx,ty,30)>.91){
 
-  /*
-   * 小さな野花
-   */
+    ctx.fillStyle="#eadc99";
+    ctx.fillRect(x+21,y+13,2,2);
 
-  if(
-    noiseValue(
-      tx,
-      ty,
-      90
-    )>.88
-  ){
-
-    ctx.fillStyle=
-      "#eee0a2";
-
-
-    ctx.fillRect(
-      sx+20,
-      sy+12,
-      2,
-      2
-    );
-
-
-    ctx.fillStyle=
-      "#78935b";
-
-
-    ctx.fillRect(
-      sx+20,
-      sy+14,
-      1,
-      4
-    );
-
+    ctx.fillStyle="#587843";
+    ctx.fillRect(x+21,y+15,1,4);
   }
-
 }
 
 
-/* =========================================================
-   STONE PATH
-========================================================= */
+function pathTile(x,y,tx,ty){
 
-function drawStonePathTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+  ctx.fillStyle=V.path;
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=
-    COLORS.path;
+  const odd=(tx+ty)%2;
 
+  ctx.fillStyle=V.path2;
 
   ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
-
-
-  /*
-   * タイルの境界を消すため、
-   * 一枚の地面にランダムな石を敷いているように描く。
-   */
-
-  const seed=
-    noiseValue(
-      tx,
-      ty,
-      11
-    );
-
-
-  ctx.fillStyle=
-    COLORS.pathLight;
-
-
-  ctx.fillRect(
-    sx+3,
-    sy+4,
-    11+
-    Math.floor(seed*5),
-    6
-  );
-
-
-  ctx.fillRect(
-    sx+19,
-    sy+5,
-    10,
-    8
-  );
-
-
-  ctx.fillStyle=
-    "#a89470";
-
-
-  ctx.fillRect(
-    sx+5,
-    sy+15,
-    16,
+    x+2,
+    y+3,
+    odd?14:10,
     7
   );
 
+  ctx.fillRect(
+    x+(odd?18:14),
+    y+4,
+    odd?11:15,
+    8
+  );
+
+  ctx.fillStyle="#998263";
 
   ctx.fillRect(
-    sx+23,
-    sy+16,
-    7,
+    x+4,
+    y+15,
+    15,
+    7
+  );
+
+  ctx.fillRect(
+    x+22,
+    y+16,
+    8,
     6
   );
 
-
-  ctx.fillStyle=
-    COLORS.pathDark;
-
+  ctx.fillStyle=V.pathDark;
 
   ctx.fillRect(
-    sx+2,
-    sy+25,
-    10,
+    x+2,
+    y+25,
+    11,
     2
   );
 
-
   ctx.fillRect(
-    sx+16,
-    sy+27,
-    13,
+    x+16,
+    y+27,
+    14,
     2
   );
 
+  if(vrand(tx,ty,17)>.65){
 
-  /*
-   * 石の隙間の苔
-   */
-
-  if(
-    seed>.62
-  ){
-
-    ctx.fillStyle=
-      "#688251";
-
+    ctx.fillStyle="#637a4d";
 
     ctx.fillRect(
-      sx+14,
-      sy+11,
+      x+15,
+      y+10,
       2,
       5
     );
-
-
-    ctx.fillRect(
-      sx+15,
-      sy+13,
-      4,
-      2
-    );
-
   }
-
 }
 
 
-/* =========================================================
-   TEA FIELD
-========================================================= */
+function teaTile(x,y,tx,ty){
 
-function drawTeaTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+  ctx.fillStyle="#617a49";
+  ctx.fillRect(x,y,TILE,TILE);
 
-  /*
-   * 茶畑の地面
-   */
-
-  ctx.fillStyle=
-    "#647d4c";
-
-
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
-
-
-  /*
-   * 茶樹の影
-   */
-
-  ctx.fillStyle=
-    "rgba(25,55,27,.27)";
-
-
-  ctx.fillRect(
-    sx+1,
-    sy+16,
-    31,
-    12
-  );
-
-
-  /*
-   * 茶樹本体
-   */
-
-  ctx.fillStyle=
-    COLORS.teaDark;
-
-
-  ctx.fillRect(
-    sx,
-    sy+11,
-    32,
-    13
-  );
-
-
-  ctx.fillStyle=
-    COLORS.tea;
-
-
-  ctx.fillRect(
-    sx+1,
-    sy+8,
-    31,
-    12
-  );
-
-
-  /*
-   * 茶樹の丸み
-   */
-
-  const wave=
-    Math.sin(
-      visualTime()*1.3+
-      tx*.7+
-      ty*.35
-    );
-
+  ctx.fillStyle="rgba(24,47,24,.25)";
+  ctx.fillRect(x,y+17,TILE,11);
 
   const sway=
     Math.round(
-      wave*.7
+      Math.sin(
+        vt()*1.1+
+        tx*.6+
+        ty*.25
+      )*.7
     );
 
+  ctx.fillStyle=V.teaDark;
+  ctx.fillRect(x,y+10,TILE,14);
 
-  ctx.fillStyle=
-    COLORS.teaMid;
+  ctx.fillStyle=V.tea;
 
+  ctx.fillRect(x+sway,y+8,8,12);
+  ctx.fillRect(x+7+sway,y+5,9,15);
+  ctx.fillRect(x+15+sway,y+7,9,13);
+  ctx.fillRect(x+23+sway,y+4,9,16);
 
-  ctx.fillRect(
-    sx+2+sway,
-    sy+6,
-    7,
-    8
-  );
+  ctx.fillStyle=V.tea2;
 
+  ctx.fillRect(x+2+sway,y+7,6,5);
+  ctx.fillRect(x+10+sway,y+4,6,5);
+  ctx.fillRect(x+18+sway,y+6,6,5);
+  ctx.fillRect(x+25+sway,y+3,5,6);
 
-  ctx.fillRect(
-    sx+8+sway,
-    sy+4,
-    8,
-    9
-  );
+  ctx.fillStyle=V.tea3;
 
+  ctx.fillRect(x+4+sway,y+8,3,2);
+  ctx.fillRect(x+12+sway,y+5,3,2);
+  ctx.fillRect(x+26+sway,y+4,3,2);
 
-  ctx.fillRect(
-    sx+15+sway,
-    sy+6,
-    8,
-    8
-  );
+  ctx.fillStyle=V.newLeaf;
 
+  ctx.fillRect(x+12+sway,y+2,2,4);
+  ctx.fillRect(x+27+sway,y+1,2,4);
 
-  ctx.fillRect(
-    sx+22+sway,
-    sy+4,
-    8,
-    9
-  );
-
-
-  /*
-   * 新芽
-   */
-
-  ctx.fillStyle=
-    COLORS.teaNew;
-
-
-  ctx.fillRect(
-    sx+6+sway,
-    sy+5,
-    2,
-    3
-  );
-
-
-  ctx.fillRect(
-    sx+14+sway,
-    sy+3,
-    2,
-    3
-  );
-
-
-  ctx.fillRect(
-    sx+26+sway,
-    sy+3,
-    2,
-    3
-  );
-
-
-  /*
-   * 葉のハイライト
-   */
-
-  ctx.fillStyle=
-    COLORS.teaLight;
-
-
-  ctx.fillRect(
-    sx+4+sway,
-    sy+9,
-    4,
-    2
-  );
-
-
-  ctx.fillRect(
-    sx+12+sway,
-    sy+7,
-    5,
-    2
-  );
-
-
-  ctx.fillRect(
-    sx+23+sway,
-    sy+8,
-    5,
-    2
-  );
-
-
-  /*
-   * 列の下側を暗くして
-   * 段々畑っぽい奥行きを作る
-   */
-
-  ctx.fillStyle=
-    "rgba(30,52,27,.20)";
-
-
-  ctx.fillRect(
-    sx,
-    sy+25,
-    TILE,
-    7
-  );
-
+  ctx.fillStyle="rgba(27,45,25,.18)";
+  ctx.fillRect(x,y+25,TILE,7);
 }
 
 
-/* =========================================================
-   TERRACE / STONE WALL
-========================================================= */
+function wallTile(x,y,tx,ty){
 
-function drawTerraceTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+  ctx.fillStyle="#5e6058";
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=
-    COLORS.stoneDark;
+  ctx.fillStyle=V.stone;
+  ctx.fillRect(x,y+2,TILE,27);
 
+  ctx.fillStyle=V.stone2;
+  ctx.fillRect(x,y+2,TILE,4);
 
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
+  ctx.fillStyle="#5f6059";
 
+  ctx.fillRect(x,y+14,TILE,2);
+  ctx.fillRect(x+14,y+2,2,12);
+  ctx.fillRect(x+8,y+16,2,13);
+  ctx.fillRect(x+25,y+16,2,13);
 
-  ctx.fillStyle=
-    COLORS.stone;
+  if(vrand(tx,ty,4)>.55){
 
-
-  ctx.fillRect(
-    sx,
-    sy+2,
-    TILE,
-    27
-  );
-
-
-  ctx.fillStyle=
-    COLORS.stoneLight;
-
-
-  ctx.fillRect(
-    sx,
-    sy+2,
-    TILE,
-    5
-  );
-
-
-  /*
-   * 石組み
-   */
-
-  ctx.fillStyle=
-    "#64645d";
-
-
-  ctx.fillRect(
-    sx,
-    sy+14,
-    TILE,
-    2
-  );
-
-
-  ctx.fillRect(
-    sx+15,
-    sy+2,
-    2,
-    13
-  );
-
-
-  ctx.fillRect(
-    sx+8,
-    sy+16,
-    2,
-    13
-  );
-
-
-  ctx.fillRect(
-    sx+25,
-    sy+16,
-    2,
-    13
-  );
-
-
-  /*
-   * 苔
-   */
-
-  if(
-    noiseValue(
-      tx,
-      ty,
-      3
-    )>.45
-  ){
-
-    ctx.fillStyle=
-      "#59734c";
-
-
-    ctx.fillRect(
-      sx+2,
-      sy+7,
-      7,
-      3
-    );
-
-
-    ctx.fillRect(
-      sx+4,
-      sy+10,
-      3,
-      3
-    );
-
+    ctx.fillStyle="#58704a";
+    ctx.fillRect(x+3,y+7,7,3);
   }
-
-
-  /*
-   * 石垣下の影
-   */
-
-  ctx.fillStyle=
-    "rgba(30,35,29,.22)";
-
-
-  ctx.fillRect(
-    sx,
-    sy+29,
-    TILE,
-    3
-  );
-
 }
 
 
-/* =========================================================
-   WATER
-========================================================= */
+function waterTile(x,y,tx,ty){
 
-function drawWaterTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+  ctx.fillStyle="#3f747e";
+  ctx.fillRect(x,y,TILE,TILE);
 
-  const time=
-    visualTime();
+  ctx.fillStyle=V.water;
+  ctx.fillRect(x+3,y,TILE-6,TILE);
 
+  const t=vt();
 
-  ctx.fillStyle=
-    COLORS.waterDark;
+  for(let i=0;i<3;i++){
 
-
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
-
-
-  ctx.fillStyle=
-    COLORS.water;
-
-
-  ctx.fillRect(
-    sx+2,
-    sy,
-    TILE-4,
-    TILE
-  );
-
-
-  /*
-   * 流れる水
-   */
-
-  for(
-    let i=0;
-    i<3;
-    i++
-  ){
-
-    const offset=
-      (
-        time*15+
-        i*13+
-        ty*5
-      )%38;
-
+    const yy=
+      y+
+      ((t*13+i*11+ty*4)%36)-3;
 
     ctx.fillStyle=
       i===0
-        ? COLORS.waterLight
-        : "rgba(200,235,225,.35)";
-
+        ? V.water2
+        : "rgba(210,239,229,.35)";
 
     ctx.fillRect(
-      sx+5+
-      (
-        i*7
-      ),
-      sy+
-      offset-6,
-      9,
+      x+5+i*5,
+      yy,
+      10,
       2
     );
-
   }
-
-
-  ctx.fillStyle=
-    "rgba(230,245,225,.25)";
-
-
-  ctx.fillRect(
-    sx+4,
-    sy+3,
-    2,
-    26
-  );
-
 }
 
 
-/* =========================================================
-   WOOD
-========================================================= */
+function woodTile(x,y){
 
-function drawWoodTile(
-  sx,
-  sy
-){
+  ctx.fillStyle=V.wood;
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=
-    COLORS.wood;
+  ctx.fillStyle=V.wood2;
 
+  ctx.fillRect(x,y+7,TILE,2);
+  ctx.fillRect(x,y+21,TILE,2);
 
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
+  ctx.fillStyle=V.woodDark;
 
-
-  ctx.fillStyle=
-    COLORS.woodLight;
-
-
-  ctx.fillRect(
-    sx,
-    sy+6,
-    TILE,
-    2
-  );
-
-
-  ctx.fillRect(
-    sx,
-    sy+20,
-    TILE,
-    2
-  );
-
-
-  ctx.fillStyle=
-    COLORS.woodDark;
-
-
-  ctx.fillRect(
-    sx+10,
-    sy,
-    2,
-    TILE
-  );
-
-
-  ctx.fillRect(
-    sx+26,
-    sy,
-    2,
-    TILE
-  );
-
+  ctx.fillRect(x+10,y,2,TILE);
+  ctx.fillRect(x+26,y,2,TILE);
 }
 
 
-/* =========================================================
-   EARTH
-========================================================= */
+function earthTile(x,y,tx,ty){
 
-function drawEarthTile(
-  sx,
-  sy,
-  tx,
-  ty
-){
+  ctx.fillStyle="#8d7454";
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=
-    "#927655";
+  ctx.fillStyle="#aa8b63";
 
-
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
-
-
-  ctx.fillStyle=
-    "#a88a63";
-
-
-  for(
-    let i=0;
-    i<3;
-    i++
-  ){
-
-    const x=
-      sx+
-      Math.floor(
-        noiseValue(
-          tx,
-          ty,
-          i
-        )*28
-      );
-
-
-    const y=
-      sy+
-      Math.floor(
-        noiseValue(
-          ty,
-          tx,
-          i+10
-        )*28
-      );
-
+  for(let i=0;i<4;i++){
 
     ctx.fillRect(
-      x,
-      y,
+      x+Math.floor(vrand(tx,ty,i)*28),
+      y+Math.floor(vrand(ty,tx,i+10)*28),
       3,
       2
     );
-
   }
-
 }
 
 
-/* =========================================================
-   BLOCK TILE
-========================================================= */
+function blockTile(x,y){
 
-function drawBlockTile(
-  sx,
-  sy
-){
+  ctx.fillStyle="#454f48";
+  ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=
-    "#4d5950";
+  ctx.fillStyle="#606b62";
+  ctx.fillRect(x,y,TILE,5);
 
-
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    TILE
-  );
-
-
-  ctx.fillStyle=
-    "#657168";
-
-
-  ctx.fillRect(
-    sx,
-    sy,
-    TILE,
-    5
-  );
-
-
-  ctx.fillStyle=
-    "#3e4842";
-
-
-  ctx.fillRect(
-    sx,
-    sy+27,
-    TILE,
-    5
-  );
-
+  ctx.fillStyle="#343e39";
+  ctx.fillRect(x,y+27,TILE,5);
 }
 
 
-/* =========================================================
-   TILE
-========================================================= */
-
-function drawTile(
-  tile,
-  sx,
-  sy,
-  tx,
-  ty
-){
+function tileDraw(tile,x,y,tx,ty){
 
   switch(tile){
 
     case 0:
-      drawGrassTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      grassTile(x,y,tx,ty);
     break;
-
 
     case 1:
-      drawStonePathTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      pathTile(x,y,tx,ty);
     break;
-
 
     case 2:
-      drawTeaTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      teaTile(x,y,tx,ty);
     break;
-
 
     case 3:
-      drawBlockTile(
-        sx,
-        sy
-      );
+      blockTile(x,y);
     break;
-
 
     case 4:
-      drawTerraceTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      wallTile(x,y,tx,ty);
     break;
-
 
     case 5:
-      drawWaterTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      waterTile(x,y,tx,ty);
     break;
-
 
     case 6:
-      drawWoodTile(
-        sx,
-        sy
-      );
+      woodTile(x,y);
     break;
-
 
     case 7:
-      drawEarthTile(
-        sx,
-        sy,
-        tx,
-        ty
-      );
+      earthTile(x,y,tx,ty);
     break;
-
   }
-
 }
 
 
 /* =========================================================
-   BUILDING SHADOW
+   MAP
 ========================================================= */
 
-function drawBuildingShadow(
-  x,
-  y,
-  w,
-  h
-){
+function drawTileMap(){
 
-  ctx.fillStyle=
-    "rgba(32,45,30,.24)";
+  const map=MAPS[currentMapId];
 
+  const sx=
+    Math.max(
+      0,
+      Math.floor(camera.x/TILE)-2
+    );
 
-  ctx.beginPath();
+  const sy=
+    Math.max(
+      0,
+      Math.floor(camera.y/TILE)-2
+    );
 
-  ctx.moveTo(
-    x+10,
-    y+20
-  );
+  const ex=
+    Math.min(
+      map.width,
+      Math.ceil(
+        (camera.x+canvas.width)/TILE
+      )+2
+    );
 
-  ctx.lineTo(
-    x+w+28,
-    y+35
-  );
+  const ey=
+    Math.min(
+      map.height,
+      Math.ceil(
+        (camera.y+canvas.height)/TILE
+      )+2
+    );
 
-  ctx.lineTo(
-    x+w+28,
-    y+h+15
-  );
+  for(let y=sy;y<ey;y++){
 
-  ctx.lineTo(
-    x+12,
-    y+h
-  );
+    for(let x=sx;x<ex;x++){
 
-  ctx.closePath();
-
-  ctx.fill();
-
+      tileDraw(
+        map.grid[y][x],
+        x*TILE-camera.x,
+        y*TILE-camera.y,
+        x,
+        y
+      );
+    }
+  }
 }
 
 
 /* =========================================================
-   ROOF
+   BUILDING
 ========================================================= */
 
-function drawRoof(
-  x,
-  y,
-  w
-){
+function drawRoof(x,y,w){
 
-  /*
-   * 大きな軒
-   */
+  ctx.fillStyle="rgba(28,37,31,.22)";
 
-  ctx.fillStyle=
-    COLORS.roofDark;
+  ctx.fillRect(
+    x-9,
+    y+22,
+    w+23,
+    11
+  );
 
+  ctx.fillStyle=V.roofDark;
 
   ctx.beginPath();
 
-  ctx.moveTo(
-    x-16,
-    y+20
-  );
-
-  ctx.lineTo(
-    x+8,
-    y
-  );
-
-  ctx.lineTo(
-    x+w-8,
-    y
-  );
-
-  ctx.lineTo(
-    x+w+16,
-    y+20
-  );
-
-  ctx.lineTo(
-    x+w+10,
-    y+29
-  );
-
-  ctx.lineTo(
-    x-10,
-    y+29
-  );
+  ctx.moveTo(x-16,y+23);
+  ctx.lineTo(x+8,y);
+  ctx.lineTo(x+w-8,y);
+  ctx.lineTo(x+w+16,y+23);
+  ctx.lineTo(x+w+10,y+29);
+  ctx.lineTo(x-10,y+29);
 
   ctx.closePath();
-
   ctx.fill();
 
-
-  /*
-   * 屋根面
-   */
-
-  ctx.fillStyle=
-    COLORS.roof;
-
+  ctx.fillStyle=V.roof;
 
   ctx.beginPath();
 
-  ctx.moveTo(
-    x-8,
-    y+18
-  );
-
-  ctx.lineTo(
-    x+11,
-    y+4
-  );
-
-  ctx.lineTo(
-    x+w-11,
-    y+4
-  );
-
-  ctx.lineTo(
-    x+w+8,
-    y+18
-  );
+  ctx.moveTo(x-9,y+19);
+  ctx.lineTo(x+11,y+4);
+  ctx.lineTo(x+w-11,y+4);
+  ctx.lineTo(x+w+9,y+19);
 
   ctx.closePath();
-
   ctx.fill();
-
-
-  /*
-   * 瓦
-   */
 
   ctx.strokeStyle=
-    "rgba(170,190,175,.23)";
-
+    "rgba(177,193,181,.24)";
 
   ctx.lineWidth=1;
 
-
-  for(
-    let i=10;
-    i<w;
-    i+=13
-  ){
+  for(let i=10;i<w;i+=13){
 
     ctx.beginPath();
 
@@ -1237,35 +499,20 @@ function drawRoof(
     );
 
     ctx.stroke();
-
   }
 
-
-  /*
-   * 軒先
-   */
-
-  ctx.fillStyle=
-    "#202b27";
-
+  ctx.fillStyle="#1d2824";
 
   ctx.fillRect(
-    x-12,
+    x-13,
     y+20,
-    w+24,
+    w+26,
     6
   );
 
+  ctx.fillStyle="#556159";
 
-  for(
-    let i=-7;
-    i<w+10;
-    i+=12
-  ){
-
-    ctx.fillStyle=
-      "#536158";
-
+  for(let i=-7;i<w+10;i+=12){
 
     ctx.fillRect(
       x+i,
@@ -1273,69 +520,96 @@ function drawRoof(
       8,
       2
     );
-
   }
-
 }
 
 
-/* =========================================================
-   BUILDING
-========================================================= */
+function latticeWindow(x,y){
 
-function drawBuilding(
-  building
-){
+  ctx.fillStyle="#4c5c53";
+  ctx.fillRect(x,y,29,25);
 
-  const x=
-    building.x*TILE-
-    camera.x;
+  ctx.fillStyle="#94a99b";
+  ctx.fillRect(x+3,y+3,23,19);
+
+  ctx.fillStyle="#4c473a";
+
+  ctx.fillRect(x+12,y+3,3,19);
+  ctx.fillRect(x+3,y+10,23,3);
+}
 
 
-  const y=
-    building.y*TILE-
-    camera.y;
-
+function buildingSign(x,y,text){
 
   const w=
-    building.w*TILE;
+    Math.max(
+      84,
+      text.length*15+20
+    );
 
+  ctx.fillStyle="#443728";
 
-  const h=
-    building.h*TILE;
-
-
-  if(
-    !visibleOnScreen(
-      x+w/2,
-      y+h/2,
-      Math.max(
-        w,
-        h
-      )
-    )
-  ){
-
-    return;
-
-  }
-
-
-  drawBuildingShadow(
-    x,
-    y,
-    w,
-    h
+  ctx.fillRect(
+    x-w/2-3,
+    y-3,
+    w+6,
+    25
   );
 
+  ctx.fillStyle="#d7c38c";
 
-  /*
-   * 白壁
-   */
+  ctx.fillRect(
+    x-w/2,
+    y,
+    w,
+    19
+  );
 
-  ctx.fillStyle=
-    COLORS.wallShade;
+  ctx.fillStyle="#354234";
 
+  ctx.font="12px sans-serif";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.fillText(
+    text,
+    x,
+    y+10
+  );
+
+  ctx.textBaseline="alphabetic";
+}
+
+
+function drawBuilding(b){
+
+  const x=b.x*TILE-camera.x;
+  const y=b.y*TILE-camera.y;
+
+  const w=b.w*TILE;
+  const h=b.h*TILE;
+
+  if(!onScreen(x+w/2,y+h/2,Math.max(w,h))){
+    return;
+  }
+
+  /* long shadow */
+
+  ctx.fillStyle="rgba(30,45,29,.19)";
+
+  ctx.beginPath();
+
+  ctx.moveTo(x+10,y+23);
+  ctx.lineTo(x+w+30,y+38);
+  ctx.lineTo(x+w+30,y+h+15);
+  ctx.lineTo(x+10,y+h);
+
+  ctx.closePath();
+  ctx.fill();
+
+  /* walls */
+
+  ctx.fillStyle=V.wall2;
 
   ctx.fillRect(
     x+3,
@@ -1344,10 +618,7 @@ function drawBuilding(
     h-26
   );
 
-
-  ctx.fillStyle=
-    COLORS.wall;
-
+  ctx.fillStyle=V.wall;
 
   ctx.fillRect(
     x+8,
@@ -1356,14 +627,7 @@ function drawBuilding(
     h-34
   );
 
-
-  /*
-   * 白壁ハイライト
-   */
-
-  ctx.fillStyle=
-    COLORS.wallLight;
-
+  ctx.fillStyle="#eee8d0";
 
   ctx.fillRect(
     x+10,
@@ -1372,606 +636,129 @@ function drawBuilding(
     7
   );
 
+  /* timber */
 
-  /*
-   * 木の梁
-   */
-
-  ctx.fillStyle=
-    COLORS.woodDark;
-
+  ctx.fillStyle=V.woodDark;
 
   ctx.fillRect(
     x+7,
-    y+39,
+    y+40,
     w-14,
     4
   );
 
-
   ctx.fillRect(
     x+15,
-    y+39,
+    y+40,
     4,
-    h-43
+    h-44
   );
-
 
   ctx.fillRect(
     x+w-19,
-    y+39,
+    y+40,
     4,
-    h-43
+    h-44
   );
 
+  /* windows */
 
-  /*
-   * 格子窓
-   */
+  if(w>150){
 
-  const windowY=
-    y+
-    Math.min(
-      60,
-      h-48
+    latticeWindow(
+      x+25,
+      y+h-72
     );
 
-
-  drawLatticeWindow(
-    x+26,
-    windowY
-  );
-
-
-  drawLatticeWindow(
-    x+w-54,
-    windowY
-  );
-
-
-  /*
-   * 入口
-   */
-
-  const doorX=
-    x+w/2-16;
-
-
-  const doorY=
-    y+h-48;
-
-
-  ctx.fillStyle=
-    "#5d422e";
-
-
-  ctx.fillRect(
-    doorX,
-    doorY,
-    32,
-    48
-  );
-
-
-  ctx.fillStyle=
-    "#806040";
-
-
-  ctx.fillRect(
-    doorX+4,
-    doorY+4,
-    24,
-    44
-  );
-
-
-  ctx.fillStyle=
-    "#3d3329";
-
-
-  ctx.fillRect(
-    doorX+15,
-    doorY+4,
-    2,
-    44
-  );
-
-
-  /*
-   * 店の種類による装飾
-   */
-
-  const isTeaHouse=
-    building.name.includes(
-      "茶馆"
-    ) ||
-    building.name.includes(
-      "茶舍"
+    latticeWindow(
+      x+w-54,
+      y+h-72
     );
-
-
-  if(isTeaHouse){
-
-    drawTeaHouseDecor(
-      x,
-      y,
-      w,
-      h
-    );
-
-  }
-  else{
-
-    drawHouseDecor(
-      x,
-      y,
-      w,
-      h
-    );
-
   }
 
+  /* door */
 
-  /*
-   * 看板
-   */
+  const dx=x+w/2-17;
+  const dy=y+h-50;
 
-  drawBuildingSign(
-    x+w/2,
-    y+35,
-    building.name
-  );
+  ctx.fillStyle="#4f3828";
+  ctx.fillRect(dx,dy,34,50);
 
+  ctx.fillStyle="#79583a";
+  ctx.fillRect(dx+4,dy+4,26,46);
 
-  /*
-   * 屋根は最後
-   */
+  ctx.fillStyle="#382c23";
+  ctx.fillRect(dx+16,dy+4,2,46);
 
-  drawRoof(
-    x,
-    y,
-    w
-  );
-
-}
-
-
-/* =========================================================
-   WINDOW
-========================================================= */
-
-function drawLatticeWindow(
-  x,
-  y
-){
-
-  ctx.fillStyle=
-    "#4c5d55";
-
-
-  ctx.fillRect(
-    x,
-    y,
-    28,
-    24
-  );
-
-
-  ctx.fillStyle=
-    "#91a89b";
-
-
-  ctx.fillRect(
-    x+3,
-    y+3,
-    22,
-    18
-  );
-
-
-  ctx.fillStyle=
-    "#4d493b";
-
-
-  ctx.fillRect(
-    x+12,
-    y+3,
-    3,
-    18
-  );
-
-
-  ctx.fillRect(
-    x+3,
-    y+10,
-    22,
-    3
-  );
-
-}
-
-
-/* =========================================================
-   BUILDING SIGN
-========================================================= */
-
-function drawBuildingSign(
-  x,
-  y,
-  text
-){
-
-  const width=
-    Math.max(
-      82,
-      text.length*15+
-      20
-    );
-
-
-  ctx.fillStyle=
-    "#493b29";
-
-
-  ctx.fillRect(
-    x-width/2-3,
-    y-3,
-    width+6,
-    25
-  );
-
-
-  ctx.fillStyle=
-    "#d9c590";
-
-
-  ctx.fillRect(
-    x-width/2,
-    y,
-    width,
-    19
-  );
-
-
-  ctx.fillStyle=
-    "#3d4938";
-
-
-  ctx.font=
-    "12px sans-serif";
-
-
-  ctx.textAlign=
-    "center";
-
-
-  ctx.textBaseline=
-    "middle";
-
-
-  ctx.fillText(
-    text,
-    x,
-    y+10
-  );
-
-
-  ctx.textBaseline=
-    "alphabetic";
-
-}
-
-
-/* =========================================================
-   TEA HOUSE DECOR
-========================================================= */
-
-function drawTeaHouseDecor(
-  x,
-  y,
-  w,
-  h
-){
-
-  /*
-   * 暖簾
-   */
-
-  const cx=
-    x+w/2;
-
-
-  ctx.fillStyle=
-    "#596c4e";
-
-
-  ctx.fillRect(
-    cx-27,
-    y+h-55,
-    54,
-    12
-  );
-
-
-  for(
-    let i=-24;
-    i<25;
-    i+=12
-  ){
-
-    ctx.fillRect(
-      cx+i,
-      y+h-45,
-      9,
-      13
-    );
-
-  }
-
-
-  /*
-   * 茶壺台
-   */
-
-  ctx.fillStyle=
-    COLORS.woodDark;
-
-
-  ctx.fillRect(
-    x+10,
-    y+h-24,
-    37,
-    6
-  );
-
-
-  ctx.fillRect(
-    x+14,
-    y+h-18,
-    3,
-    15
-  );
-
-
-  ctx.fillRect(
-    x+39,
-    y+h-18,
-    3,
-    15
-  );
-
-
-  drawTinyTeaPot(
-    x+28,
-    y+h-29
-  );
-
-
-  /*
-   * 竹椅子
-   */
-
-  drawSmallChair(
-    x+w-31,
-    y+h-12
-  );
-
-}
-
-
-/* =========================================================
-   HOUSE DECOR
-========================================================= */
-
-function drawHouseDecor(
-  x,
-  y,
-  w,
-  h
-){
-
-  /*
-   * 竹籠
-   */
-
-  ctx.strokeStyle=
-    "#987044";
-
-
-  ctx.lineWidth=2;
-
-
-  ctx.strokeRect(
-    x+w-44,
-    y+h-22,
-    25,
-    15
-  );
-
-
-  ctx.strokeRect(
-    x+w-39,
-    y+h-28,
-    15,
-    10
-  );
-
-
-  /*
-   * 茶葉
-   */
-
-  ctx.fillStyle=
-    "#527744";
-
-
-  ctx.fillRect(
-    x+w-39,
-    y+h-20,
-    15,
-    5
-  );
-
-}
-
-
-/* =========================================================
-   TEAPOT
-========================================================= */
-
-function drawTinyTeaPot(
-  x,
-  y
-){
-
-  ctx.fillStyle=
-    "#9c6247";
-
-
-  ctx.fillRect(
-    x-6,
-    y-4,
-    12,
-    8
-  );
-
-
-  ctx.fillRect(
-    x-3,
-    y-7,
-    6,
-    3
-  );
-
-
-  ctx.fillRect(
-    x+6,
-    y-2,
-    5,
-    3
-  );
-
-
-  ctx.strokeStyle=
-    "#9c6247";
-
-
-  ctx.strokeRect(
-    x-10,
-    y-3,
-    5,
-    5
-  );
-
-}
-
-
-/* =========================================================
-   CHAIR
-========================================================= */
-
-function drawSmallChair(
-  x,
-  y
-){
-
-  ctx.fillStyle=
-    "#6e5136";
-
-
-  ctx.fillRect(
-    x-9,
-    y-7,
-    18,
-    4
-  );
-
-
-  ctx.fillRect(
-    x-7,
-    y-3,
-    3,
-    12
-  );
-
-
-  ctx.fillRect(
-    x+4,
-    y-3,
-    3,
-    12
-  );
-
-
-  ctx.fillRect(
-    x-9,
-    y-18,
-    3,
-    12
-  );
-
-
-  ctx.fillRect(
-    x-9,
-    y-18,
-    18,
-    3
-  );
-
-}
-
-
-/* =========================================================
-   TREE
-========================================================= */
-
-function drawTree(
-  tileX,
-  tileY,
-  scale=1
-){
-
-  const x=
-    (
-      tileX+.5
-    )*TILE-
-    camera.x;
-
-
-  const y=
-    (
-      tileY+.5
-    )*TILE-
-    camera.y;
-
+  /* shop decoration */
 
   if(
-    !visibleOnScreen(
-      x,
-      y,
-      80
-    )
+    b.name.includes("茶馆") ||
+    b.name.includes("茶舍")
   ){
 
-    return;
+    ctx.fillStyle="#526749";
 
+    ctx.fillRect(
+      x+w/2-29,
+      y+h-58,
+      58,
+      11
+    );
+
+    for(let i=-26;i<=20;i+=12){
+
+      ctx.fillRect(
+        x+w/2+i,
+        y+h-48,
+        9,
+        14
+      );
+    }
+
+    tinyTeaPot(
+      x+27,
+      y+h-23
+    );
   }
 
+  buildingSign(
+    x+w/2,
+    y+35,
+    b.name
+  );
 
-  /*
-   * 地面影
-   */
+  drawRoof(x,y,w);
+}
 
-  ctx.fillStyle=
-    "rgba(35,55,34,.20)";
 
+/* =========================================================
+   SCENERY
+========================================================= */
+
+function drawTree(tx,ty,scale=1){
+
+  const x=(tx+.5)*TILE-camera.x;
+  const y=(ty+.5)*TILE-camera.y;
+
+  if(!onScreen(x,y,90)){
+    return;
+  }
+
+  const sway=
+    Math.sin(
+      vt()*.8+
+      tx*.45
+    )*1.2;
+
+  ctx.fillStyle="rgba(28,46,28,.19)";
 
   ctx.beginPath();
 
   ctx.ellipse(
-    x+9,
-    y+17,
-    25*scale,
+    x+10,
+    y+18,
+    27*scale,
     9*scale,
     0,
     0,
@@ -1980,848 +767,557 @@ function drawTree(
 
   ctx.fill();
 
-
-  /*
-   * 幹
-   */
-
-  ctx.fillStyle=
-    "#574733";
-
+  ctx.fillStyle="#594733";
 
   ctx.fillRect(
     x-4*scale,
-    y-3*scale,
+    y-5*scale,
     8*scale,
-    30*scale
+    33*scale
   );
 
-
-  ctx.fillStyle=
-    "#765f40";
-
-
-  ctx.fillRect(
-    x-2*scale,
-    y,
-    3*scale,
-    26*scale
-  );
-
-
-  /*
-   * 葉
-   */
-
-  const sway=
-    Math.sin(
-      visualTime()*.9+
-      tileX*.5
-    )*1.2;
-
-
-  ctx.fillStyle=
-    "#315b35";
-
+  ctx.fillStyle="#315a35";
 
   ctx.beginPath();
 
   ctx.ellipse(
     x+sway,
-    y-17*scale,
-    24*scale,
-    18*scale,
-    0,
-    0,
+    y-19*scale,
+    25*scale,
+    19*scale,
+    0,0,
     Math.PI*2
   );
 
   ctx.fill();
 
-
-  ctx.fillStyle=
-    "#477643";
-
+  ctx.fillStyle="#477844";
 
   ctx.beginPath();
 
   ctx.ellipse(
-    x-11*scale+sway,
-    y-22*scale,
-    15*scale,
-    13*scale,
-    0,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    x+12*scale+sway,
-    y-24*scale,
+    x-12*scale+sway,
+    y-25*scale,
     16*scale,
     14*scale,
-    0,
-    0,
+    0,0,
     Math.PI*2
   );
 
   ctx.fill();
 
+  ctx.beginPath();
 
-  ctx.fillStyle=
-    "#71965b";
+  ctx.ellipse(
+    x+13*scale+sway,
+    y-26*scale,
+    17*scale,
+    14*scale,
+    0,0,
+    Math.PI*2
+  );
 
+  ctx.fill();
+
+  ctx.fillStyle="#71965b";
 
   ctx.beginPath();
 
   ctx.ellipse(
     x-4*scale+sway,
-    y-31*scale,
-    11*scale,
+    y-34*scale,
+    12*scale,
     8*scale,
-    0,
-    0,
+    0,0,
     Math.PI*2
   );
 
   ctx.fill();
-
 }
 
 
-/* =========================================================
-   BAMBOO
-========================================================= */
+function drawBamboo(tx,ty){
 
-function drawBamboo(
-  tileX,
-  tileY,
-  scale=1
-){
+  const x=(tx+.5)*TILE-camera.x;
+  const y=(ty+.5)*TILE-camera.y;
 
-  const x=
-    (
-      tileX+.5
-    )*TILE-
-    camera.x;
-
-
-  const y=
-    (
-      tileY+.5
-    )*TILE-
-    camera.y;
-
-
-  if(
-    !visibleOnScreen(
-      x,
-      y,
-      70
-    )
-  ){
-
+  if(!onScreen(x,y,80)){
     return;
-
   }
-
 
   const sway=
     Math.sin(
-      visualTime()*.8+
-      tileX
+      vt()*.8+tx
     )*2;
 
-
-  /*
-   * shadow
-   */
-
-  ctx.fillStyle=
-    "rgba(34,55,32,.14)";
-
-
-  ctx.fillRect(
-    x-8,
-    y+16,
-    34,
-    6
-  );
-
-
-  /*
-   * stems
-   */
-
   const stems=[
-    [-8,-39],
-    [1,-48],
-    [10,-43]
+    [-8,-41],
+    [1,-51],
+    [10,-45],
+    [16,-37]
   ];
 
+  for(let i=0;i<stems.length;i++){
 
-  for(
-    let i=0;
-    i<stems.length;
-    i++
-  ){
-
-    const bx=
-      x+
-      stems[i][0];
-
-
-    const top=
-      y+
-      stems[i][1]*scale;
-
+    const bx=x+stems[i][0];
+    const top=y+stems[i][1];
 
     ctx.fillStyle=
-      i===1
-        ? COLORS.bambooLight
-        : COLORS.bamboo;
-
+      i%2
+        ? "#729653"
+        : "#4e783f";
 
     ctx.fillRect(
       bx,
       top,
       4,
-      y+23-top
+      y+24-top
     );
 
+    ctx.fillStyle="#9daf69";
 
-    ctx.fillStyle=
-      "#9aae69";
-
-
-    for(
-      let yy=top+10;
-      yy<y+18;
-      yy+=13
-    ){
-
-      ctx.fillRect(
-        bx,
-        yy,
-        4,
-        2
-      );
-
+    for(let yy=top+10;yy<y+20;yy+=13){
+      ctx.fillRect(bx,yy,4,2);
     }
-
   }
 
+  ctx.fillStyle="#3d703b";
 
-  /*
-   * leaves
-   */
+  ctx.fillRect(x-23+sway,y-38,19,4);
+  ctx.fillRect(x+5+sway,y-31,23,4);
+  ctx.fillRect(x-14+sway,y-20,18,4);
 
-  ctx.fillStyle=
-    "#3f713c";
+  ctx.fillStyle="#6f9957";
 
-
-  ctx.fillRect(
-    x-21+sway,
-    y-35,
-    18,
-    4
-  );
-
-
-  ctx.fillRect(
-    x+6+sway,
-    y-29,
-    20,
-    4
-  );
-
-
-  ctx.fillRect(
-    x-13+sway,
-    y-18,
-    16,
-    4
-  );
-
-
-  ctx.fillStyle=
-    "#699354";
-
-
-  ctx.fillRect(
-    x-17+sway,
-    y-41,
-    13,
-    3
-  );
-
-
-  ctx.fillRect(
-    x+8+sway,
-    y-40,
-    15,
-    3
-  );
-
+  ctx.fillRect(x-18+sway,y-45,15,3);
+  ctx.fillRect(x+8+sway,y-43,17,3);
 }
 
 
-/* =========================================================
-   TEA BASKET
-========================================================= */
+function drawBush(tx,ty){
 
-function drawTeaBasket(
-  x,
-  y
-){
+  const x=(tx+.5)*TILE-camera.x;
+  const y=(ty+.5)*TILE-camera.y;
 
-  ctx.fillStyle=
-    "#765433";
-
-
-  ctx.fillRect(
-    x-11,
-    y-6,
-    22,
-    13
-  );
-
-
-  ctx.fillStyle=
-    "#a37b48";
-
-
-  ctx.fillRect(
-    x-9,
-    y-4,
-    18,
-    9
-  );
-
-
-  ctx.strokeStyle=
-    "#65452b";
-
-
-  ctx.lineWidth=2;
-
+  ctx.fillStyle="rgba(30,48,27,.15)";
 
   ctx.beginPath();
 
-  ctx.arc(
+  ctx.ellipse(
     x,
-    y-5,
-    9,
-    Math.PI,
-    0
+    y+8,
+    17,
+    6,
+    0,0,
+    Math.PI*2
   );
 
-  ctx.stroke();
+  ctx.fill();
+
+  ctx.fillStyle="#3d693b";
+
+  ctx.fillRect(x-14,y-5,28,12);
+
+  ctx.fillStyle="#59804b";
+
+  ctx.fillRect(x-10,y-10,10,9);
+  ctx.fillRect(x+1,y-12,10,11);
+
+  ctx.fillStyle="#84a361";
+
+  ctx.fillRect(x-7,y-8,4,3);
+  ctx.fillRect(x+5,y-10,4,3);
+}
 
 
-  ctx.fillStyle=
-    "#4d783f";
+function sceneryItem(s){
 
+  switch(s.type){
 
-  ctx.fillRect(
-    x-7,
-    y-5,
-    14,
-    4
-  );
+    case "tree":
+      drawTree(
+        s.x,
+        s.y,
+        s.scale||1
+      );
+    break;
 
+    case "bamboo":
+      drawBamboo(
+        s.x,
+        s.y
+      );
+    break;
 
-  ctx.fillStyle=
-    "#7fa45d";
+    case "bush":
+      drawBush(
+        s.x,
+        s.y
+      );
+    break;
 
+    case "grassTuft":{
 
-  ctx.fillRect(
-    x-4,
-    y-7,
-    3,
-    3
-  );
+      const x=
+        (s.x+.5)*TILE-camera.x;
 
+      const y=
+        (s.y+.5)*TILE-camera.y;
 
-  ctx.fillRect(
-    x+2,
-    y-7,
-    3,
-    3
-  );
+      ctx.fillStyle="#486c3d";
 
+      ctx.fillRect(x-6,y,2,9);
+      ctx.fillRect(x,y-4,2,13);
+      ctx.fillRect(x+6,y+1,2,8);
+
+    }break;
+
+    case "stoneCluster":{
+
+      const x=
+        (s.x+.5)*TILE-camera.x;
+
+      const y=
+        (s.y+.5)*TILE-camera.y;
+
+      ctx.fillStyle="#74766d";
+      ctx.fillRect(x-12,y,14,8);
+
+      ctx.fillStyle="#97998d";
+      ctx.fillRect(x-7,y-5,13,8);
+
+      ctx.fillStyle="#62685b";
+      ctx.fillRect(x+5,y+2,10,6);
+
+    }break;
+  }
 }
 
 
 /* =========================================================
-   PROP
+   PROPS
 ========================================================= */
 
-function drawProp(
-  prop
-){
+function tinyTeaPot(x,y){
 
-  const x=
-    (
-      prop.x+.5
-    )*TILE-
-    camera.x;
+  ctx.fillStyle="#9c6044";
+
+  ctx.fillRect(x-6,y-4,12,8);
+  ctx.fillRect(x-3,y-7,6,3);
+  ctx.fillRect(x+6,y-2,5,3);
+
+  ctx.strokeStyle="#9c6044";
+
+  ctx.strokeRect(
+    x-10,
+    y-3,
+    5,
+    5
+  );
+}
 
 
-  const y=
-    (
-      prop.y+.5
-    )*TILE-
-    camera.y;
+function basket(x,y){
+
+  ctx.fillStyle="#725032";
+  ctx.fillRect(x-11,y-6,22,13);
+
+  ctx.fillStyle="#a27a48";
+  ctx.fillRect(x-9,y-4,18,9);
+
+  ctx.strokeStyle="#63432b";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+  ctx.arc(x,y-5,9,Math.PI,0);
+  ctx.stroke();
+
+  ctx.fillStyle="#47733d";
+  ctx.fillRect(x-7,y-5,14,4);
+
+  ctx.fillStyle="#82a45e";
+  ctx.fillRect(x-4,y-7,3,3);
+  ctx.fillRect(x+2,y-8,3,3);
+}
 
 
-  if(
-    !visibleOnScreen(
-      x,
-      y,
-      60
-    )
-  ){
+function chair(x,y){
 
+  ctx.fillStyle=V.woodDark;
+
+  ctx.fillRect(x-9,y-7,18,4);
+
+  ctx.fillRect(x-7,y-3,3,12);
+  ctx.fillRect(x+4,y-3,3,12);
+
+  ctx.fillRect(x-9,y-18,3,12);
+  ctx.fillRect(x-9,y-18,18,3);
+}
+
+
+function teaTable(x,y){
+
+  ctx.fillStyle="rgba(30,40,27,.15)";
+
+  ctx.fillRect(
+    x-18,
+    y+8,
+    38,
+    5
+  );
+
+  ctx.fillStyle=V.woodDark;
+
+  ctx.fillRect(
+    x-17,
+    y-5,
+    34,
+    7
+  );
+
+  ctx.fillStyle=V.wood2;
+
+  ctx.fillRect(
+    x-14,
+    y-4,
+    28,
+    3
+  );
+
+  ctx.fillStyle=V.woodDark;
+
+  ctx.fillRect(x-12,y+2,4,13);
+  ctx.fillRect(x+8,y+2,4,13);
+
+  tinyTeaPot(x,y-9);
+
+  /* cup */
+
+  ctx.fillStyle="#d7d1b4";
+
+  ctx.fillRect(
+    x+9,
+    y-8,
+    5,
+    4
+  );
+}
+
+
+function drawProp(p){
+
+  const x=(p.x+.5)*TILE-camera.x;
+  const y=(p.y+.5)*TILE-camera.y;
+
+  if(!onScreen(x,y,60)){
     return;
-
   }
 
-
-  switch(
-    prop.type
-  ){
-
-
-    case "sign":
-
-      ctx.fillStyle=
-        "rgba(40,45,31,.18)";
-
-
-      ctx.fillRect(
-        x-25,
-        y+16,
-        55,
-        5
-      );
-
-
-      ctx.fillStyle=
-        COLORS.woodDark;
-
-
-      ctx.fillRect(
-        x-3,
-        y-2,
-        6,
-        29
-      );
-
-
-      ctx.fillStyle=
-        "#d4c49a";
-
-
-      ctx.fillRect(
-        x-38,
-        y-25,
-        76,
-        25
-      );
-
-
-      ctx.fillStyle=
-        "#7c6946";
-
-
-      ctx.fillRect(
-        x-38,
-        y-25,
-        76,
-        3
-      );
-
-
-      ctx.fillRect(
-        x-38,
-        y-3,
-        76,
-        3
-      );
-
-
-      ctx.fillStyle=
-        "#334435";
-
-
-      ctx.font=
-        "12px serif";
-
-
-      ctx.textAlign=
-        "center";
-
-
-      ctx.fillText(
-        prop.text ||
-        "",
-        x,
-        y-9
-      );
-
-    break;
-
+  switch(p.type){
 
     case "basket":
-
-      drawTeaBasket(
-        x,
-        y
-      );
-
+      basket(x,y);
     break;
 
+    case "chair":
+      chair(x,y);
+    break;
+
+    case "teaTable":
+      teaTable(x,y);
+    break;
+
+    case "bench":
+
+      ctx.fillStyle=V.woodDark;
+      ctx.fillRect(x-18,y-6,36,6);
+
+      ctx.fillStyle=V.wood2;
+      ctx.fillRect(x-15,y-5,30,3);
+
+      ctx.fillStyle=V.woodDark;
+      ctx.fillRect(x-12,y,4,12);
+      ctx.fillRect(x+8,y,4,12);
+
+    break;
 
     case "teaRack":
 
-      ctx.fillStyle=
-        COLORS.woodDark;
+      ctx.fillStyle=V.woodDark;
 
+      ctx.fillRect(x-18,y-4,36,4);
+      ctx.fillRect(x-15,y,3,17);
+      ctx.fillRect(x+12,y,3,17);
 
-      ctx.fillRect(
-        x-16,
-        y-5,
-        32,
-        4
-      );
+      ctx.fillStyle="#b18a55";
+      ctx.fillRect(x-15,y-12,30,9);
 
+      ctx.fillStyle="#4c743e";
 
-      ctx.fillRect(
-        x-13,
-        y-1,
-        3,
-        17
-      );
-
-
-      ctx.fillRect(
-        x+10,
-        y-1,
-        3,
-        17
-      );
-
-
-      ctx.fillStyle=
-        "#b18755";
-
-
-      ctx.fillRect(
-        x-14,
-        y-12,
-        28,
-        8
-      );
-
-
-      ctx.fillStyle=
-        "#517742";
-
-
-      for(
-        let i=-11;
-        i<=9;
-        i+=5
-      ){
-
-        ctx.fillRect(
-          x+i,
-          y-10,
-          4,
-          3
-        );
-
+      for(let i=-12;i<=10;i+=5){
+        ctx.fillRect(x+i,y-10,4,3);
       }
 
     break;
 
-
-    case "bench":
-
-      ctx.fillStyle=
-        COLORS.woodDark;
-
-
-      ctx.fillRect(
-        x-17,
-        y-5,
-        34,
-        6
-      );
-
-
-      ctx.fillStyle=
-        COLORS.woodLight;
-
-
-      ctx.fillRect(
-        x-15,
-        y-4,
-        30,
-        3
-      );
-
-
-      ctx.fillStyle=
-        COLORS.woodDark;
-
-
-      ctx.fillRect(
-        x-12,
-        y+1,
-        4,
-        12
-      );
-
-
-      ctx.fillRect(
-        x+8,
-        y+1,
-        4,
-        12
-      );
-
-    break;
-
-
     case "pot":
+    case "jar":
 
-      ctx.fillStyle=
-        "#995c43";
+      ctx.fillStyle="#86543e";
+      ctx.fillRect(x-8,y-7,16,16);
 
+      ctx.fillStyle="#ad7251";
+      ctx.fillRect(x-6,y-10,12,5);
 
-      ctx.fillRect(
-        x-8,
-        y,
-        16,
-        10
-      );
-
-
-      ctx.fillStyle=
-        "#b87958";
-
-
-      ctx.fillRect(
-        x-6,
-        y,
-        12,
-        3
-      );
-
-
-      ctx.fillStyle=
-        "#416f3d";
-
-
-      ctx.fillRect(
-        x-2,
-        y-14,
-        4,
-        15
-      );
-
-
-      ctx.fillRect(
-        x-9,
-        y-12,
-        8,
-        5
-      );
-
-
-      ctx.fillRect(
-        x+1,
-        y-16,
-        9,
-        6
-      );
+      ctx.fillStyle="#5c3d30";
+      ctx.fillRect(x-5,y-11,10,2);
 
     break;
-
 
     case "stone":
 
-      ctx.fillStyle=
-        "rgba(30,40,30,.15)";
+      ctx.fillStyle="#74766d";
+      ctx.fillRect(x-12,y-5,24,13);
 
+      ctx.fillStyle="#a09e90";
+      ctx.fillRect(x-8,y-9,14,5);
 
-      ctx.fillRect(
-        x-12,
-        y+6,
-        26,
-        5
-      );
-
-
-      ctx.fillStyle=
-        COLORS.stone;
-
-
-      ctx.fillRect(
-        x-12,
-        y-5,
-        24,
-        13
-      );
-
-
-      ctx.fillStyle=
-        COLORS.stoneLight;
-
-
-      ctx.fillRect(
-        x-8,
-        y-9,
-        14,
-        5
-      );
-
-
-      ctx.fillStyle=
-        "#607154";
-
-
-      ctx.fillRect(
-        x-9,
-        y-3,
-        5,
-        3
-      );
+      ctx.fillStyle="#5d714e";
+      ctx.fillRect(x-9,y-3,5,3);
 
     break;
 
+    case "sign":{
+
+      ctx.fillStyle=V.woodDark;
+      ctx.fillRect(x-3,y-2,6,30);
+
+      ctx.fillStyle="#d5c59a";
+      ctx.fillRect(x-39,y-25,78,25);
+
+      ctx.fillStyle="#786546";
+
+      ctx.fillRect(x-39,y-25,78,3);
+      ctx.fillRect(x-39,y-3,78,3);
+
+      ctx.fillStyle="#324235";
+
+      ctx.font="12px serif";
+      ctx.textAlign="center";
+
+      ctx.fillText(
+        p.text||"",
+        x,
+        y-9
+      );
+
+    }break;
 
     case "lantern":
 
-      /*
-       * 昼の龍井村なので、
-       * 武林のように発光させず装飾提灯として描く。
-       */
+      ctx.fillStyle=V.woodDark;
+      ctx.fillRect(x-2,y-19,4,33);
 
-      ctx.fillStyle=
-        COLORS.woodDark;
+      ctx.fillStyle="#a45b43";
+      ctx.fillRect(x-7,y-18,14,14);
 
-
-      ctx.fillRect(
-        x-2,
-        y-18,
-        4,
-        32
-      );
-
-
-      ctx.fillStyle=
-        "#a85d45";
-
-
-      ctx.fillRect(
-        x-7,
-        y-17,
-        14,
-        13
-      );
-
-
-      ctx.fillStyle=
-        "#c87856";
-
-
-      ctx.fillRect(
-        x-4,
-        y-16,
-        8,
-        11
-      );
-
-
-      ctx.fillStyle=
-        "#5e4432";
-
-
-      ctx.fillRect(
-        x-5,
-        y-4,
-        10,
-        2
-      );
+      ctx.fillStyle="#cb7957";
+      ctx.fillRect(x-4,y-17,8,12);
 
     break;
 
-  }
+    case "well":
 
+      ctx.fillStyle="#65665f";
+      ctx.fillRect(x-14,y-3,28,12);
+
+      ctx.fillStyle="#939286";
+      ctx.fillRect(x-12,y-6,24,8);
+
+      ctx.fillStyle="#293331";
+      ctx.fillRect(x-8,y-5,16,5);
+
+      ctx.fillStyle=V.woodDark;
+      ctx.fillRect(x-14,y-22,3,19);
+      ctx.fillRect(x+11,y-22,3,19);
+      ctx.fillRect(x-14,y-22,28,3);
+
+    break;
+
+    case "woodPile":
+
+      ctx.fillStyle="#59412d";
+
+      ctx.fillRect(x-14,y,28,5);
+      ctx.fillRect(x-11,y-6,25,5);
+      ctx.fillRect(x-7,y-12,20,5);
+
+      ctx.fillStyle="#8b6743";
+
+      ctx.fillRect(x+7,y+1,4,3);
+      ctx.fillRect(x+7,y-5,4,3);
+      ctx.fillRect(x+6,y-11,4,3);
+
+    break;
+
+    case "bambooFence":
+
+      ctx.fillStyle="#7e8f54";
+
+      for(let i=-12;i<=12;i+=8){
+        ctx.fillRect(x+i,y-15,3,28);
+      }
+
+      ctx.fillRect(x-15,y-7,31,3);
+      ctx.fillRect(x-15,y+5,31,3);
+
+    break;
+
+    case "flower":
+
+      ctx.fillStyle="#527641";
+
+      ctx.fillRect(x-1,y-7,2,14);
+
+      ctx.fillStyle="#d7b9a2";
+      ctx.fillRect(x-5,y-10,5,5);
+
+      ctx.fillStyle="#e5d1a8";
+      ctx.fillRect(x+1,y-12,5,5);
+
+    break;
+
+    case "stool":
+
+      ctx.fillStyle=V.woodDark;
+
+      ctx.fillRect(x-9,y-5,18,5);
+      ctx.fillRect(x-6,y,3,10);
+      ctx.fillRect(x+3,y,3,10);
+
+    break;
+  }
 }
 
 
 /* =========================================================
-   NPC BODY
+   NPC
 ========================================================= */
 
-function drawNPC(
-  npc
+function npcBase(
+  x,
+  y,
+  color,
+  type="villager",
+  label=null
 ){
-
-  const x=
-    (
-      npc.x+.5
-    )*TILE-
-    camera.x;
-
-
-  const y=
-    (
-      npc.y+.5
-    )*TILE-
-    camera.y;
-
-
-  if(
-    !visibleOnScreen(
-      x,
-      y,
-      60
-    )
-  ){
-
-    return;
-
-  }
-
-
-  const time=
-    visualTime();
-
 
   const idle=
     Math.sin(
-      time*1.7+
-      npc.x
-    )*.7;
+      vt()*1.6+x*.01
+    )*.5;
 
-
-  /*
-   * shadow
-   */
-
-  ctx.fillStyle=
-    "rgba(24,38,24,.23)";
-
+  ctx.fillStyle="rgba(25,38,24,.22)";
 
   ctx.beginPath();
 
@@ -2830,74 +1326,58 @@ function drawNPC(
     y+15,
     11,
     5,
-    0,
-    0,
+    0,0,
     Math.PI*2
   );
 
   ctx.fill();
 
+  /* legs */
 
-  /*
-   * body
-   */
+  ctx.fillStyle="#3f4541";
 
-  ctx.fillStyle=
-    npc.color ||
-    "#64745a";
+  ctx.fillRect(x-7,y+8+idle,5,10);
+  ctx.fillRect(x+2,y+8+idle,5,10);
 
+  /* clothes */
+
+  ctx.fillStyle=color;
 
   ctx.fillRect(
     x-9,
-    y-4+idle,
+    y-5+idle,
     18,
-    21
+    18
   );
-
-
-  /*
-   * arms
-   */
 
   ctx.fillRect(
     x-12,
     y+1+idle,
     4,
-    14
+    13
   );
-
 
   ctx.fillRect(
     x+8,
     y+1+idle,
     4,
-    14
+    13
   );
 
+  /* head */
 
-  /*
-   * head
-   */
-
-  ctx.fillStyle=
-    "#e2b58c";
-
+  ctx.fillStyle="#e1b38b";
 
   ctx.fillRect(
     x-7,
     y-18+idle,
     14,
-    14
+    13
   );
 
+  /* hair */
 
-  /*
-   * hair
-   */
-
-  ctx.fillStyle=
-    "#3b312b";
-
+  ctx.fillStyle="#372e29";
 
   ctx.fillRect(
     x-8,
@@ -2906,62 +1386,21 @@ function drawNPC(
     6
   );
 
-
-  /*
-   * NPCごとの生活感
-   */
-
   if(
-    npc.id==="teaAunt" ||
-    npc.id==="grandma"
+    type==="farmer" ||
+    type==="worker"
   ){
 
-    /*
-     * 頭巾
-     */
+    /* straw hat */
 
-    ctx.fillStyle=
-      "#8f6b54";
-
+    ctx.fillStyle="#c1a263";
 
     ctx.fillRect(
-      x-9,
+      x-12,
       y-22+idle,
-      18,
-      4
-    );
-
-
-    ctx.fillRect(
-      x+5,
-      y-19+idle,
-      5,
-      8
-    );
-
-  }
-
-
-  if(
-    npc.id==="oldFarmer" ||
-    npc.id==="youngFarmer"
-  ){
-
-    /*
-     * 麦わら帽子
-     */
-
-    ctx.fillStyle=
-      "#c2a361";
-
-
-    ctx.fillRect(
-      x-11,
-      y-22+idle,
-      22,
+      24,
       3
     );
-
 
     ctx.fillRect(
       x-7,
@@ -2969,145 +1408,259 @@ function drawNPC(
       14,
       6
     );
-
   }
 
+  if(type==="tourist"){
 
-  if(
-    npc.id==="teaMaster"
-  ){
+    /* small backpack */
 
-    /*
-     * 前掛け
-     */
-
-    ctx.fillStyle=
-      "#d1c6a4";
-
+    ctx.fillStyle="#7b5141";
 
     ctx.fillRect(
-      x-6,
-      y+1+idle,
-      12,
-      14
+      x+8,
+      y-2+idle,
+      5,
+      12
     );
-
   }
 
+  if(type==="teaGuest"){
 
-  /*
-   * label
-   */
+    ctx.fillStyle="#c7b68d";
 
-  ctx.fillStyle=
-    "rgba(17,28,18,.83)";
+    ctx.fillRect(
+      x-5,
+      y+1+idle,
+      10,
+      4
+    );
+  }
+
+  if(label){
+
+    ctx.fillStyle="rgba(18,28,18,.82)";
+
+    ctx.fillRect(
+      x-14,
+      y-43,
+      28,
+      15
+    );
+
+    ctx.fillStyle="#efe5c4";
+
+    ctx.font="10px sans-serif";
+    ctx.textAlign="center";
+
+    ctx.fillText(
+      label,
+      x,
+      y-32
+    );
+  }
+}
 
 
-  ctx.fillRect(
-    x-14,
-    y-43,
-    28,
-    15
-  );
+function drawNPC(npc){
 
+  const x=(npc.x+.5)*TILE-camera.x;
+  const y=(npc.y+.5)*TILE-camera.y;
 
-  ctx.fillStyle=
-    "#efe5c4";
+  if(!onScreen(x,y,60)){
+    return;
+  }
 
+  let type="villager";
 
-  ctx.font=
-    "10px sans-serif";
+  if(
+    npc.id==="oldFarmer" ||
+    npc.id==="youngFarmer" ||
+    npc.id==="grandma"
+  ){
+    type="farmer";
+  }
 
+  if(npc.id==="tourist"){
+    type="tourist";
+  }
 
-  ctx.textAlign=
-    "center";
+  if(npc.id==="teaGuest"){
+    type="teaGuest";
+  }
 
+  if(npc.id==="teaMaster"){
+    type="worker";
+  }
 
-  ctx.fillText(
-    npc.label ||
-    "人",
+  npcBase(
     x,
-    y-32
+    y,
+    npc.color||"#66715c",
+    type,
+    npc.label||"人"
   );
+}
 
+
+function drawAmbientNPC(npc){
+
+  const x=(npc.x+.5)*TILE-camera.x;
+  const y=(npc.y+.5)*TILE-camera.y;
+
+  if(!onScreen(x,y,60)){
+    return;
+  }
+
+  const colors={
+
+    villager:"#726050",
+    tourist:"#596e7c",
+    farmer:"#617348",
+    teaGuest:"#77695a",
+    worker:"#6e5542"
+
+  };
+
+  npcBase(
+    x,
+    y,
+    colors[npc.type]||"#68705c",
+    npc.type,
+    null
+  );
 }
 
 
 /* =========================================================
-   INTERACTABLE MARKER
+   PLAYER
 ========================================================= */
 
-function drawInteractables(
-  map
-){
+function drawPlayer(){
 
-  const time=
-    visualTime();
+  const x=player.x-camera.x;
+  const y=player.y-camera.y;
+
+  const moving=!!player.moving;
+
+  const step=
+    moving
+      ? Math.sin(vt()*10)
+      : 0;
+
+  const bob=
+    moving
+      ? Math.abs(step)*1.1
+      : 0;
+
+  ctx.fillStyle="rgba(23,35,23,.25)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    x,
+    y+15,
+    11,
+    5,
+    0,0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle="#364750";
+
+  ctx.fillRect(
+    x-7,
+    y+8+bob,
+    5,
+    10+step
+  );
+
+  ctx.fillRect(
+    x+2,
+    y+8+bob,
+    5,
+    10-step
+  );
+
+  ctx.fillStyle="#536f7e";
+
+  ctx.fillRect(
+    x-9,
+    y-5+bob,
+    18,
+    18
+  );
+
+  ctx.fillStyle="#e7b890";
+
+  ctx.fillRect(
+    x-7,
+    y-18+bob,
+    14,
+    13
+  );
+
+  ctx.fillStyle="#392f2a";
+
+  ctx.fillRect(
+    x-8,
+    y-21+bob,
+    16,
+    6
+  );
+
+  if(player.direction==="up"){
+
+    ctx.fillStyle="#715a42";
+
+    ctx.fillRect(
+      x-7,
+      y-2+bob,
+      14,
+      13
+    );
+  }
+}
 
 
-  for(
-    const item of
-    map.interactables
-  ){
+/* =========================================================
+   INTERACTABLES
+========================================================= */
+
+function drawInteractables(map){
+
+  if(!Array.isArray(map.interactables)){
+    return;
+  }
+
+  for(const item of map.interactables){
 
     if(
-      saveData.words.includes(
-        item.word
-      )
+      typeof saveData!=="undefined" &&
+      saveData.words &&
+      saveData.words.includes(item.word)
     ){
-
       continue;
-
     }
 
-
-    const x=
-      (
-        item.x+.5
-      )*TILE-
-      camera.x;
-
-
-    const y=
-      (
-        item.y+.5
-      )*TILE-
-      camera.y;
-
-
-    if(
-      !visibleOnScreen(
-        x,
-        y,
-        40
-      )
-    ){
-
-      continue;
-
-    }
-
+    const x=(item.x+.5)*TILE-camera.x;
+    const y=(item.y+.5)*TILE-camera.y;
 
     const bob=
       Math.sin(
-        time*2+
-        item.x*.4
+        vt()*2+
+        item.x*.5
       )*2;
 
-
-    /*
-     * 控えめな光
-     */
-
     ctx.fillStyle=
-      "rgba(237,207,105,.14)";
-
+      "rgba(238,208,106,.14)";
 
     ctx.beginPath();
 
     ctx.arc(
       x,
-      y-19+bob,
+      y-20+bob,
       10,
       0,
       Math.PI*2
@@ -3115,14 +1668,7 @@ function drawInteractables(
 
     ctx.fill();
 
-
-    /*
-     * 茶葉型のマーカー
-     */
-
-    ctx.fillStyle=
-      "#e7cc72";
-
+    ctx.fillStyle="#e5ca70";
 
     ctx.beginPath();
 
@@ -3138,7 +1684,6 @@ function drawInteractables(
 
     ctx.fill();
 
-
     ctx.beginPath();
 
     ctx.ellipse(
@@ -3152,930 +1697,109 @@ function drawInteractables(
     );
 
     ctx.fill();
-
-
-    ctx.fillStyle=
-      "#9f8749";
-
-
-    ctx.fillRect(
-      x,
-      y-20+bob,
-      1,
-      7
-    );
-
   }
-
 }
 
 
 /* =========================================================
-   PLAYER
+   WORLD OBJECTS
 ========================================================= */
 
-function drawPlayer(){
+function drawWorldObjects(){
 
-  const x=
-    player.x-
-    camera.x;
+  const map=MAPS[currentMapId];
 
-
-  const y=
-    player.y-
-    camera.y;
-
-
-  const time=
-    visualTime();
-
-
-  const walking=
-    player.moving;
-
-
-  const step=
-    walking
-      ? Math.sin(
-          time*10
-        )
-      : 0;
-
-
-  const bob=
-    walking
-      ? Math.abs(step)*1.2
-      : Math.sin(
-          time*1.8
-        )*.25;
-
-
-  /*
-   * shadow
-   */
-
-  ctx.fillStyle=
-    "rgba(22,34,23,.25)";
-
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    x,
-    y+14,
-    11,
-    5,
-    0,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  /*
-   * legs
-   */
-
-  ctx.fillStyle=
-    "#35464e";
-
-
-  ctx.fillRect(
-    x-7,
-    y+8+bob,
-    5,
-    10+
-    step*1.2
-  );
-
-
-  ctx.fillRect(
-    x+2,
-    y+8+bob,
-    5,
-    10-
-    step*1.2
-  );
-
-
-  /*
-   * body
-   */
-
-  ctx.fillStyle=
-    "#536d7c";
-
-
-  ctx.fillRect(
-    x-9,
-    y-5+bob,
-    18,
-    18
-  );
-
-
-  /*
-   * backpack
-   */
-
-  if(
-    player.direction==="up"
-  ){
-
-    ctx.fillStyle=
-      "#725b43";
-
-
-    ctx.fillRect(
-      x-7,
-      y-2+bob,
-      14,
-      13
-    );
-
-  }
-
-
-  /*
-   * head
-   */
-
-  ctx.fillStyle=
-    "#e8b991";
-
-
-  ctx.fillRect(
-    x-7,
-    y-18+bob,
-    14,
-    13
-  );
-
-
-  /*
-   * hair
-   */
-
-  ctx.fillStyle=
-    "#3b302b";
-
-
-  ctx.fillRect(
-    x-8,
-    y-21+bob,
-    16,
-    6
-  );
-
-
-  /*
-   * facing marker
-   */
-
-  ctx.fillStyle=
-    "#dce6e4";
-
-
-  if(
-    player.direction==="down"
-  ){
-
-    ctx.fillRect(
-      x-3,
-      y+4+bob,
-      6,
-      3
-    );
-
-  }
-  else if(
-    player.direction==="left"
-  ){
-
-    ctx.fillRect(
-      x-8,
-      y-1+bob,
-      3,
-      6
-    );
-
-  }
-  else if(
-    player.direction==="right"
-  ){
-
-    ctx.fillRect(
-      x+5,
-      y-1+bob,
-      3,
-      6
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   VILLAGE DECOR
-========================================================= */
-
-function drawVillageDetails(){
-
-  /*
-   * 大木
-   */
-
-  const trees=[
-
-    [1,5,1.15],
-    [13,3,1],
-    [32,4,1.2],
-    [41,8,1],
-    [60,12,1.1],
-
-    [2,25,1.1],
-    [16,27,.95],
-    [58,24,1],
-
-    [2,44,1],
-    [22,42,1.1],
-    [40,40,1],
-    [59,43,1.1]
-
-  ];
-
-
-  for(
-    const tree of
-    trees
-  ){
-
-    drawTree(
-      tree[0],
-      tree[1],
-      tree[2]
-    );
-
-  }
-
-
-  /*
-   * 竹
-   */
-
-  const bamboo=[
-
-    [12,11],
-    [14,11],
-
-    [58,19],
-    [60,20],
-
-    [28,7],
-    [31,7]
-
-  ];
-
-
-  for(
-    const item of
-    bamboo
-  ){
-
-    drawBamboo(
-      item[0],
-      item[1]
-    );
-
-  }
-
-
-  /*
-   * マップデータにない細かな生活小物。
-   * 当たり判定を持たない純粋な装飾。
-   */
-
-  drawTeaBasketAtTile(
-    17,
-    29
-  );
-
-
-  drawTeaBasketAtTile(
-    42,
-    26
-  );
-
-
-  drawClayJarAtTile(
-    44,
-    27
-  );
-
-
-  drawClayJarAtTile(
-    55,
-    34
-  );
-
-}
-
-
-/* =========================================================
-   TEA BASKET AT TILE
-========================================================= */
-
-function drawTeaBasketAtTile(
-  tx,
-  ty
-){
-
-  drawTeaBasket(
-
-    (
-      tx+.5
-    )*TILE-
-    camera.x,
-
-    (
-      ty+.5
-    )*TILE-
-    camera.y
-
-  );
-
-}
-
-
-/* =========================================================
-   CLAY JAR
-========================================================= */
-
-function drawClayJarAtTile(
-  tx,
-  ty
-){
-
-  const x=
-    (
-      tx+.5
-    )*TILE-
-    camera.x;
-
-
-  const y=
-    (
-      ty+.5
-    )*TILE-
-    camera.y;
-
-
-  ctx.fillStyle=
-    "#81543e";
-
-
-  ctx.fillRect(
-    x-7,
-    y-8,
-    14,
-    16
-  );
-
-
-  ctx.fillStyle=
-    "#a46b4d";
-
-
-  ctx.fillRect(
-    x-5,
-    y-11,
-    10,
-    4
-  );
-
-
-  ctx.fillStyle=
-    "#5f4133";
-
-
-  ctx.fillRect(
-    x-4,
-    y-12,
-    8,
-    2
-  );
-
-}
-
-
-/* =========================================================
-   FIELD DETAILS
-========================================================= */
-
-function drawFieldDetails(){
-
-  const trees=[
-
-    [2,6,1],
-    [7,12,.9],
-    [49,13,1],
-    [3,37,1.1],
-    [47,37,1]
-
-  ];
-
-
-  for(
-    const tree of
-    trees
-  ){
-
-    drawTree(
-      tree[0],
-      tree[1],
-      tree[2]
-    );
-
-  }
-
-
-  /*
-   * 茶摘み籠
-   */
-
-  drawTeaBasketAtTile(
-    31,
-    29
-  );
-
-
-  drawTeaBasketAtTile(
-    18,
-    13
-  );
-
-}
-
-
-/* =========================================================
-   MOUNTAIN DETAILS
-========================================================= */
-
-function drawMountainDetails(){
-
-  const bamboo=[
-
-    [7,5],
-    [10,7],
-    [14,5],
-
-    [25,5],
-    [29,6],
-
-    [47,7],
-    [49,11],
-
-    [7,19],
-    [47,29],
-    [10,37]
-
-  ];
-
-
-  for(
-    const item of
-    bamboo
-  ){
-
-    drawBamboo(
-      item[0],
-      item[1],
-      1.1
-    );
-
-  }
-
-
-  const trees=[
-
-    [3,18,1.2],
-    [17,16,1],
-    [31,29,1],
-    [48,37,1.2]
-
-  ];
-
-
-  for(
-    const tree of
-    trees
-  ){
-
-    drawTree(
-      tree[0],
-      tree[1],
-      tree[2]
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   WORKSHOP DETAILS
-========================================================= */
-
-function drawWorkshopDetails(){
-
-  /*
-   * 製茶場らしい茶籠
-   */
-
-  drawTeaBasketAtTile(
-    16,
-    17
-  );
-
-
-  drawTeaBasketAtTile(
-    28,
-    17
-  );
-
-
-  /*
-   * 茶葉乾燥台
-   */
-
-  const points=[
-    [14,13],
-    [29,13]
-  ];
-
-
-  for(
-    const point of
-    points
-  ){
-
-    const x=
-      (
-        point[0]+.5
-      )*TILE-
-      camera.x;
-
-
-    const y=
-      (
-        point[1]+.5
-      )*TILE-
-      camera.y;
-
-
-    ctx.fillStyle=
-      COLORS.woodDark;
-
-
-    ctx.fillRect(
-      x-17,
-      y,
-      34,
-      4
-    );
-
-
-    ctx.fillRect(
-      x-14,
-      y+4,
-      3,
-      12
-    );
-
-
-    ctx.fillRect(
-      x+11,
-      y+4,
-      3,
-      12
-    );
-
-
-    ctx.fillStyle=
-      "#547842";
-
-
-    ctx.fillRect(
-      x-14,
-      y-5,
-      28,
-      6
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   MAP DETAILS
-========================================================= */
-
-function drawMapDetails(){
-
-  switch(
-    currentMapId
-  ){
-
-    case "village":
-
-      drawVillageDetails();
-
-    break;
-
-
-    case "field":
-
-      drawFieldDetails();
-
-    break;
-
-
-    case "mountain":
-
-      drawMountainDetails();
-
-    break;
-
-
-    case "workshop":
-
-      drawWorkshopDetails();
-
-    break;
-
-  }
-
-}
-
-
-/* =========================================================
-   TILE MAP
-========================================================= */
-
-function drawTileMap(){
-
-  const map=
-    MAPS[currentMapId];
-
-
-  const startX=
-    Math.max(
-      0,
-      Math.floor(
-        camera.x/TILE
-      )-2
-    );
-
-
-  const startY=
-    Math.max(
-      0,
-      Math.floor(
-        camera.y/TILE
-      )-2
-    );
-
-
-  const endX=
-    Math.min(
-      map.width,
-      Math.ceil(
-        (
-          camera.x+
-          canvas.width
-        )/TILE
-      )+2
-    );
-
-
-  const endY=
-    Math.min(
-      map.height,
-      Math.ceil(
-        (
-          camera.y+
-          canvas.height
-        )/TILE
-      )+2
-    );
-
-
-  for(
-    let y=startY;
-    y<endY;
-    y++
-  ){
-
-    for(
-      let x=startX;
-      x<endX;
-      x++
-    ){
-
-      drawTile(
-
-        map.grid[y][x],
-
-        x*TILE-
-        camera.x,
-
-        y*TILE-
-        camera.y,
-
-        x,
-
-        y
-
-      );
-
+  if(Array.isArray(map.scenery)){
+    for(const s of map.scenery){
+      sceneryItem(s);
     }
-
   }
 
+  if(Array.isArray(map.buildings)){
+    for(const b of map.buildings){
+      drawBuilding(b);
+    }
+  }
+
+  if(Array.isArray(map.props)){
+    for(const p of map.props){
+      drawProp(p);
+    }
+  }
+
+  drawInteractables(map);
 }
 
 
 /* =========================================================
-   MAP OBJECTS
-========================================================= */
-
-function drawMapObjects(){
-
-  const map=
-    MAPS[currentMapId];
-
-
-  /*
-   * 景観オブジェクト
-   */
-
-  drawMapDetails();
-
-
-  /*
-   * 建物
-   */
-
-  if(
-    Array.isArray(
-      map.buildings
-    )
-  ){
-
-    for(
-      const building of
-      map.buildings
-    ){
-
-      drawBuilding(
-        building
-      );
-
-    }
-
-  }
-
-
-  /*
-   * props
-   */
-
-  if(
-    Array.isArray(
-      map.props
-    )
-  ){
-
-    for(
-      const prop of
-      map.props
-    ){
-
-      drawProp(
-        prop
-      );
-
-    }
-
-  }
-
-
-  /*
-   * 単語ポイント
-   */
-
-  drawInteractables(
-    map
-  );
-
-}
-
-
-/* =========================================================
-   ENTITY DRAW ORDER
+   ENTITIES
 ========================================================= */
 
 function drawEntities(){
 
-  const map=
-    MAPS[currentMapId];
+  const map=MAPS[currentMapId];
 
+  const list=[];
 
-  const entities=[];
+  if(Array.isArray(map.ambientNPCs)){
 
+    for(const npc of map.ambientNPCs){
 
-  if(
-    Array.isArray(
-      map.npcs
-    )
-  ){
+      list.push({
 
-    for(
-      const npc of
-      map.npcs
-    ){
-
-      entities.push({
-
-        y:
-          (
-            npc.y+.5
-          )*TILE,
+        y:(npc.y+.5)*TILE,
 
         draw(){
-
-          drawNPC(
-            npc
-          );
-
+          drawAmbientNPC(npc);
         }
 
       });
-
     }
-
   }
 
+  if(Array.isArray(map.npcs)){
 
-  entities.push({
+    for(const npc of map.npcs){
 
-    y:
-      player.y,
+      list.push({
+
+        y:(npc.y+.5)*TILE,
+
+        draw(){
+          drawNPC(npc);
+        }
+
+      });
+    }
+  }
+
+  list.push({
+
+    y:player.y,
 
     draw(){
-
       drawPlayer();
-
     }
 
   });
 
-
-  entities.sort(
-    (
-      a,
-      b
-    )=>
-      a.y-b.y
+  list.sort(
+    (a,b)=>a.y-b.y
   );
 
-
-  for(
-    const entity of
-    entities
-  ){
-
+  for(const entity of list){
     entity.draw();
-
   }
-
 }
 
 
 /* =========================================================
-   SUNLIGHT
+   ATMOSPHERE
 ========================================================= */
 
 function drawSunlight(){
 
-  /*
-   * 全体を少し暖かい春の昼にする
-   */
-
-  const gradient=
+  const g=
     ctx.createLinearGradient(
       0,
       0,
@@ -4083,28 +1807,22 @@ function drawSunlight(){
       canvas.height
     );
 
-
-  gradient.addColorStop(
+  g.addColorStop(
     0,
-    "rgba(255,241,190,.085)"
+    "rgba(255,240,188,.09)"
   );
 
-
-  gradient.addColorStop(
+  g.addColorStop(
     .45,
-    "rgba(255,250,218,.025)"
+    "rgba(255,248,216,.025)"
   );
 
-
-  gradient.addColorStop(
+  g.addColorStop(
     1,
-    "rgba(56,91,50,.035)"
+    "rgba(52,82,47,.035)"
   );
 
-
-  ctx.fillStyle=
-    gradient;
-
+  ctx.fillStyle=g;
 
   ctx.fillRect(
     0,
@@ -4112,167 +1830,67 @@ function drawSunlight(){
     canvas.width,
     canvas.height
   );
-
 }
 
 
-/* =========================================================
-   MOVING CLOUD SHADOW
-========================================================= */
-
-function drawCloudShadows(){
-
-  /*
-   * 非常に薄い雲影。
-   * ゲーム画面を暗くしすぎない。
-   */
-
-  const time=
-    visualTime();
-
+function drawCloudShadow(){
 
   const x=
-    (
-      time*18
-    )%
-    (
-      canvas.width+
-      500
-    )-
-    300;
-
+    (vt()*17)%
+    (canvas.width+600)-350;
 
   ctx.save();
 
-
-  ctx.translate(
-    x,
-    0
-  );
-
-
-  ctx.rotate(
-    -.13
-  );
-
+  ctx.translate(x,0);
+  ctx.rotate(-.12);
 
   ctx.fillStyle=
-    "rgba(47,72,45,.035)";
-
+    "rgba(43,67,41,.035)";
 
   ctx.fillRect(
     0,
-    -80,
-    190,
-    canvas.height+220
+    -100,
+    210,
+    canvas.height+250
   );
-
 
   ctx.fillRect(
-    230,
-    -80,
-    90,
-    canvas.height+220
+    260,
+    -100,
+    110,
+    canvas.height+250
   );
-
 
   ctx.restore();
-
 }
 
-
-/* =========================================================
-   SUN PATCHES
-========================================================= */
-
-function drawSunPatches(){
-
-  /*
-   * 木漏れ日のような薄い光
-   */
-
-  const time=
-    visualTime();
-
-
-  const pulse=
-    .018+
-    Math.sin(
-      time*.7
-    )*.005;
-
-
-  ctx.fillStyle=
-    `rgba(255,244,186,${pulse})`;
-
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    140,
-    110,
-    110,
-    50,
-    -.25,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    730,
-    390,
-    150,
-    55,
-    -.2,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-}
-
-
-/* =========================================================
-   VIGNETTE
-========================================================= */
 
 function drawVignette(){
 
-  const gradient=
+  const g=
     ctx.createRadialGradient(
-
       canvas.width/2,
       canvas.height/2,
-      170,
-
+      160,
       canvas.width/2,
       canvas.height/2,
-      620
-
+      Math.max(
+        canvas.width,
+        canvas.height
+      )*.75
     );
 
-
-  gradient.addColorStop(
+  g.addColorStop(
     0,
     "rgba(0,0,0,0)"
   );
 
-
-  gradient.addColorStop(
+  g.addColorStop(
     1,
-    "rgba(24,42,27,.11)"
+    "rgba(22,38,24,.11)"
   );
 
-
-  ctx.fillStyle=
-    gradient;
-
+  ctx.fillStyle=g;
 
   ctx.fillRect(
     0,
@@ -4280,80 +1898,37 @@ function drawVignette(){
     canvas.width,
     canvas.height
   );
-
 }
 
 
 /* =========================================================
-   MAP TRANSITION MARKERS
+   EXIT HINT
 ========================================================= */
 
 function drawExitHints(){
 
-  const map=
-    MAPS[currentMapId];
+  const map=MAPS[currentMapId];
 
-
-  if(
-    !Array.isArray(
-      map.exits
-    )
-  ){
-
+  if(!Array.isArray(map.exits)){
     return;
-
   }
 
+  const a=
+    .045+
+    (Math.sin(vt()*2)+1)*.015;
 
-  const time=
-    visualTime();
-
-
-  const alpha=
-    .08+
-    (
-      Math.sin(
-        time*2
-      )+1
-    )*.025;
-
-
-  for(
-    const exit of
-    map.exits
-  ){
-
-    const x=
-      exit.x*TILE-
-      camera.x;
-
-
-    const y=
-      exit.y*TILE-
-      camera.y;
-
-
-    const w=
-      exit.width*TILE;
-
-
-    const h=
-      exit.height*TILE;
-
+  for(const exit of map.exits){
 
     ctx.fillStyle=
-      `rgba(230,221,165,${alpha})`;
-
+      `rgba(235,220,158,${a})`;
 
     ctx.fillRect(
-      x,
-      y,
-      w,
-      h
+      exit.x*TILE-camera.x,
+      exit.y*TILE-camera.y,
+      exit.width*TILE,
+      exit.height*TILE
     );
-
   }
-
 }
 
 
@@ -4363,13 +1938,7 @@ function drawExitHints(){
 
 function drawGame(){
 
-  /*
-   * 背景
-   */
-
-  ctx.fillStyle=
-    "#647f50";
-
+  ctx.fillStyle="#657f50";
 
   ctx.fillRect(
     0,
@@ -4378,65 +1947,22 @@ function drawGame(){
     canvas.height
   );
 
-
-  /*
-   * 地形
-   */
-
   drawTileMap();
-
-
-  /*
-   * 出口のごく薄い誘導
-   */
 
   drawExitHints();
 
-
-  /*
-   * 建物・木・竹・小物
-   */
-
-  drawMapObjects();
-
-
-  /*
-   * NPC + PLAYER
-   */
+  drawWorldObjects();
 
   drawEntities();
 
-
-  /*
-   * 昼光
-   */
-
   drawSunlight();
 
-
-  /*
-   * 木漏れ日
-   */
-
-  drawSunPatches();
-
-
-  /*
-   * 雲の影
-   */
-
-  drawCloudShadows();
-
-
-  /*
-   * 画面端の奥行き
-   */
+  drawCloudShadow();
 
   drawVignette();
-
 }
 
 
 console.log(
-  "杭州探索録2 Visual System Ver.3.0 - LIVING LONGJING loaded"
+  "杭州探索録2 Visual System Ver.4.0 - LIVING LONGJING loaded"
 );
