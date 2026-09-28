@@ -3,44 +3,50 @@
 /*
 ==========================================================
  杭州探索録2
- VISUAL SYSTEM Ver.1.1
+ VISUAL SYSTEM Ver.2.0
 
- SPRING LONGJING
+ LONGJING SPRING VILLAGE
 ==========================================================
 */
 
 
 const COLORS={
 
-  grass:"#77965b",
+  grass:"#78965b",
 
-  grassDark:"#67864d",
+  grassDark:"#68864e",
 
-  grassLight:"#88a866",
+  grassLight:"#93ae6c",
 
-  path:"#c5ae82",
+  path:"#c3ac80",
 
-  pathDark:"#a58d67",
+  pathLight:"#d1bc91",
 
-  tea:"#426f39",
+  pathDark:"#9f8966",
 
-  teaLight:"#5c8d4c",
+  tea:"#3f7138",
 
-  teaDark:"#31572e",
+  teaLight:"#649650",
 
-  stone:"#827f70",
+  teaDark:"#2d582d",
 
-  stoneLight:"#a19c88",
+  stone:"#7f7d70",
+
+  stoneLight:"#aaa491",
 
   water:"#5c99a1",
 
-  waterLight:"#7bb3b5",
+  waterLight:"#83bdba",
 
-  wood:"#8b6947",
+  wood:"#8a6848",
 
-  roof:"#3f4a42",
+  roof:"#3d4c43",
 
-  wall:"#d4c4a0"
+  roofLight:"#536359",
+
+  wall:"#d5c6a4",
+
+  wallShade:"#b9aa8a"
 
 };
 
@@ -59,8 +65,6 @@ function drawTile(
 
   switch(tile){
 
-
-    /* GRASS */
 
     case 0:
 
@@ -84,7 +88,7 @@ function drawTile(
         (
           tx*7+
           ty*11
-        )%9===0
+        )%8===0
       ){
 
         ctx.fillStyle=
@@ -92,15 +96,15 @@ function drawTile(
 
 
         ctx.fillRect(
-          sx+8,
-          sy+11,
-          3,
+          sx+7,
+          sy+12,
+          2,
           5
         );
 
 
         ctx.fillRect(
-          sx+19,
+          sx+20,
           sy+20,
           2,
           4
@@ -110,8 +114,6 @@ function drawTile(
 
     break;
 
-
-    /* PATH */
 
     case 1:
 
@@ -128,7 +130,7 @@ function drawTile(
 
 
       ctx.fillStyle=
-        COLORS.pathDark;
+        COLORS.pathLight;
 
 
       if(
@@ -138,9 +140,30 @@ function drawTile(
       ){
 
         ctx.fillRect(
-          sx+6,
-          sy+9,
-          8,
+          sx+4,
+          sy+5,
+          11,
+          5
+        );
+
+      }
+
+
+      ctx.fillStyle=
+        COLORS.pathDark;
+
+
+      if(
+        (
+          tx*5+
+          ty
+        )%4===0
+      ){
+
+        ctx.fillRect(
+          sx+17,
+          sy+20,
+          9,
           3
         );
 
@@ -148,8 +171,6 @@ function drawTile(
 
     break;
 
-
-    /* TEA FIELD */
 
     case 2:
 
@@ -170,10 +191,10 @@ function drawTile(
 
 
       ctx.fillRect(
-        sx+2,
-        sy+10,
-        28,
-        15
+        sx+1,
+        sy+12,
+        30,
+        14
       );
 
 
@@ -182,10 +203,10 @@ function drawTile(
 
 
       ctx.fillRect(
-        sx+3,
-        sy+7,
-        26,
-        12
+        sx+2,
+        sy+8,
+        28,
+        13
       );
 
 
@@ -195,16 +216,18 @@ function drawTile(
 
       for(
         let i=0;
-        i<4;
+        i<5;
         i++
       ){
 
         ctx.fillRect(
-          sx+5+i*6,
+          sx+3+i*6,
           sy+5+
-          (i%2)*2,
+          (
+            i%2
+          )*2,
           5,
-          4
+          5
         );
 
       }
@@ -212,12 +235,10 @@ function drawTile(
     break;
 
 
-    /* WALL */
-
     case 3:
 
       ctx.fillStyle=
-        "#5c6258";
+        "#555e55";
 
 
       ctx.fillRect(
@@ -229,7 +250,7 @@ function drawTile(
 
 
       ctx.fillStyle=
-        "#747b70";
+        "#687268";
 
 
       ctx.fillRect(
@@ -241,8 +262,6 @@ function drawTile(
 
     break;
 
-
-    /* STONE */
 
     case 4:
 
@@ -264,14 +283,14 @@ function drawTile(
 
       ctx.fillRect(
         sx,
-        sy+3,
+        sy+2,
         TILE,
         5
       );
 
 
       ctx.fillStyle=
-        "#69685e";
+        "#65655e";
 
 
       ctx.fillRect(
@@ -281,10 +300,16 @@ function drawTile(
         24
       );
 
+
+      ctx.fillRect(
+        sx,
+        sy+18,
+        TILE,
+        2
+      );
+
     break;
 
-
-    /* WATER */
 
     case 5:
 
@@ -305,24 +330,22 @@ function drawTile(
 
 
       ctx.fillRect(
-        sx+5,
-        sy+10,
+        sx+4,
+        sy+8,
         15,
         2
       );
 
 
       ctx.fillRect(
-        sx+14,
-        sy+22,
-        12,
+        sx+12,
+        sy+21,
+        14,
         2
       );
 
     break;
 
-
-    /* WOOD */
 
     case 6:
 
@@ -339,7 +362,7 @@ function drawTile(
 
 
       ctx.fillStyle=
-        "#aa855c";
+        "#aa865e";
 
 
       ctx.fillRect(
@@ -355,6 +378,22 @@ function drawTile(
         sy+20,
         TILE,
         3
+      );
+
+    break;
+
+
+    case 7:
+
+      ctx.fillStyle=
+        "#9a7b57";
+
+
+      ctx.fillRect(
+        sx,
+        sy,
+        TILE,
+        TILE
       );
 
     break;
@@ -390,112 +429,208 @@ function drawBuilding(
     building.h*TILE;
 
 
-  /* shadow */
-
   ctx.fillStyle=
     "rgba(0,0,0,.18)";
 
 
   ctx.fillRect(
-    x+8,
-    y+12,
+    x+9,
+    y+13,
     w,
     h
   );
 
 
-  /* wall */
+  ctx.fillStyle=
+    COLORS.wallShade;
+
+
+  ctx.fillRect(
+    x,
+    y+27,
+    w,
+    h-27
+  );
+
 
   ctx.fillStyle=
     COLORS.wall;
 
 
   ctx.fillRect(
-    x,
-    y+22,
-    w,
-    h-22
+    x+4,
+    y+28,
+    w-8,
+    h-32
   );
 
 
-  /* roof */
+  /*
+  roof
+  */
+
+  ctx.fillStyle=
+    "#303d37";
+
+
+  ctx.fillRect(
+    x-9,
+    y+4,
+    w+18,
+    9
+  );
+
 
   ctx.fillStyle=
     COLORS.roof;
 
 
   ctx.fillRect(
-    x-6,
-    y,
-    w+12,
-    30
+    x-5,
+    y+10,
+    w+10,
+    23
   );
 
 
   ctx.fillStyle=
-    "#566157";
+    COLORS.roofLight;
 
 
   ctx.fillRect(
     x,
-    y+5,
+    y+11,
     w,
-    7
+    5
   );
 
 
-  /* door */
+  /*
+  roof edge
+  */
 
   ctx.fillStyle=
-    "#6e5139";
+    "#27342f";
 
 
-  ctx.fillRect(
-    x+w/2-12,
-    y+h-35,
-    24,
-    35
-  );
+  for(
+    let i=0;
+    i<w;
+    i+=18
+  ){
+
+    ctx.fillRect(
+      x+i,
+      y+29,
+      12,
+      4
+    );
+
+  }
 
 
-  /* windows */
+  /*
+  windows
+  */
 
   ctx.fillStyle=
-    "#9eb2a2";
+    "#566d64";
 
 
   ctx.fillRect(
     x+18,
-    y+45,
-    22,
-    20
+    y+48,
+    24,
+    22
   );
 
 
   ctx.fillRect(
-    x+w-40,
-    y+45,
-    22,
-    20
-  );
-
-
-  /* sign */
-
-  ctx.fillStyle=
-    "#efe3bd";
-
-
-  ctx.fillRect(
-    x+w/2-45,
-    y+26,
-    90,
+    x+w-42,
+    y+48,
+    24,
     22
   );
 
 
   ctx.fillStyle=
-    "#3d4c39";
+    "#9db2a3";
+
+
+  ctx.fillRect(
+    x+21,
+    y+51,
+    18,
+    16
+  );
+
+
+  ctx.fillRect(
+    x+w-39,
+    y+51,
+    18,
+    16
+  );
+
+
+  /*
+  door
+  */
+
+  ctx.fillStyle=
+    "#664a34";
+
+
+  ctx.fillRect(
+    x+w/2-13,
+    y+h-39,
+    26,
+    39
+  );
+
+
+  ctx.fillStyle=
+    "#a98354";
+
+
+  ctx.fillRect(
+    x+w/2+6,
+    y+h-21,
+    3,
+    3
+  );
+
+
+  /*
+  sign
+  */
+
+  ctx.fillStyle=
+    "#eee0b8";
+
+
+  ctx.fillRect(
+    x+w/2-48,
+    y+29,
+    96,
+    21
+  );
+
+
+  ctx.strokeStyle=
+    "#755f3d";
+
+
+  ctx.strokeRect(
+    x+w/2-48,
+    y+29,
+    96,
+    21
+  );
+
+
+  ctx.fillStyle=
+    "#384638";
 
 
   ctx.font=
@@ -509,7 +644,7 @@ function drawBuilding(
   ctx.fillText(
     building.name,
     x+w/2,
-    y+41
+    y+44
   );
 
 }
@@ -520,63 +655,70 @@ function drawBuilding(
 ========================================================= */
 
 function drawTree(
-  x,
-  y
+  tileX,
+  tileY,
+  scale=1
 ){
 
-  const sx=
-    x-camera.x;
+  const x=
+    (
+      tileX+.5
+    )*TILE-
+    camera.x;
 
 
-  const sy=
-    y-camera.y;
+  const y=
+    (
+      tileY+.5
+    )*TILE-
+    camera.y;
 
 
   ctx.fillStyle=
-    "#594b35";
+    "#594a34";
 
 
   ctx.fillRect(
-    sx-4,
-    sy+8,
-    8,
-    18
+    x-4*scale,
+    y,
+    8*scale,
+    25*scale
   );
 
 
   ctx.fillStyle=
-    "#315b36";
+    "#2f5c35";
 
 
   ctx.fillRect(
-    sx-18,
-    sy-10,
-    36,
-    24
+    x-19*scale,
+    y-18*scale,
+    38*scale,
+    27*scale
   );
 
 
   ctx.fillStyle=
-    "#426f43";
+    "#427342";
 
 
   ctx.fillRect(
-    sx-12,
-    sy-18,
-    24,
-    18
+    x-13*scale,
+    y-27*scale,
+    27*scale,
+    23*scale
   );
 
 
   ctx.fillStyle=
-    "#5d8752";
+    "#66935a";
 
 
   ctx.fillRect(
-    sx-8,
-    sy-15,
-    8,
-    7
+    x-9*scale,
+    y-23*scale,
+    9*scale,
+    7*scale
   );
 
 }
@@ -587,64 +729,389 @@ function drawTree(
 ========================================================= */
 
 function drawBamboo(
-  x,
-  y
+  tileX,
+  tileY
 ){
 
-  const sx=
-    x-camera.x;
+  const x=
+    (
+      tileX+.5
+    )*TILE-
+    camera.x;
 
 
-  const sy=
-    y-camera.y;
-
-
-  ctx.fillStyle=
-    "#496f3f";
-
-
-  ctx.fillRect(
-    sx-7,
-    sy-22,
-    4,
-    48
-  );
-
-
-  ctx.fillRect(
-    sx+3,
-    sy-28,
-    4,
-    54
-  );
+  const y=
+    (
+      tileY+.5
+    )*TILE-
+    camera.y;
 
 
   ctx.fillStyle=
-    "#6e9657";
+    "#456b3c";
 
 
   ctx.fillRect(
-    sx-15,
-    sy-15,
-    13,
-    5
+    x-6,
+    y-28,
+    4,
+    55
   );
 
 
   ctx.fillRect(
-    sx+6,
-    sy-8,
+    x+4,
+    y-34,
+    4,
+    61
+  );
+
+
+  ctx.fillStyle=
+    "#71975b";
+
+
+  ctx.fillRect(
+    x-15,
+    y-19,
     14,
     5
   );
 
 
   ctx.fillRect(
-    sx-10,
-    sy+1,
-    12,
+    x+7,
+    y-11,
+    15,
     5
   );
+
+
+  ctx.fillRect(
+    x-11,
+    y+1,
+    13,
+    5
+  );
+
+}
+
+
+/* =========================================================
+   PROP
+========================================================= */
+
+function drawProp(
+  prop
+){
+
+  const x=
+    (
+      prop.x+.5
+    )*TILE-
+    camera.x;
+
+
+  const y=
+    (
+      prop.y+.5
+    )*TILE-
+    camera.y;
+
+
+  switch(
+    prop.type
+  ){
+
+
+    case "sign":
+
+      ctx.fillStyle=
+        "#594531";
+
+
+      ctx.fillRect(
+        x-3,
+        y-3,
+        6,
+        26
+      );
+
+
+      ctx.fillStyle=
+        "#d6c89f";
+
+
+      ctx.fillRect(
+        x-34,
+        y-23,
+        68,
+        24
+      );
+
+
+      ctx.strokeStyle=
+        "#665638";
+
+
+      ctx.strokeRect(
+        x-34,
+        y-23,
+        68,
+        24
+      );
+
+
+      ctx.fillStyle=
+        "#334234";
+
+
+      ctx.font=
+        "12px sans-serif";
+
+
+      ctx.textAlign=
+        "center";
+
+
+      ctx.fillText(
+        prop.text ||
+        "",
+        x,
+        y-7
+      );
+
+    break;
+
+
+    case "basket":
+
+      ctx.fillStyle=
+        "#8c683e";
+
+
+      ctx.fillRect(
+        x-10,
+        y-5,
+        20,
+        12
+      );
+
+
+      ctx.strokeStyle=
+        "#c0985d";
+
+
+      ctx.strokeRect(
+        x-8,
+        y-12,
+        16,
+        13
+      );
+
+
+      ctx.fillStyle=
+        "#4f7a3d";
+
+
+      ctx.fillRect(
+        x-7,
+        y-7,
+        14,
+        5
+      );
+
+    break;
+
+
+    case "teaRack":
+
+      ctx.fillStyle=
+        "#684b31";
+
+
+      ctx.fillRect(
+        x-15,
+        y-8,
+        30,
+        4
+      );
+
+
+      ctx.fillRect(
+        x-12,
+        y-4,
+        3,
+        18
+      );
+
+
+      ctx.fillRect(
+        x+9,
+        y-4,
+        3,
+        18
+      );
+
+
+      ctx.fillStyle=
+        "#50753e";
+
+
+      ctx.fillRect(
+        x-12,
+        y-12,
+        24,
+        5
+      );
+
+    break;
+
+
+    case "bench":
+
+      ctx.fillStyle=
+        "#725338";
+
+
+      ctx.fillRect(
+        x-15,
+        y-5,
+        30,
+        6
+      );
+
+
+      ctx.fillRect(
+        x-11,
+        y+1,
+        4,
+        10
+      );
+
+
+      ctx.fillRect(
+        x+7,
+        y+1,
+        4,
+        10
+      );
+
+    break;
+
+
+    case "pot":
+
+      ctx.fillStyle=
+        "#a15e47";
+
+
+      ctx.fillRect(
+        x-7,
+        y,
+        14,
+        10
+      );
+
+
+      ctx.fillStyle=
+        "#4f7d45";
+
+
+      ctx.fillRect(
+        x-2,
+        y-12,
+        4,
+        13
+      );
+
+
+      ctx.fillRect(
+        x-8,
+        y-10,
+        7,
+        5
+      );
+
+
+      ctx.fillRect(
+        x+1,
+        y-13,
+        8,
+        5
+      );
+
+    break;
+
+
+    case "stone":
+
+      ctx.fillStyle=
+        "#77766c";
+
+
+      ctx.fillRect(
+        x-11,
+        y-6,
+        22,
+        13
+      );
+
+
+      ctx.fillStyle=
+        "#99978a";
+
+
+      ctx.fillRect(
+        x-7,
+        y-9,
+        13,
+        5
+      );
+
+    break;
+
+
+    case "lantern":
+
+      ctx.fillStyle=
+        "#55412d";
+
+
+      ctx.fillRect(
+        x-2,
+        y-15,
+        4,
+        28
+      );
+
+
+      ctx.fillStyle=
+        "#d5a054";
+
+
+      ctx.fillRect(
+        x-6,
+        y-14,
+        12,
+        12
+      );
+
+
+      ctx.fillStyle=
+        "#f0c976";
+
+
+      ctx.fillRect(
+        x-3,
+        y-12,
+        6,
+        8
+      );
+
+    break;
+
+  }
 
 }
 
@@ -671,8 +1138,6 @@ function drawNPC(
     camera.y;
 
 
-  /* shadow */
-
   ctx.fillStyle=
     "rgba(0,0,0,.22)";
 
@@ -684,8 +1149,6 @@ function drawNPC(
     7
   );
 
-
-  /* body */
 
   ctx.fillStyle=
     npc.color ||
@@ -700,8 +1163,6 @@ function drawNPC(
   );
 
 
-  /* face */
-
   ctx.fillStyle=
     "#e6b98e";
 
@@ -714,8 +1175,6 @@ function drawNPC(
   );
 
 
-  /* hair */
-
   ctx.fillStyle=
     "#38302b";
 
@@ -727,8 +1186,6 @@ function drawNPC(
     6
   );
 
-
-  /* label */
 
   ctx.fillStyle=
     "rgba(15,24,17,.82)";
@@ -786,7 +1243,9 @@ function drawInteractables(
         item.word
       )
     ){
+
       continue;
+
     }
 
 
@@ -812,14 +1271,14 @@ function drawInteractables(
 
 
     ctx.fillStyle=
-      "rgba(241,208,108,.25)";
+      "rgba(241,208,108,.22)";
 
 
     ctx.fillRect(
-      x-7,
-      y-28+bob,
-      14,
-      14
+      x-8,
+      y-29+bob,
+      16,
+      16
     );
 
 
@@ -855,8 +1314,6 @@ function drawPlayer(){
     camera.y;
 
 
-  /* shadow */
-
   ctx.fillStyle=
     "rgba(0,0,0,.24)";
 
@@ -868,8 +1325,6 @@ function drawPlayer(){
     7
   );
 
-
-  /* body */
 
   ctx.fillStyle=
     "#536a79";
@@ -883,8 +1338,6 @@ function drawPlayer(){
   );
 
 
-  /* face */
-
   ctx.fillStyle=
     "#e9ba94";
 
@@ -897,8 +1350,6 @@ function drawPlayer(){
   );
 
 
-  /* hair */
-
   ctx.fillStyle=
     "#3e302a";
 
@@ -910,8 +1361,6 @@ function drawPlayer(){
     6
   );
 
-
-  /* direction */
 
   ctx.fillStyle=
     "#d5e1e4";
@@ -929,7 +1378,6 @@ function drawPlayer(){
     );
 
   }
-
   else if(
     player.direction==="down"
   ){
@@ -942,7 +1390,6 @@ function drawPlayer(){
     );
 
   }
-
   else if(
     player.direction==="left"
   ){
@@ -955,7 +1402,6 @@ function drawPlayer(){
     );
 
   }
-
   else{
 
     ctx.fillRect(
@@ -971,88 +1417,103 @@ function drawPlayer(){
 
 
 /* =========================================================
-   AMBIENT
+   VILLAGE DETAILS
 ========================================================= */
 
-function drawAmbientDetails(){
+function drawVillageDetails(){
 
-  if(
-    currentMapId===
-    "village"
+  const trees=[
+
+    [1,5,1.1],
+    [13,3,1],
+    [32,4,1.2],
+    [41,8,1],
+    [60,12,1.1],
+
+    [2,25,1.1],
+    [16,27,1],
+    [58,24,1],
+
+    [2,44,1],
+    [22,42,1.1],
+    [40,40,1],
+    [59,43,1.1]
+
+  ];
+
+
+  for(
+    const tree of
+    trees
   ){
 
-    const trees=[
-
-      [2,11],
-
-      [20,6],
-
-      [33,8],
-
-      [51,16],
-
-      [3,29],
-
-      [46,24],
-
-      [34,33]
-
-    ];
-
-
-    for(
-      const [x,y] of
-      trees
-    ){
-
-      drawTree(
-        (
-          x+.5
-        )*TILE,
-
-        (
-          y+.5
-        )*TILE
-      );
-
-    }
+    drawTree(
+      tree[0],
+      tree[1],
+      tree[2]
+    );
 
   }
 
 
+  const bamboo=[
+
+    [12,11],
+    [14,11],
+
+    [58,19],
+    [60,20],
+
+    [28,7],
+    [31,7]
+
+  ];
+
+
+  for(
+    const item of
+    bamboo
+  ){
+
+    drawBamboo(
+      item[0],
+      item[1]
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   OTHER MAP DETAILS
+========================================================= */
+
+function drawOtherDetails(){
+
   if(
-    currentMapId===
-    "field"
+    currentMapId==="field"
   ){
 
     const trees=[
 
       [2,6],
-
       [7,12],
-
       [49,13],
-
       [3,37],
-
       [47,37]
 
     ];
 
 
     for(
-      const [x,y] of
+      const tree of
       trees
     ){
 
       drawTree(
-        (
-          x+.5
-        )*TILE,
-
-        (
-          y+.5
-        )*TILE
+        tree[0],
+        tree[1]
       );
 
     }
@@ -1061,48 +1522,33 @@ function drawAmbientDetails(){
 
 
   if(
-    currentMapId===
-    "mountain"
+    currentMapId==="mountain"
   ){
 
     const bamboo=[
 
       [7,5],
-
       [10,7],
-
       [14,5],
-
       [25,5],
-
       [29,6],
-
       [47,7],
-
       [49,11],
-
       [7,19],
-
       [47,29],
-
       [10,37]
 
     ];
 
 
     for(
-      const [x,y] of
+      const item of
       bamboo
     ){
 
       drawBamboo(
-        (
-          x+.5
-        )*TILE,
-
-        (
-          y+.5
-        )*TILE
+        item[0],
+        item[1]
       );
 
     }
@@ -1193,7 +1639,18 @@ function drawMap(){
   }
 
 
-  drawAmbientDetails();
+  if(
+    currentMapId==="village"
+  ){
+
+    drawVillageDetails();
+
+  }
+  else{
+
+    drawOtherDetails();
+
+  }
 
 
   for(
@@ -1204,6 +1661,26 @@ function drawMap(){
     drawBuilding(
       building
     );
+
+  }
+
+
+  if(
+    Array.isArray(
+      map.props
+    )
+  ){
+
+    for(
+      const prop of
+      map.props
+    ){
+
+      drawProp(
+        prop
+      );
+
+    }
 
   }
 
@@ -1279,7 +1756,10 @@ function drawGame(){
 
 
   entities.sort(
-    (a,b)=>
+    (
+      a,
+      b
+    )=>
       a.y-b.y
   );
 
@@ -1296,7 +1776,7 @@ function drawGame(){
 
   /*
   --------------------------------------------------------
-  DAYLIGHT
+  SPRING DAYLIGHT
   --------------------------------------------------------
   */
 
@@ -1311,13 +1791,19 @@ function drawGame(){
 
   gradient.addColorStop(
     0,
-    "rgba(255,241,188,.055)"
+    "rgba(255,244,198,.07)"
+  );
+
+
+  gradient.addColorStop(
+    .55,
+    "rgba(255,255,220,.015)"
   );
 
 
   gradient.addColorStop(
     1,
-    "rgba(30,70,38,.035)"
+    "rgba(37,78,40,.04)"
   );
 
 
@@ -1336,5 +1822,5 @@ function drawGame(){
 
 
 console.log(
-  "杭州探索録2 Visual System Ver.1.1 loaded"
+  "杭州探索録2 Visual System Ver.2.0 loaded"
 );
