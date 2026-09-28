@@ -3,7 +3,12 @@
 /*
 ==========================================================
  杭州探索録2
- GAME SYSTEM Ver.2.0
+ GAME SYSTEM Ver.2.1
+
+ Dialogue System Ver.2.0 対応
+ ・会話中の単語取得
+ ・単語ポップアップ後の会話復帰
+ ・従来の探索システム維持
 ==========================================================
 */
 
@@ -337,10 +342,20 @@ window.addEventListener(
     }
 
 
+    /*
+    --------------------------------------------------------
+    E / ENTER
+    --------------------------------------------------------
+    */
+
     if(
       key==="e" ||
       key==="enter"
     ){
+
+      /*
+       * 単語ポップアップが開いている場合
+       */
 
       if(
         !wordPopup.classList.contains(
@@ -349,18 +364,47 @@ window.addEventListener(
       ){
 
         closeWordPopup();
+
+
+        /*
+         * Dialogue Ver.2.0
+         *
+         * 会話途中で単語を取得した場合、
+         * ポップアップを閉じたあと
+         * 会話へ戻る。
+         */
+
+        if(
+          typeof resumeDialogueAfterWord===
+            "function"
+        ){
+
+          resumeDialogueAfterWord();
+
+        }
+
+
         return;
 
       }
 
+
+      /*
+       * 会話中
+       */
 
       if(dialogue.active){
 
         advanceDialogue();
+
         return;
 
       }
 
+
+      /*
+       * 手帖表示中
+       */
 
       if(
         !notebook.classList.contains(
@@ -373,6 +417,10 @@ window.addEventListener(
       }
 
 
+      /*
+       * タイトル画面
+       */
+
       if(
         !titleScreen.classList.contains(
           "hidden"
@@ -383,6 +431,10 @@ window.addEventListener(
 
       }
 
+
+      /*
+       * ストーリープレビュー
+       */
 
       if(
         !storyPreview.classList.contains(
@@ -395,10 +447,20 @@ window.addEventListener(
       }
 
 
+      /*
+       * 通常インタラクト
+       */
+
       interact();
 
     }
 
+
+    /*
+    --------------------------------------------------------
+    NOTEBOOK
+    --------------------------------------------------------
+    */
 
     if(key==="l"){
 
@@ -639,6 +701,11 @@ function updatePlayer(
   }
 
 
+  /*
+   * UIが開いている間は
+   * プレイヤーを停止。
+   */
+
   if(
     dialogue.active ||
     !wordPopup.classList.contains(
@@ -672,7 +739,9 @@ function updatePlayer(
   ){
 
     dy=-1;
-    player.direction="up";
+
+    player.direction=
+      "up";
 
   }
 
@@ -683,7 +752,9 @@ function updatePlayer(
   ){
 
     dy=1;
-    player.direction="down";
+
+    player.direction=
+      "down";
 
   }
 
@@ -694,7 +765,9 @@ function updatePlayer(
   ){
 
     dx=-1;
-    player.direction="left";
+
+    player.direction=
+      "left";
 
   }
 
@@ -705,7 +778,9 @@ function updatePlayer(
   ){
 
     dx=1;
-    player.direction="right";
+
+    player.direction=
+      "right";
 
   }
 
@@ -716,9 +791,15 @@ function updatePlayer(
 
 
   if(!player.moving){
+
     return;
+
   }
 
+
+  /*
+   * 斜め移動速度を補正
+   */
 
   const length=
     Math.hypot(
@@ -728,11 +809,13 @@ function updatePlayer(
 
 
   dx/=length;
+
   dy/=length;
 
 
   const amount=
-    player.speed*dt;
+    player.speed*
+    dt;
 
 
   const nx=
@@ -745,6 +828,11 @@ function updatePlayer(
     dy*amount;
 
 
+  /*
+   * X / Yを別々に判定することで
+   * 壁に沿って滑らかに移動できる。
+   */
+
   if(
     canMoveTo(
       nx,
@@ -752,7 +840,8 @@ function updatePlayer(
     )
   ){
 
-    player.x=nx;
+    player.x=
+      nx;
 
   }
 
@@ -764,7 +853,8 @@ function updatePlayer(
     )
   ){
 
-    player.y=ny;
+    player.y=
+      ny;
 
   }
 
@@ -781,7 +871,9 @@ function updatePlayer(
 function checkExits(){
 
   if(exitCooldown>0){
+
     return;
+
   }
 
 
@@ -804,14 +896,19 @@ function checkExits(){
 
     if(
       tx>=exit.x &&
-      tx<exit.x+exit.width &&
+      tx<
+        exit.x+
+        exit.width &&
       ty>=exit.y &&
-      ty<exit.y+exit.height
+      ty<
+        exit.y+
+        exit.height
     ){
 
       changeMap(
         exit
       );
+
 
       return;
 
@@ -836,6 +933,7 @@ function changeMap(
       "Unknown map",
       exit.target
     );
+
 
     return;
 
@@ -1014,6 +1112,10 @@ function getNearbyNPC(){
 
 function interact(){
 
+  /*
+   * NPCを優先。
+   */
+
   const npc=
     getNearbyNPC();
 
@@ -1024,10 +1126,16 @@ function interact(){
       npc
     );
 
+
     return;
 
   }
 
+
+  /*
+   * NPCがいなければ
+   * 語彙オブジェクトを調べる。
+   */
 
   const item=
     getNearbyInteractable();
@@ -1069,6 +1177,7 @@ function updateInteractionHint(){
     interactionHint.classList.add(
       "hidden"
     );
+
 
     return;
 
@@ -1135,10 +1244,15 @@ function obtainWord(
       id
     );
 
+
     return;
 
   }
 
+
+  /*
+   * 初回取得なら保存。
+   */
 
   if(
     !saveData.words.includes(
@@ -1155,6 +1269,10 @@ function obtainWord(
 
   }
 
+
+  /*
+   * ポップアップへ表示。
+   */
 
   wordChinese.textContent=
     word.cn;
@@ -1182,6 +1300,10 @@ function obtainWord(
 }
 
 
+/* =========================================================
+   WORD POPUP
+========================================================= */
+
 function closeWordPopup(){
 
   wordPopup.classList.add(
@@ -1191,9 +1313,28 @@ function closeWordPopup(){
 }
 
 
+/*
+ * ボタンから閉じた場合にも、
+ * Dialogue Ver.2.0の会話へ復帰する。
+ */
+
 wordCloseButton.addEventListener(
   "click",
-  closeWordPopup
+  ()=>{
+
+    closeWordPopup();
+
+
+    if(
+      typeof resumeDialogueAfterWord===
+        "function"
+    ){
+
+      resumeDialogueAfterWord();
+
+    }
+
+  }
 );
 
 
@@ -1258,10 +1399,15 @@ function renderNotebook(){
 
 
   const categories=[
+
     "龍井村",
+
     "茶畑",
+
     "製茶",
+
     "山道"
+
   ];
 
 
@@ -1324,10 +1470,16 @@ function renderNotebook(){
         "notebook-word"+
         (
           unlocked
-          ? ""
-          : " locked"
+            ? ""
+            : " locked"
         );
 
+
+      /*
+      --------------------------------------------------------
+      発見済み
+      --------------------------------------------------------
+      */
 
       if(unlocked){
 
@@ -1372,6 +1524,13 @@ function renderNotebook(){
         );
 
       }
+
+      /*
+      --------------------------------------------------------
+      未発見
+      --------------------------------------------------------
+      */
+
       else{
 
         const a=
@@ -1551,6 +1710,10 @@ function update(
 }
 
 
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
 let lastTime=
   performance.now();
 
@@ -1563,18 +1726,24 @@ function gameLoop(
     Math.min(
       .04,
       (
-        time-lastTime
+        time-
+        lastTime
       )/1000
     );
 
 
-  lastTime=time;
+  lastTime=
+    time;
 
 
   update(
     dt
   );
 
+
+  /*
+   * visuals.js側の描画。
+   */
 
   if(
     typeof drawGame===
@@ -1599,9 +1768,12 @@ function gameLoop(
 
 loadSave();
 
+
 updateProgress();
 
+
 updateMapLabel();
+
 
 updateCamera();
 
@@ -1612,5 +1784,5 @@ requestAnimationFrame(
 
 
 console.log(
-  "杭州探索録2 Game System Ver.2.0 loaded"
+  "杭州探索録2 Game System Ver.2.1 - DIALOGUE READY loaded"
 );
