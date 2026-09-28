@@ -3,31 +3,38 @@
 /*
 ==========================================================
  杭州探索録2
- INTERIOR SYSTEM Ver.1.0
+ INTERIOR SYSTEM Ver.1.1
 
  MURAGUCHI TEAHOUSE
+ VOCABULARY EXPANSION
 
  ・木造茶館
  ・格子窓
  ・窓外の龍井茶山
  ・梁 / 柱
  ・茶棚
- ・茶壺 / 茶缶
- ・丸卓
- ・椅子
- ・茶カウンター
- ・奥座敷
+ ・茶壺 / 茶杯 / 茶罐
+ ・茶桌 / 椅子
+ ・柜台
+ ・菜单
+ ・茶具
+ ・开水
+ ・厨房
  ・掛け軸
  ・植物
  ・竹籠
  ・木箱
- ・厨房
+ ・照明
  ・湯気
- ・室内照明
  ・前景レイヤー
 ==========================================================
 */
 
+
+/*
+ * visuals.js Ver.5.1 の
+ * 屋外drawGameを保存。
+ */
 
 const outdoorDrawGame=
   drawGame;
@@ -38,20 +45,36 @@ const outdoorDrawGame=
 ========================================================= */
 
 function ix(tx){
-  return tx*TILE-camera.x;
+
+  return(
+    tx*TILE-
+    camera.x
+  );
+
 }
+
 
 function iy(ty){
-  return ty*TILE-camera.y;
+
+  return(
+    ty*TILE-
+    camera.y
+  );
+
 }
 
+
 function itime(){
-  return performance.now()/1000;
+
+  return(
+    performance.now()/1000
+  );
+
 }
 
 
 /* =========================================================
-   BASE
+   BACKGROUND
 ========================================================= */
 
 function interiorBase(){
@@ -64,17 +87,21 @@ function interiorBase(){
       canvas.height
     );
 
+
   g.addColorStop(
     0,
     "#5b4935"
   );
+
 
   g.addColorStop(
     1,
     "#302a23"
   );
 
+
   ctx.fillStyle=g;
+
 
   ctx.fillRect(
     0,
@@ -87,7 +114,7 @@ function interiorBase(){
 
 
 /* =========================================================
-   FLOOR
+   WOOD FLOOR
 ========================================================= */
 
 function drawInteriorFloor(){
@@ -95,47 +122,73 @@ function drawInteriorFloor(){
   const map=
     MAPS[currentMapId];
 
+
   const sx=
     Math.max(
       0,
-      Math.floor(camera.x/TILE)-2
+      Math.floor(
+        camera.x/TILE
+      )-2
     );
+
 
   const sy=
     Math.max(
       0,
-      Math.floor(camera.y/TILE)-2
+      Math.floor(
+        camera.y/TILE
+      )-2
     );
+
 
   const ex=
     Math.min(
       map.width,
       Math.ceil(
-        (camera.x+canvas.width)/TILE
+        (
+          camera.x+
+          canvas.width
+        )/TILE
       )+2
     );
+
 
   const ey=
     Math.min(
       map.height,
       Math.ceil(
-        (camera.y+canvas.height)/TILE
+        (
+          camera.y+
+          canvas.height
+        )/TILE
       )+2
     );
 
 
-  for(let y=sy;y<ey;y++){
+  for(
+    let y=sy;
+    y<ey;
+    y++
+  ){
 
-    for(let x=sx;x<ex;x++){
+    for(
+      let x=sx;
+      x<ex;
+      x++
+    ){
 
       const tile=
         map.grid[y][x];
 
+
       const px=
-        x*TILE-camera.x;
+        x*TILE-
+        camera.x;
+
 
       const py=
-        y*TILE-camera.y;
+        y*TILE-
+        camera.y;
 
 
       if(tile===6){
@@ -145,6 +198,7 @@ function drawInteriorFloor(){
             ? "#8b6846"
             : "#805e40";
 
+
         ctx.fillRect(
           px,
           py,
@@ -153,8 +207,13 @@ function drawInteriorFloor(){
         );
 
 
+        /*
+         * plank highlight
+         */
+
         ctx.fillStyle=
           "rgba(235,199,139,.10)";
+
 
         ctx.fillRect(
           px,
@@ -164,8 +223,13 @@ function drawInteriorFloor(){
         );
 
 
+        /*
+         * plank shadow
+         */
+
         ctx.fillStyle=
           "rgba(46,30,21,.20)";
+
 
         ctx.fillRect(
           px,
@@ -175,8 +239,13 @@ function drawInteriorFloor(){
         );
 
 
+        /*
+         * grain
+         */
+
         ctx.fillStyle=
           "rgba(47,31,22,.25)";
+
 
         ctx.fillRect(
           px+15,
@@ -185,11 +254,25 @@ function drawInteriorFloor(){
           TILE
         );
 
+
+        ctx.fillStyle=
+          "rgba(245,214,164,.07)";
+
+
+        ctx.fillRect(
+          px+4,
+          py+12,
+          19,
+          1
+        );
+
       }
+
       else{
 
         ctx.fillStyle=
           "#3b3027";
+
 
         ctx.fillRect(
           px,
@@ -216,8 +299,10 @@ function drawBackWall(){
   const x=
     ix(2);
 
+
   const y=
     iy(1);
+
 
   const w=
     26*TILE;
@@ -225,6 +310,7 @@ function drawBackWall(){
 
   ctx.fillStyle=
     "#c8b58d";
+
 
   ctx.fillRect(
     x,
@@ -238,13 +324,18 @@ function drawBackWall(){
    * plaster texture
    */
 
-  for(let i=0;i<30;i++){
+  for(
+    let i=0;
+    i<36;
+    i++
+  ){
 
     const px=
       x+
       (
         i*83
       )%w;
+
 
     const py=
       y+
@@ -253,10 +344,12 @@ function drawBackWall(){
         i*37
       )%(4*TILE);
 
+
     ctx.fillStyle=
       i%2
         ? "rgba(112,87,59,.06)"
         : "rgba(255,244,211,.06)";
+
 
     ctx.fillRect(
       px,
@@ -271,7 +364,7 @@ function drawBackWall(){
 
 
 /* =========================================================
-   MOUNTAIN WINDOW VIEW
+   WINDOW
 ========================================================= */
 
 function drawWindowView(
@@ -284,22 +377,26 @@ function drawWindowView(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
 
+
   const ww=
     w*TILE;
+
 
   const hh=
     h*TILE;
 
 
   /*
-   * frame shadow
+   * deep frame
    */
 
   ctx.fillStyle=
     "#39291f";
+
 
   ctx.fillRect(
     x-6,
@@ -321,17 +418,21 @@ function drawWindowView(
       y+hh
     );
 
+
   sky.addColorStop(
     0,
     "#d9e7c7"
   );
+
 
   sky.addColorStop(
     1,
     "#b7c99a"
   );
 
+
   ctx.fillStyle=sky;
+
 
   ctx.fillRect(
     x,
@@ -342,89 +443,111 @@ function drawWindowView(
 
 
   /*
-   * distant mountain
+   * distant mountains
    */
 
   ctx.fillStyle=
-    "#77906a";
+    "#8ca17c";
+
 
   ctx.beginPath();
 
+
   ctx.moveTo(
     x,
-    y+hh*.60
-  );
-
-  ctx.lineTo(
-    x+ww*.20,
-    y+hh*.30
-  );
-
-  ctx.lineTo(
-    x+ww*.42,
     y+hh*.58
   );
 
+
   ctx.lineTo(
-    x+ww*.67,
-    y+hh*.25
+    x+ww*.17,
+    y+hh*.34
   );
+
+
+  ctx.lineTo(
+    x+ww*.34,
+    y+hh*.55
+  );
+
+
+  ctx.lineTo(
+    x+ww*.57,
+    y+hh*.27
+  );
+
+
+  ctx.lineTo(
+    x+ww*.78,
+    y+hh*.49
+  );
+
 
   ctx.lineTo(
     x+ww,
-    y+hh*.52
+    y+hh*.31
   );
+
 
   ctx.lineTo(
     x+ww,
     y+hh
   );
+
 
   ctx.lineTo(
     x,
     y+hh
   );
+
 
   ctx.fill();
 
 
   /*
-   * tea hills
+   * near tea hills
    */
 
   ctx.fillStyle=
-    "#4d7548";
+    "#55794d";
+
 
   ctx.beginPath();
 
+
   ctx.moveTo(
     x,
-    y+hh*.68
+    y+hh*.67
   );
+
 
   ctx.quadraticCurveTo(
     x+ww*.22,
-    y+hh*.48,
+    y+hh*.47,
     x+ww*.46,
     y+hh*.70
   );
 
+
   ctx.quadraticCurveTo(
     x+ww*.72,
-    y+hh*.48,
+    y+hh*.46,
     x+ww,
-    y+hh*.66
+    y+hh*.65
   );
+
 
   ctx.lineTo(
     x+ww,
     y+hh
   );
+
 
   ctx.lineTo(
     x,
     y+hh
   );
+
 
   ctx.fill();
 
@@ -436,21 +559,30 @@ function drawWindowView(
   ctx.strokeStyle=
     "rgba(39,78,39,.55)";
 
+
   ctx.lineWidth=2;
 
-  for(let row=0;row<4;row++){
+
+  for(
+    let row=0;
+    row<4;
+    row++
+  ){
 
     ctx.beginPath();
+
 
     const yy=
       y+
       hh*.70+
       row*7;
 
+
     ctx.moveTo(
       x+5,
       yy
     );
+
 
     ctx.bezierCurveTo(
       x+ww*.30,
@@ -463,19 +595,25 @@ function drawWindowView(
       yy-2
     );
 
+
     ctx.stroke();
 
   }
 
 
   /*
-   * lattice
+   * lattice vertical
    */
 
   ctx.fillStyle=
     "#513a29";
 
-  for(let xx=1;xx<w;xx++){
+
+  for(
+    let xx=1;
+    xx<w;
+    xx++
+  ){
 
     ctx.fillRect(
       x+
@@ -491,7 +629,15 @@ function drawWindowView(
   }
 
 
-  for(let yy=1;yy<h;yy++){
+  /*
+   * lattice horizontal
+   */
+
+  for(
+    let yy=1;
+    yy<h;
+    yy++
+  ){
 
     ctx.fillRect(
       x,
@@ -507,14 +653,12 @@ function drawWindowView(
   }
 
 
-  /*
-   * frame
-   */
-
   ctx.strokeStyle=
     "#2f231b";
 
+
   ctx.lineWidth=6;
+
 
   ctx.strokeRect(
     x,
@@ -532,12 +676,9 @@ function drawWindowView(
 
 function drawBeams(){
 
-  /*
-   * horizontal beam
-   */
-
   ctx.fillStyle=
     "#4a3325";
+
 
   ctx.fillRect(
     ix(1),
@@ -550,6 +691,7 @@ function drawBeams(){
   ctx.fillStyle=
     "#6b4a31";
 
+
   ctx.fillRect(
     ix(1),
     iy(5),
@@ -558,12 +700,9 @@ function drawBeams(){
   );
 
 
-  /*
-   * ceiling beam
-   */
-
   ctx.fillStyle=
     "#3e2b21";
+
 
   ctx.fillRect(
     ix(1),
@@ -573,28 +712,35 @@ function drawBeams(){
   );
 
 
-  /*
-   * columns
-   */
-
   const columns=[
+
     [2,2],
+
     [13,2],
+
     [20,2],
+
     [27,2]
+
   ];
 
 
-  for(const p of columns){
+  for(
+    const p
+    of columns
+  ){
 
     const x=
       ix(p[0]);
 
+
     const y=
       iy(p[1]);
 
+
     ctx.fillStyle=
       "#422d21";
+
 
     ctx.fillRect(
       x,
@@ -606,6 +752,7 @@ function drawBeams(){
 
     ctx.fillStyle=
       "#795237";
+
 
     ctx.fillRect(
       x+2,
@@ -620,7 +767,7 @@ function drawBeams(){
 
 
 /* =========================================================
-   TEA SHELVES
+   TEA SHELF
 ========================================================= */
 
 function drawTeaShelf(
@@ -632,8 +779,10 @@ function drawTeaShelf(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
+
 
   const ww=
     w*TILE;
@@ -641,6 +790,7 @@ function drawTeaShelf(
 
   ctx.fillStyle=
     "#432e22";
+
 
   ctx.fillRect(
     x,
@@ -653,6 +803,7 @@ function drawTeaShelf(
   ctx.fillStyle=
     "#765137";
 
+
   ctx.fillRect(
     x+5,
     y+5,
@@ -661,12 +812,9 @@ function drawTeaShelf(
   );
 
 
-  /*
-   * shelves
-   */
-
   ctx.fillStyle=
     "#38261d";
+
 
   ctx.fillRect(
     x+4,
@@ -674,6 +822,7 @@ function drawTeaShelf(
     ww-8,
     5
   );
+
 
   ctx.fillRect(
     x+4,
@@ -684,17 +833,26 @@ function drawTeaShelf(
 
 
   /*
-   * tea tins
+   * 茶罐
    */
 
-  for(let row=0;row<3;row++){
+  for(
+    let row=0;
+    row<3;
+    row++
+  ){
 
-    for(let col=0;col<w*2;col++){
+    for(
+      let col=0;
+      col<w*2;
+      col++
+    ){
 
       const px=
         x+
         9+
         col*14;
+
 
       const py=
         y+
@@ -702,18 +860,37 @@ function drawTeaShelf(
         row*27;
 
 
-      ctx.fillStyle=
+      const variant=
         (
-          col+row
-        )%3===0
-          ? "#65704b"
-          : (
-              (
-                col+row
-              )%3===1
-                ? "#765742"
-                : "#887649"
-            );
+          col+
+          row
+        )%4;
+
+
+      if(variant===0){
+
+        ctx.fillStyle=
+          "#65704b";
+
+      }
+      else if(variant===1){
+
+        ctx.fillStyle=
+          "#765742";
+
+      }
+      else if(variant===2){
+
+        ctx.fillStyle=
+          "#887649";
+
+      }
+      else{
+
+        ctx.fillStyle=
+          "#536d68";
+
+      }
 
 
       ctx.fillRect(
@@ -724,8 +901,29 @@ function drawTeaShelf(
       );
 
 
+      /*
+       * lid
+       */
+
+      ctx.fillStyle=
+        "#44372b";
+
+
+      ctx.fillRect(
+        px+1,
+        py-2,
+        7,
+        2
+      );
+
+
+      /*
+       * label
+       */
+
       ctx.fillStyle=
         "#d4c38e";
+
 
       ctx.fillRect(
         px+2,
@@ -742,7 +940,7 @@ function drawTeaShelf(
 
 
 /* =========================================================
-   TEA TABLE
+   TABLE
 ========================================================= */
 
 function drawTeaTable(
@@ -754,18 +952,17 @@ function drawTeaTable(
   const x=
     ix(tx+.5);
 
+
   const y=
     iy(ty+.5);
 
 
-  /*
-   * shadow
-   */
-
   ctx.fillStyle=
     "rgba(27,20,16,.28)";
 
+
   ctx.beginPath();
+
 
   ctx.ellipse(
     x,
@@ -777,15 +974,13 @@ function drawTeaTable(
     Math.PI*2
   );
 
+
   ctx.fill();
 
 
-  /*
-   * legs
-   */
-
   ctx.fillStyle=
     "#503523";
+
 
   ctx.fillRect(
     x-15*scale,
@@ -793,6 +988,7 @@ function drawTeaTable(
     5*scale,
     21*scale
   );
+
 
   ctx.fillRect(
     x+10*scale,
@@ -802,14 +998,12 @@ function drawTeaTable(
   );
 
 
-  /*
-   * table top
-   */
-
   ctx.fillStyle=
     "#825838";
 
+
   ctx.beginPath();
+
 
   ctx.ellipse(
     x,
@@ -821,13 +1015,16 @@ function drawTeaTable(
     Math.PI*2
   );
 
+
   ctx.fill();
 
 
   ctx.fillStyle=
     "#aa7b4c";
 
+
   ctx.beginPath();
+
 
   ctx.ellipse(
     x,
@@ -839,37 +1036,58 @@ function drawTeaTable(
     Math.PI*2
   );
 
+
   ctx.fill();
 
 
   /*
-   * teapot
+   * 茶壺
    */
 
   ctx.fillStyle=
     "#d1c19c";
 
-  ctx.fillRect(
-    x-6,
-    y-9,
-    12,
-    8
+
+  ctx.beginPath();
+
+
+  ctx.ellipse(
+    x,
+    y-6,
+    7,
+    5,
+    0,
+    0,
+    Math.PI*2
   );
 
+
+  ctx.fill();
+
+
   ctx.fillRect(
-    x+6,
-    y-7,
+    x-3,
+    y-12,
     6,
-    3
+    4
+  );
+
+
+  ctx.fillRect(
+    x+5,
+    y-7,
+    7,
+    2
   );
 
 
   /*
-   * cups
+   * 茶杯
    */
 
   ctx.fillStyle=
     "#eee0bd";
+
 
   ctx.fillRect(
     x-19,
@@ -877,6 +1095,7 @@ function drawTeaTable(
     6,
     4
   );
+
 
   ctx.fillRect(
     x+14,
@@ -889,7 +1108,7 @@ function drawTeaTable(
 
 
 /* =========================================================
-   STOOL
+   STOOL / CHAIR
 ========================================================= */
 
 function drawStool(
@@ -900,12 +1119,14 @@ function drawStool(
   const x=
     ix(tx+.5);
 
+
   const y=
     iy(ty+.5);
 
 
   ctx.fillStyle=
     "rgba(30,20,14,.20)";
+
 
   ctx.fillRect(
     x-12,
@@ -918,12 +1139,14 @@ function drawStool(
   ctx.fillStyle=
     "#553925";
 
+
   ctx.fillRect(
     x-9,
     y,
     4,
     15
   );
+
 
   ctx.fillRect(
     x+5,
@@ -935,6 +1158,7 @@ function drawStool(
 
   ctx.fillStyle=
     "#8b6140";
+
 
   ctx.fillRect(
     x-13,
@@ -955,16 +1179,14 @@ function drawCounter(){
   const x=
     ix(20.5);
 
+
   const y=
     iy(6.2);
 
 
-  /*
-   * back shadow
-   */
-
   ctx.fillStyle=
     "rgba(27,19,15,.28)";
+
 
   ctx.fillRect(
     x,
@@ -974,12 +1196,9 @@ function drawCounter(){
   );
 
 
-  /*
-   * front
-   */
-
   ctx.fillStyle=
     "#62432d";
+
 
   ctx.fillRect(
     x,
@@ -992,6 +1211,7 @@ function drawCounter(){
   ctx.fillStyle=
     "#8e6542";
 
+
   ctx.fillRect(
     x,
     y,
@@ -1001,20 +1221,31 @@ function drawCounter(){
 
 
   /*
-   * panel details
+   * panels
    */
 
   ctx.strokeStyle=
     "#3d2b21";
 
+
   ctx.lineWidth=3;
 
-  for(let i=0;i<5;i++){
+
+  for(
+    let i=0;
+    i<5;
+    i++
+  ){
 
     ctx.strokeRect(
-      x+10+i*41,
+      x+
+      10+
+      i*41,
+
       y+15,
+
       30,
+
       20
     );
 
@@ -1022,10 +1253,14 @@ function drawCounter(){
 
 
   /*
-   * teaware
+   * counter tea cups
    */
 
-  for(let i=0;i<5;i++){
+  for(
+    let i=0;
+    i<5;
+    i++
+  ){
 
     const px=
       x+
@@ -1050,6 +1285,7 @@ function drawCounter(){
     ctx.fillStyle=
       "#7e6044";
 
+
     ctx.fillRect(
       px+3,
       y-12,
@@ -1063,7 +1299,278 @@ function drawCounter(){
 
 
 /* =========================================================
-   RAISED TATAMI / PLATFORM
+   TEAWARE SET
+========================================================= */
+
+function drawTeaWareSet(){
+
+  const x=
+    ix(22.5);
+
+
+  const y=
+    iy(6.0);
+
+
+  /*
+   * 茶盤
+   */
+
+  ctx.fillStyle=
+    "#4b3425";
+
+
+  ctx.fillRect(
+    x,
+    y,
+    92,
+    28
+  );
+
+
+  ctx.fillStyle=
+    "#8a6341";
+
+
+  ctx.fillRect(
+    x+4,
+    y+4,
+    84,
+    20
+  );
+
+
+  /*
+   * 茶壺
+   */
+
+  ctx.fillStyle=
+    "#b9a27d";
+
+
+  ctx.beginPath();
+
+
+  ctx.ellipse(
+    x+30,
+    y+12,
+    13,
+    8,
+    0,
+    0,
+    Math.PI*2
+  );
+
+
+  ctx.fill();
+
+
+  ctx.fillRect(
+    x+25,
+    y+2,
+    10,
+    5
+  );
+
+
+  ctx.fillRect(
+    x+40,
+    y+10,
+    10,
+    3
+  );
+
+
+  /*
+   * handle
+   */
+
+  ctx.strokeStyle=
+    "#8b7557";
+
+
+  ctx.lineWidth=3;
+
+
+  ctx.beginPath();
+
+
+  ctx.arc(
+    x+19,
+    y+11,
+    9,
+    Math.PI/2,
+    Math.PI*1.5
+  );
+
+
+  ctx.stroke();
+
+
+  /*
+   * 茶杯
+   */
+
+  for(
+    let i=0;
+    i<3;
+    i++
+  ){
+
+    ctx.fillStyle=
+      "#e2d5b6";
+
+
+    ctx.beginPath();
+
+
+    ctx.ellipse(
+      x+
+      58+
+      i*10,
+
+      y+13,
+
+      4,
+      3,
+      0,
+      0,
+      Math.PI*2
+    );
+
+
+    ctx.fill();
+
+
+    ctx.fillRect(
+      x+
+      54+
+      i*10,
+
+      y+12,
+
+      8,
+      5
+    );
+
+  }
+
+
+  drawInteriorSteam(
+    23.45,
+    5.95,
+    2
+  );
+
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function drawTeaMenu(){
+
+  const x=
+    ix(19.7);
+
+
+  const y=
+    iy(8.3);
+
+
+  ctx.fillStyle=
+    "rgba(36,25,19,.30)";
+
+
+  ctx.fillRect(
+    x+4,
+    y+5,
+    62,
+    82
+  );
+
+
+  ctx.fillStyle=
+    "#493326";
+
+
+  ctx.fillRect(
+    x,
+    y,
+    62,
+    82
+  );
+
+
+  ctx.fillStyle=
+    "#d8c89d";
+
+
+  ctx.fillRect(
+    x+5,
+    y+5,
+    52,
+    72
+  );
+
+
+  ctx.fillStyle=
+    "#49382b";
+
+
+  ctx.textAlign=
+    "center";
+
+
+  ctx.textBaseline=
+    "alphabetic";
+
+
+  ctx.font=
+    "bold 12px serif";
+
+
+  ctx.fillText(
+    "茶 单",
+    x+31,
+    y+20
+  );
+
+
+  ctx.font=
+    "9px serif";
+
+
+  ctx.fillText(
+    "龙井茶",
+    x+31,
+    y+38
+  );
+
+
+  ctx.fillText(
+    "明前茶",
+    x+31,
+    y+52
+  );
+
+
+  ctx.fillText(
+    "雨前茶",
+    x+31,
+    y+66
+  );
+
+
+  ctx.textAlign=
+    "start";
+
+}
+
+
+/* =========================================================
+   PLATFORM
 ========================================================= */
 
 function drawRaisedPlatform(){
@@ -1071,11 +1578,14 @@ function drawRaisedPlatform(){
   const x=
     ix(3);
 
+
   const y=
     iy(3);
 
+
   const w=
     10*TILE;
+
 
   const h=
     5*TILE;
@@ -1083,6 +1593,7 @@ function drawRaisedPlatform(){
 
   ctx.fillStyle=
     "#503a29";
+
 
   ctx.fillRect(
     x,
@@ -1095,6 +1606,7 @@ function drawRaisedPlatform(){
   ctx.fillStyle=
     "#a18859";
 
+
   ctx.fillRect(
     x+5,
     y+5,
@@ -1103,17 +1615,18 @@ function drawRaisedPlatform(){
   );
 
 
-  /*
-   * tatami divisions
-   */
-
   ctx.strokeStyle=
     "#756742";
+
 
   ctx.lineWidth=2;
 
 
-  for(let xx=0;xx<4;xx++){
+  for(
+    let xx=0;
+    xx<4;
+    xx++
+  ){
 
     ctx.strokeRect(
       x+
@@ -1132,6 +1645,7 @@ function drawRaisedPlatform(){
   ctx.fillStyle=
     "#34271f";
 
+
   ctx.fillRect(
     x,
     y+h-14,
@@ -1142,6 +1656,7 @@ function drawRaisedPlatform(){
 
   ctx.fillStyle=
     "#7e5a3d";
+
 
   ctx.fillRect(
     x,
@@ -1166,12 +1681,14 @@ function drawScroll(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
 
 
   ctx.fillStyle=
     "#5d402c";
+
 
   ctx.fillRect(
     x-4,
@@ -1184,6 +1701,7 @@ function drawScroll(
   ctx.fillStyle=
     "#e3d4aa";
 
+
   ctx.fillRect(
     x,
     y,
@@ -1194,6 +1712,7 @@ function drawScroll(
 
   ctx.fillStyle=
     "#c4aa72";
+
 
   ctx.fillRect(
     x,
@@ -1206,11 +1725,14 @@ function drawScroll(
   ctx.fillStyle=
     "#463428";
 
+
   ctx.font=
     "16px serif";
 
+
   ctx.textAlign=
     "center";
+
 
   ctx.textBaseline=
     "top";
@@ -1233,6 +1755,10 @@ function drawScroll(
   );
 
 
+  ctx.textAlign=
+    "start";
+
+
   ctx.textBaseline=
     "alphabetic";
 
@@ -1251,12 +1777,14 @@ function drawInteriorPlant(
   const x=
     ix(tx+.5);
 
+
   const y=
     iy(ty+.5);
 
 
   ctx.fillStyle=
     "#79523a";
+
 
   ctx.fillRect(
     x-10,
@@ -1268,6 +1796,7 @@ function drawInteriorPlant(
 
   ctx.fillStyle=
     "#463726";
+
 
   ctx.fillRect(
     x-7,
@@ -1287,17 +1816,24 @@ function drawInteriorPlant(
   ctx.strokeStyle=
     "#47603c";
 
+
   ctx.lineWidth=3;
 
 
-  for(let i=0;i<6;i++){
+  for(
+    let i=0;
+    i<6;
+    i++
+  ){
 
     ctx.beginPath();
+
 
     ctx.moveTo(
       x,
       y+6
     );
+
 
     ctx.quadraticCurveTo(
       x+
@@ -1320,6 +1856,7 @@ function drawInteriorPlant(
       )*7
     );
 
+
     ctx.stroke();
 
   }
@@ -1329,9 +1866,14 @@ function drawInteriorPlant(
     "#638056";
 
 
-  for(let i=0;i<7;i++){
+  for(
+    let i=0;
+    i<7;
+    i++
+  ){
 
     ctx.beginPath();
+
 
     ctx.ellipse(
       x+
@@ -1347,10 +1889,13 @@ function drawInteriorPlant(
 
       8,
       4,
+
       i*.3,
+
       0,
       Math.PI*2
     );
+
 
     ctx.fill();
 
@@ -1360,7 +1905,7 @@ function drawInteriorPlant(
 
 
 /* =========================================================
-   BASKETS / BOXES
+   BASKET
 ========================================================= */
 
 function drawBasket(
@@ -1371,12 +1916,14 @@ function drawBasket(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
 
 
   ctx.fillStyle=
     "#8c6a3f";
+
 
   ctx.fillRect(
     x,
@@ -1389,22 +1936,30 @@ function drawBasket(
   ctx.strokeStyle=
     "#4d3824";
 
+
   ctx.lineWidth=2;
 
 
-  for(let i=4;i<24;i+=6){
+  for(
+    let i=4;
+    i<24;
+    i+=6
+  ){
 
     ctx.beginPath();
+
 
     ctx.moveTo(
       x+i,
       y+9
     );
 
+
     ctx.lineTo(
       x+i-4,
       y+24
     );
+
 
     ctx.stroke();
 
@@ -1412,6 +1967,7 @@ function drawBasket(
 
 
   ctx.beginPath();
+
 
   ctx.arc(
     x+12,
@@ -1421,10 +1977,15 @@ function drawBasket(
     0
   );
 
+
   ctx.stroke();
 
 }
 
+
+/* =========================================================
+   WOOD BOX
+========================================================= */
 
 function drawWoodBox(
   tx,
@@ -1434,12 +1995,14 @@ function drawWoodBox(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
 
 
   ctx.fillStyle=
     "#67482f";
+
 
   ctx.fillRect(
     x,
@@ -1452,7 +2015,9 @@ function drawWoodBox(
   ctx.strokeStyle=
     "#3e2d22";
 
+
   ctx.lineWidth=3;
+
 
   ctx.strokeRect(
     x+2,
@@ -1464,15 +2029,18 @@ function drawWoodBox(
 
   ctx.beginPath();
 
+
   ctx.moveTo(
     x+4,
     y+4
   );
 
+
   ctx.lineTo(
     x+27,
     y+20
   );
+
 
   ctx.stroke();
 
@@ -1480,7 +2048,7 @@ function drawWoodBox(
 
 
 /* =========================================================
-   LAMPS
+   LAMP
 ========================================================= */
 
 function drawInteriorLamp(
@@ -1491,6 +2059,7 @@ function drawInteriorLamp(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
 
@@ -1498,19 +2067,24 @@ function drawInteriorLamp(
   ctx.strokeStyle=
     "#3b2b21";
 
+
   ctx.lineWidth=2;
 
+
   ctx.beginPath();
+
 
   ctx.moveTo(
     x,
     y-30
   );
 
+
   ctx.lineTo(
     x,
     y
   );
+
 
   ctx.stroke();
 
@@ -1520,6 +2094,7 @@ function drawInteriorLamp(
       x,
       y+8,
       2,
+
       x,
       y+8,
       65
@@ -1531,6 +2106,7 @@ function drawInteriorLamp(
     "rgba(255,215,139,.16)"
   );
 
+
   glow.addColorStop(
     1,
     "rgba(255,215,139,0)"
@@ -1538,6 +2114,7 @@ function drawInteriorLamp(
 
 
   ctx.fillStyle=glow;
+
 
   ctx.fillRect(
     x-70,
@@ -1550,6 +2127,7 @@ function drawInteriorLamp(
   ctx.fillStyle=
     "#b77c3f";
 
+
   ctx.fillRect(
     x-11,
     y,
@@ -1560,6 +2138,7 @@ function drawInteriorLamp(
 
   ctx.fillStyle=
     "#f0d89a";
+
 
   ctx.fillRect(
     x-7,
@@ -1584,8 +2163,10 @@ function drawInteriorSteam(
   const x=
     ix(tx);
 
+
   const y=
     iy(ty);
+
 
   const t=
     itime();
@@ -1593,13 +2174,19 @@ function drawInteriorSteam(
 
   ctx.save();
 
+
   ctx.strokeStyle=
     "rgba(245,236,214,.30)";
+
 
   ctx.lineWidth=2;
 
 
-  for(let i=0;i<3;i++){
+  for(
+    let i=0;
+    i<3;
+    i++
+  ){
 
     const rise=
       (
@@ -1611,10 +2198,12 @@ function drawInteriorSteam(
 
     ctx.beginPath();
 
+
     ctx.moveTo(
       x+i*4,
       y-rise
     );
+
 
     ctx.bezierCurveTo(
       x-5+i*4,
@@ -1626,6 +2215,7 @@ function drawInteriorSteam(
       x+i*4,
       y-rise-21
     );
+
 
     ctx.stroke();
 
@@ -1646,12 +2236,14 @@ function drawKitchen(){
   const x=
     ix(24);
 
+
   const y=
     iy(15);
 
 
   ctx.fillStyle=
     "#44352a";
+
 
   ctx.fillRect(
     x,
@@ -1664,6 +2256,7 @@ function drawKitchen(){
   ctx.fillStyle=
     "#72543b";
 
+
   ctx.fillRect(
     x+8,
     y+14,
@@ -1672,10 +2265,16 @@ function drawKitchen(){
   );
 
 
+  /*
+   * stove
+   */
+
   ctx.fillStyle=
     "#282823";
 
+
   ctx.beginPath();
+
 
   ctx.ellipse(
     x+58,
@@ -1687,11 +2286,13 @@ function drawKitchen(){
     Math.PI*2
   );
 
+
   ctx.fill();
 
 
   ctx.fillStyle=
     "#b48954";
+
 
   ctx.fillRect(
     x+16,
@@ -1711,7 +2312,214 @@ function drawKitchen(){
 
 
 /* =========================================================
-   INTERIOR DECORATION - BACK
+   HOT WATER KETTLE
+========================================================= */
+
+function drawHotWaterKettle(){
+
+  const x=
+    ix(25.2);
+
+
+  const y=
+    iy(15.5);
+
+
+  /*
+   * kettle body
+   */
+
+  ctx.fillStyle=
+    "#363633";
+
+
+  ctx.beginPath();
+
+
+  ctx.ellipse(
+    x,
+    y,
+    18,
+    13,
+    0,
+    0,
+    Math.PI*2
+  );
+
+
+  ctx.fill();
+
+
+  /*
+   * lid
+   */
+
+  ctx.fillStyle=
+    "#55534b";
+
+
+  ctx.fillRect(
+    x-9,
+    y-14,
+    18,
+    6
+  );
+
+
+  ctx.fillStyle=
+    "#272724";
+
+
+  ctx.fillRect(
+    x-3,
+    y-18,
+    6,
+    4
+  );
+
+
+  /*
+   * handle
+   */
+
+  ctx.strokeStyle=
+    "#292925";
+
+
+  ctx.lineWidth=4;
+
+
+  ctx.beginPath();
+
+
+  ctx.arc(
+    x,
+    y-4,
+    22,
+    Math.PI,
+    0
+  );
+
+
+  ctx.stroke();
+
+
+  /*
+   * spout
+   */
+
+  ctx.fillStyle=
+    "#44443f";
+
+
+  ctx.beginPath();
+
+
+  ctx.moveTo(
+    x+15,
+    y-5
+  );
+
+
+  ctx.lineTo(
+    x+30,
+    y-12
+  );
+
+
+  ctx.lineTo(
+    x+29,
+    y-6
+  );
+
+
+  ctx.lineTo(
+    x+15,
+    y+2
+  );
+
+
+  ctx.fill();
+
+
+  drawInteriorSteam(
+    25.2,
+    15.2,
+    7
+  );
+
+}
+
+
+/* =========================================================
+   SMALL TEA TINS
+========================================================= */
+
+function drawCounterTeaTins(){
+
+  const baseX=
+    ix(21.1);
+
+
+  const baseY=
+    iy(5.55);
+
+
+  for(
+    let i=0;
+    i<5;
+    i++
+  ){
+
+    const x=
+      baseX+
+      i*25;
+
+
+    ctx.fillStyle=
+      i%2
+        ? "#657052"
+        : "#80624b";
+
+
+    ctx.fillRect(
+      x,
+      baseY,
+      15,
+      19
+    );
+
+
+    ctx.fillStyle=
+      "#403329";
+
+
+    ctx.fillRect(
+      x+2,
+      baseY-3,
+      11,
+      3
+    );
+
+
+    ctx.fillStyle=
+      "#ddcb9d";
+
+
+    ctx.fillRect(
+      x+4,
+      baseY+7,
+      7,
+      5
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INTERIOR BACK
 ========================================================= */
 
 function drawInteriorBack(){
@@ -1720,7 +2528,7 @@ function drawInteriorBack(){
 
 
   /*
-   * windows
+   * 龙井茶山の見える格子窓
    */
 
   drawWindowView(
@@ -1732,14 +2540,14 @@ function drawInteriorBack(){
 
 
   /*
-   * raised room
+   * 奥座敷
    */
 
   drawRaisedPlatform();
 
 
   /*
-   * shelves
+   * 茶罐棚
    */
 
   drawTeaShelf(
@@ -1750,7 +2558,7 @@ function drawInteriorBack(){
 
 
   /*
-   * scrolls
+   * 掛け軸
    */
 
   drawScroll(
@@ -1761,25 +2569,27 @@ function drawInteriorBack(){
 
 
   /*
-   * structural beams
+   * 梁と柱
    */
 
   drawBeams();
 
 
   /*
-   * lamps
+   * 灯り
    */
 
   drawInteriorLamp(
-    8*TILE/TILE,
+    8,
     6
   );
+
 
   drawInteriorLamp(
     16,
     6
   );
+
 
   drawInteriorLamp(
     24,
@@ -1796,14 +2606,35 @@ function drawInteriorBack(){
 function drawInteriorFurniture(){
 
   /*
-   * counter
+   * 柜台
    */
 
   drawCounter();
 
 
   /*
-   * tea tables
+   * 茶罐
+   */
+
+  drawCounterTeaTins();
+
+
+  /*
+   * 茶具
+   */
+
+  drawTeaWareSet();
+
+
+  /*
+   * 菜单
+   */
+
+  drawTeaMenu();
+
+
+  /*
+   * 茶桌
    */
 
   drawTeaTable(
@@ -1812,17 +2643,20 @@ function drawInteriorFurniture(){
     .95
   );
 
+
   drawTeaTable(
     11.5,
     10.5,
     .95
   );
 
+
   drawTeaTable(
     16.5,
     13.5,
     .95
   );
+
 
   drawTeaTable(
     22.5,
@@ -1832,20 +2666,55 @@ function drawInteriorFurniture(){
 
 
   /*
-   * stools
+   * 椅子
    */
 
-  drawStool(4.2,10.8);
-  drawStool(7.1,11.2);
+  drawStool(
+    4.2,
+    10.8
+  );
 
-  drawStool(10.2,9.6);
-  drawStool(13.2,10.1);
 
-  drawStool(15.2,12.7);
-  drawStool(18.5,13.2);
+  drawStool(
+    7.1,
+    11.2
+  );
 
-  drawStool(21.1,10.7);
-  drawStool(24.3,11.1);
+
+  drawStool(
+    10.2,
+    9.6
+  );
+
+
+  drawStool(
+    13.2,
+    10.1
+  );
+
+
+  drawStool(
+    15.2,
+    12.7
+  );
+
+
+  drawStool(
+    18.5,
+    13.2
+  );
+
+
+  drawStool(
+    21.1,
+    10.7
+  );
+
+
+  drawStool(
+    24.3,
+    11.1
+  );
 
 
   /*
@@ -1856,6 +2725,7 @@ function drawInteriorFurniture(){
     2.5,
     5.4
   );
+
 
   drawInteriorPlant(
     27,
@@ -1872,6 +2742,7 @@ function drawInteriorFurniture(){
     17
   );
 
+
   drawBasket(
     4,
     17
@@ -1887,6 +2758,7 @@ function drawInteriorFurniture(){
     18
   );
 
+
   drawWoodBox(
     6,
     18
@@ -1899,20 +2771,25 @@ function drawInteriorFurniture(){
 
   drawKitchen();
 
+
+  /*
+   * 开水
+   */
+
+  drawHotWaterKettle();
+
 }
 
 
 /* =========================================================
-   ENTITY DRAW
+   ENTITIES
 ========================================================= */
 
 function drawInteriorEntities(){
 
   /*
-   * Existing visuals.js functions are reused.
-   *
-   * drawEntities() already sorts
-   * ambient NPC / important NPC / player by Y.
+   * visuals.js Ver.5.1 の
+   * Y-sort済みentity rendererを再利用。
    */
 
   drawEntities();
@@ -1921,13 +2798,13 @@ function drawInteriorEntities(){
 
 
 /* =========================================================
-   FRONT DETAILS
+   FRONT LAYER
 ========================================================= */
 
 function drawInteriorFront(){
 
   /*
-   * tea steam
+   * 各茶桌から湯気
    */
 
   drawInteriorSteam(
@@ -1936,17 +2813,20 @@ function drawInteriorFront(){
     1
   );
 
+
   drawInteriorSteam(
     12,
     10,
     2
   );
 
+
   drawInteriorSteam(
     17,
     13,
     3
   );
+
 
   drawInteriorSteam(
     23,
@@ -1956,19 +2836,37 @@ function drawInteriorFront(){
 
 
   /*
+   * 柜台の茶器から湯気
+   */
+
+  drawInteriorSteam(
+    24,
+    7,
+    5
+  );
+
+
+  /*
    * foreground columns
    */
 
-  const cols=[
+  const columns=[
+
     [2,8],
+
     [27,8]
+
   ];
 
 
-  for(const p of cols){
+  for(
+    const p
+    of columns
+  ){
 
     const x=
       ix(p[0]);
+
 
     const y=
       iy(p[1]);
@@ -1976,6 +2874,7 @@ function drawInteriorFront(){
 
     ctx.fillStyle=
       "#35261e";
+
 
     ctx.fillRect(
       x,
@@ -1987,6 +2886,7 @@ function drawInteriorFront(){
 
     ctx.fillStyle=
       "#6b4932";
+
 
     ctx.fillRect(
       x+2,
@@ -2001,13 +2901,13 @@ function drawInteriorFront(){
 
 
 /* =========================================================
-   INTERIOR LIGHT
+   LIGHT
 ========================================================= */
 
 function drawInteriorLight(){
 
   /*
-   * warm ambient
+   * warm room tone
    */
 
   const warm=
@@ -2024,10 +2924,12 @@ function drawInteriorLight(){
     "rgba(255,224,168,.055)"
   );
 
+
   warm.addColorStop(
     .55,
     "rgba(255,221,158,.015)"
   );
+
 
   warm.addColorStop(
     1,
@@ -2036,6 +2938,7 @@ function drawInteriorLight(){
 
 
   ctx.fillStyle=warm;
+
 
   ctx.fillRect(
     0,
@@ -2046,11 +2949,12 @@ function drawInteriorLight(){
 
 
   /*
-   * window light
+   * window daylight
    */
 
   const wx=
     ix(16);
+
 
   const wy=
     iy(4);
@@ -2073,6 +2977,7 @@ function drawInteriorLight(){
     "rgba(229,239,190,.11)"
   );
 
+
   light.addColorStop(
     1,
     "rgba(229,239,190,0)"
@@ -2080,6 +2985,7 @@ function drawInteriorLight(){
 
 
   ctx.fillStyle=light;
+
 
   ctx.fillRect(
     wx-280,
@@ -2123,6 +3029,7 @@ function drawInteriorVignette(){
 
   ctx.fillStyle=g;
 
+
   ctx.fillRect(
     0,
     0,
@@ -2134,13 +3041,14 @@ function drawInteriorVignette(){
 
 
 /* =========================================================
-   EXIT MARK
+   EXIT
 ========================================================= */
 
 function drawInteriorExit(){
 
   const x=
     ix(13);
+
 
   const y=
     iy(20);
@@ -2156,12 +3064,7 @@ function drawInteriorExit(){
 
 
   ctx.fillStyle=
-    `rgba(
-      239,
-      217,
-      151,
-      ${pulse}
-    )`;
+    `rgba(239,217,151,${pulse})`;
 
 
   ctx.fillRect(
@@ -2173,11 +3076,12 @@ function drawInteriorExit(){
 
 
   /*
-   * threshold
+   * wooden threshold
    */
 
   ctx.fillStyle=
     "#4d3425";
+
 
   ctx.fillRect(
     x,
@@ -2190,26 +3094,66 @@ function drawInteriorExit(){
 
 
 /* =========================================================
-   MAIN INTERIOR DRAW
+   MAIN
 ========================================================= */
 
 function drawInteriorGame(){
 
   interiorBase();
 
+
+  /*
+   * floor
+   */
+
   drawInteriorFloor();
+
+
+  /*
+   * wall / window / shelf
+   */
 
   drawInteriorBack();
 
+
+  /*
+   * tables / counter / menu / tea ware
+   */
+
   drawInteriorFurniture();
+
+
+  /*
+   * door
+   */
 
   drawInteriorExit();
 
+
+  /*
+   * player + NPC
+   */
+
   drawInteriorEntities();
+
+
+  /*
+   * steam + foreground columns
+   */
 
   drawInteriorFront();
 
+
+  /*
+   * room lighting
+   */
+
   drawInteriorLight();
+
+
+  /*
+   * final depth
+   */
 
   drawInteriorVignette();
 
@@ -2221,6 +3165,10 @@ function drawInteriorGame(){
 ========================================================= */
 
 drawGame=function(){
+
+  /*
+   * 茶館のみInterior Systemを使用。
+   */
 
   if(
     currentMapId==="teahouse"
@@ -2234,8 +3182,8 @@ drawGame=function(){
 
 
   /*
-   * Everything outside the teahouse
-   * continues to use Visual System Ver.5.1.
+   * village / field / workshop / mountain
+   * はVisual System Ver.5.1をそのまま使用。
    */
 
   outdoorDrawGame();
@@ -2244,5 +3192,5 @@ drawGame=function(){
 
 
 console.log(
-  "杭州探索録2 Interior System Ver.1.0 - MURAGUCHI TEAHOUSE loaded"
+  "杭州探索録2 Interior System Ver.1.1 - TEAHOUSE VOCABULARY loaded"
 );
