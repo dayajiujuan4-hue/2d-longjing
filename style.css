@@ -11,16 +11,25 @@ body{
 
   background:#101711;
 
-  font-family:
-    "Noto Sans JP",
-    "Yu Gothic",
-    sans-serif;
-
   color:#f4f0e4;
+
+  font-family:
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif;
 }
 
 button{
   font:inherit;
+}
+
+
+/* =========================================================
+   COMMON
+========================================================= */
+
+.hidden{
+  display:none !important;
 }
 
 
@@ -31,37 +40,83 @@ button{
 #titleScreen{
   position:fixed;
   inset:0;
+
   z-index:5000;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
+  overflow:hidden;
+
   background:
-    radial-gradient(
-      circle at 50% 15%,
-      #789467 0%,
-      #354c35 38%,
-      #142019 75%
+    linear-gradient(
+      #a8c4a0 0%,
+      #77966d 45%,
+      #344d37 100%
     );
 }
 
-#titleScreen.hidden{
-  display:none;
+.title-background{
+  position:absolute;
+  inset:0;
+
+  overflow:hidden;
+
+  pointer-events:none;
+}
+
+.mountain{
+  position:absolute;
+
+  left:-10%;
+  width:120%;
+
+  border-radius:50% 50% 0 0;
+}
+
+.mountain-back{
+  height:55%;
+
+  bottom:-20%;
+
+  background:#58775a;
+
+  transform:
+    rotate(-3deg);
+}
+
+.mountain-front{
+  height:43%;
+
+  bottom:-22%;
+
+  background:#38583e;
+
+  transform:
+    rotate(4deg);
 }
 
 .title-panel{
-  width:min(540px,90vw);
+  position:relative;
 
-  padding:48px 42px;
+  z-index:2;
+
+  width:min(
+    540px,
+    90vw
+  );
+
+  padding:
+    46px 42px;
 
   text-align:center;
 
   background:
-    rgba(20,31,23,.88);
+    rgba(20,31,23,.91);
 
   border:
-    1px solid rgba(231,221,177,.35);
+    1px solid rgba(231,221,177,.42);
 
   box-shadow:
     0 30px 90px rgba(0,0,0,.4);
@@ -69,7 +124,9 @@ button{
 
 .series-name{
   font-size:13px;
+
   letter-spacing:.35em;
+
   color:#d5c795;
 }
 
@@ -77,13 +134,21 @@ button{
   margin:
     12px 0 2px;
 
-  font-size:52px;
+  font-size:
+    clamp(
+      36px,
+      6vw,
+      52px
+    );
+
   letter-spacing:.16em;
 }
 
 .title-cn{
   font-size:20px;
+
   letter-spacing:.25em;
+
   color:#c8d8b0;
 }
 
@@ -91,6 +156,7 @@ button{
   margin-top:8px;
 
   font-size:10px;
+
   letter-spacing:.35em;
 
   color:#879a7f;
@@ -100,17 +166,19 @@ button{
   width:80px;
   height:1px;
 
-  margin:26px auto;
+  margin:
+    26px auto;
 
   background:#b8a66b;
 }
 
 .title-copy{
   line-height:1.9;
+
   color:#d2d4c8;
 }
 
-#startButton,
+.main-button,
 .sub-button{
   display:block;
 
@@ -119,19 +187,22 @@ button{
   margin:
     24px auto 0;
 
-  padding:13px;
+  padding:
+    13px;
 
   border:
     1px solid #b9aa72;
-
-  background:#4f6947;
 
   color:white;
 
   cursor:pointer;
 }
 
-#startButton:hover{
+.main-button{
+  background:#4f6947;
+}
+
+.main-button:hover{
   background:#617d57;
 }
 
@@ -139,13 +210,19 @@ button{
   margin-top:10px;
 
   background:
-    rgba(255,255,255,.04);
+    rgba(255,255,255,.05);
+}
+
+.sub-button:hover{
+  background:
+    rgba(255,255,255,.12);
 }
 
 #titleProgress{
   margin-top:24px;
 
   font-size:12px;
+
   color:#9eaa95;
 }
 
@@ -159,6 +236,8 @@ button{
 
   width:100vw;
   height:100vh;
+
+  overflow:hidden;
 
   background:#182318;
 }
@@ -201,7 +280,7 @@ button{
     10px 15px;
 
   background:
-    rgba(18,27,20,.82);
+    rgba(18,27,20,.85);
 
   border-left:
     3px solid #d0b66e;
@@ -223,7 +302,7 @@ button{
 
 
 /* =========================================================
-   COUNTER
+   WORD COUNTER
 ========================================================= */
 
 #wordCounter{
@@ -238,7 +317,7 @@ button{
     9px 13px;
 
   background:
-    rgba(18,27,20,.82);
+    rgba(18,27,20,.85);
 
   font-size:12px;
 }
@@ -263,9 +342,10 @@ button{
     7px 12px;
 
   background:
-    rgba(12,18,14,.78);
+    rgba(12,18,14,.8);
 
   font-size:10px;
+
   color:#c3cbbd;
 
   white-space:nowrap;
@@ -291,16 +371,12 @@ button{
     8px 14px;
 
   background:
-    rgba(17,24,18,.94);
+    rgba(17,24,18,.96);
 
   border:
     1px solid rgba(231,221,177,.35);
 
   font-size:12px;
-}
-
-.hidden{
-  display:none !important;
 }
 
 
@@ -331,7 +407,7 @@ button{
   padding:14px;
 
   background:
-    rgba(14,20,16,.96);
+    rgba(14,20,16,.97);
 
   border:
     2px solid #c5ad6b;
@@ -361,9 +437,9 @@ button{
 }
 
 .dialogue-main{
-  flex:1;
-
   position:relative;
+
+  flex:1;
 
   padding-right:25px;
 }
@@ -413,7 +489,10 @@ button{
 }
 
 .word-popup-card{
-  width:min(430px,90vw);
+  width:min(
+    430px,
+    90vw
+  );
 
   padding:
     34px 32px;
@@ -433,6 +512,7 @@ button{
 
 .word-found{
   font-size:12px;
+
   letter-spacing:.2em;
 
   color:#687252;
@@ -444,7 +524,6 @@ button{
   font-size:45px;
 
   font-family:
-    "Noto Serif SC",
     serif;
 }
 
@@ -512,8 +591,15 @@ button{
 }
 
 .notebook-panel{
-  width:min(760px,92vw);
-  height:min(650px,88vh);
+  width:min(
+    760px,
+    92vw
+  );
+
+  height:min(
+    650px,
+    88vh
+  );
 
   overflow:auto;
 
@@ -529,17 +615,20 @@ button{
 
 .notebook-header{
   display:flex;
+
   align-items:flex-start;
+
   justify-content:space-between;
+
+  padding-bottom:16px;
 
   border-bottom:
     2px solid #847958;
-
-  padding-bottom:16px;
 }
 
 .notebook-header h2{
-  margin:3px 0 0;
+  margin:
+    3px 0 0;
 
   font-size:28px;
 }
@@ -556,7 +645,8 @@ button{
   width:38px;
   height:38px;
 
-  border:1px solid #81785e;
+  border:
+    1px solid #81785e;
 
   background:transparent;
 
@@ -592,7 +682,7 @@ button{
   display:grid;
 
   grid-template-columns:
-    100px 130px 1fr;
+    110px 150px 1fr;
 
   gap:10px;
 
@@ -611,5 +701,41 @@ button{
 
 .notebook-cn{
   font-size:16px;
+
   font-weight:bold;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:650px){
+
+  .title-panel{
+    padding:
+      35px 20px;
+  }
+
+  #controlHint{
+    font-size:8px;
+  }
+
+  #dialogueBox{
+    width:
+      calc(100vw - 20px);
+  }
+
+  #portraitFace{
+    width:62px;
+    height:62px;
+  }
+
+  .notebook-word{
+    grid-template-columns:
+      85px 110px 1fr;
+
+    font-size:11px;
+  }
+
 }
