@@ -3,18 +3,12 @@
 /*
 ==========================================================
  杭州探索録2
- VISUAL SYSTEM Ver.1
+ VISUAL SYSTEM Ver.1.1
 
  SPRING LONGJING
 ==========================================================
 */
 
-
-/*
-==========================================================
- COLORS
-==========================================================
-*/
 
 const COLORS={
 
@@ -46,18 +40,14 @@ const COLORS={
 
   roof:"#3f4a42",
 
-  wall:"#d4c4a0",
-
-  shadow:"rgba(26,43,25,.20)"
+  wall:"#d4c4a0"
 
 };
 
 
-/*
-==========================================================
- TILE
-==========================================================
-*/
+/* =========================================================
+   TILE
+========================================================= */
 
 function drawTile(
   tile,
@@ -70,7 +60,7 @@ function drawTile(
   switch(tile){
 
 
-    /* grass */
+    /* GRASS */
 
     case 0:
 
@@ -91,11 +81,15 @@ function drawTile(
 
 
       if(
-        (tx*7+ty*11)%9===0
+        (
+          tx*7+
+          ty*11
+        )%9===0
       ){
 
         ctx.fillStyle=
           COLORS.grassLight;
+
 
         ctx.fillRect(
           sx+8,
@@ -103,6 +97,7 @@ function drawTile(
           3,
           5
         );
+
 
         ctx.fillRect(
           sx+19,
@@ -116,12 +111,13 @@ function drawTile(
     break;
 
 
-    /* path */
+    /* PATH */
 
     case 1:
 
       ctx.fillStyle=
         COLORS.path;
+
 
       ctx.fillRect(
         sx,
@@ -134,8 +130,11 @@ function drawTile(
       ctx.fillStyle=
         COLORS.pathDark;
 
+
       if(
-        (tx+ty)%3===0
+        (
+          tx+ty
+        )%3===0
       ){
 
         ctx.fillRect(
@@ -150,12 +149,13 @@ function drawTile(
     break;
 
 
-    /* tea */
+    /* TEA FIELD */
 
     case 2:
 
       ctx.fillStyle=
         COLORS.grassDark;
+
 
       ctx.fillRect(
         sx,
@@ -168,6 +168,7 @@ function drawTile(
       ctx.fillStyle=
         COLORS.teaDark;
 
+
       ctx.fillRect(
         sx+2,
         sy+10,
@@ -178,6 +179,7 @@ function drawTile(
 
       ctx.fillStyle=
         COLORS.tea;
+
 
       ctx.fillRect(
         sx+3,
@@ -199,7 +201,8 @@ function drawTile(
 
         ctx.fillRect(
           sx+5+i*6,
-          sy+5+(i%2)*2,
+          sy+5+
+          (i%2)*2,
           5,
           4
         );
@@ -209,12 +212,13 @@ function drawTile(
     break;
 
 
-    /* wall */
+    /* WALL */
 
     case 3:
 
       ctx.fillStyle=
         "#5c6258";
+
 
       ctx.fillRect(
         sx,
@@ -223,15 +227,28 @@ function drawTile(
         TILE
       );
 
+
+      ctx.fillStyle=
+        "#747b70";
+
+
+      ctx.fillRect(
+        sx,
+        sy,
+        TILE,
+        5
+      );
+
     break;
 
 
-    /* stone */
+    /* STONE */
 
     case 4:
 
       ctx.fillStyle=
         COLORS.stone;
+
 
       ctx.fillRect(
         sx,
@@ -244,6 +261,7 @@ function drawTile(
       ctx.fillStyle=
         COLORS.stoneLight;
 
+
       ctx.fillRect(
         sx,
         sy+3,
@@ -251,15 +269,28 @@ function drawTile(
         5
       );
 
+
+      ctx.fillStyle=
+        "#69685e";
+
+
+      ctx.fillRect(
+        sx+14,
+        sy+8,
+        2,
+        24
+      );
+
     break;
 
 
-    /* water */
+    /* WATER */
 
     case 5:
 
       ctx.fillStyle=
         COLORS.water;
+
 
       ctx.fillRect(
         sx,
@@ -272,12 +303,14 @@ function drawTile(
       ctx.fillStyle=
         COLORS.waterLight;
 
+
       ctx.fillRect(
         sx+5,
         sy+10,
         15,
         2
       );
+
 
       ctx.fillRect(
         sx+14,
@@ -289,12 +322,13 @@ function drawTile(
     break;
 
 
-    /* wood */
+    /* WOOD */
 
     case 6:
 
       ctx.fillStyle=
         COLORS.wood;
+
 
       ctx.fillRect(
         sx,
@@ -307,12 +341,14 @@ function drawTile(
       ctx.fillStyle=
         "#aa855c";
 
+
       ctx.fillRect(
         sx,
         sy+6,
         TILE,
         3
       );
+
 
       ctx.fillRect(
         sx,
@@ -328,11 +364,9 @@ function drawTile(
 }
 
 
-/*
-==========================================================
- BUILDINGS
-==========================================================
-*/
+/* =========================================================
+   BUILDING
+========================================================= */
 
 function drawBuilding(
   building
@@ -342,12 +376,15 @@ function drawBuilding(
     building.x*TILE-
     camera.x;
 
+
   const y=
     building.y*TILE-
     camera.y;
 
+
   const w=
     building.w*TILE;
+
 
   const h=
     building.h*TILE;
@@ -357,6 +394,7 @@ function drawBuilding(
 
   ctx.fillStyle=
     "rgba(0,0,0,.18)";
+
 
   ctx.fillRect(
     x+8,
@@ -371,6 +409,7 @@ function drawBuilding(
   ctx.fillStyle=
     COLORS.wall;
 
+
   ctx.fillRect(
     x,
     y+22,
@@ -384,6 +423,7 @@ function drawBuilding(
   ctx.fillStyle=
     COLORS.roof;
 
+
   ctx.fillRect(
     x-6,
     y,
@@ -394,6 +434,7 @@ function drawBuilding(
 
   ctx.fillStyle=
     "#566157";
+
 
   ctx.fillRect(
     x,
@@ -408,6 +449,7 @@ function drawBuilding(
   ctx.fillStyle=
     "#6e5139";
 
+
   ctx.fillRect(
     x+w/2-12,
     y+h-35,
@@ -421,12 +463,14 @@ function drawBuilding(
   ctx.fillStyle=
     "#9eb2a2";
 
+
   ctx.fillRect(
     x+18,
     y+45,
     22,
     20
   );
+
 
   ctx.fillRect(
     x+w-40,
@@ -441,6 +485,7 @@ function drawBuilding(
   ctx.fillStyle=
     "#efe3bd";
 
+
   ctx.fillRect(
     x+w/2-45,
     y+26,
@@ -452,8 +497,10 @@ function drawBuilding(
   ctx.fillStyle=
     "#3d4c39";
 
+
   ctx.font=
     "12px sans-serif";
+
 
   ctx.textAlign=
     "center";
@@ -468,20 +515,18 @@ function drawBuilding(
 }
 
 
-/*
-==========================================================
- TREES
-==========================================================
-*/
+/* =========================================================
+   TREE
+========================================================= */
 
 function drawTree(
   x,
-  y,
-  seed=0
+  y
 ){
 
   const sx=
     x-camera.x;
+
 
   const sy=
     y-camera.y;
@@ -489,6 +534,7 @@ function drawTree(
 
   ctx.fillStyle=
     "#594b35";
+
 
   ctx.fillRect(
     sx-4,
@@ -501,6 +547,7 @@ function drawTree(
   ctx.fillStyle=
     "#315b36";
 
+
   ctx.fillRect(
     sx-18,
     sy-10,
@@ -511,6 +558,7 @@ function drawTree(
 
   ctx.fillStyle=
     "#426f43";
+
 
   ctx.fillRect(
     sx-12,
@@ -523,6 +571,7 @@ function drawTree(
   ctx.fillStyle=
     "#5d8752";
 
+
   ctx.fillRect(
     sx-8,
     sy-15,
@@ -533,11 +582,9 @@ function drawTree(
 }
 
 
-/*
-==========================================================
- BAMBOO
-==========================================================
-*/
+/* =========================================================
+   BAMBOO
+========================================================= */
 
 function drawBamboo(
   x,
@@ -546,6 +593,7 @@ function drawBamboo(
 
   const sx=
     x-camera.x;
+
 
   const sy=
     y-camera.y;
@@ -561,6 +609,7 @@ function drawBamboo(
     4,
     48
   );
+
 
   ctx.fillRect(
     sx+3,
@@ -581,12 +630,14 @@ function drawBamboo(
     5
   );
 
+
   ctx.fillRect(
     sx+6,
     sy-8,
     14,
     5
   );
+
 
   ctx.fillRect(
     sx-10,
@@ -598,22 +649,25 @@ function drawBamboo(
 }
 
 
-/*
-==========================================================
- NPC
-==========================================================
-*/
+/* =========================================================
+   NPC
+========================================================= */
 
 function drawNPC(
   npc
 ){
 
   const x=
-    npc.x*TILE-
+    (
+      npc.x+.5
+    )*TILE-
     camera.x;
 
+
   const y=
-    npc.y*TILE-
+    (
+      npc.y+.5
+    )*TILE-
     camera.y;
 
 
@@ -621,6 +675,7 @@ function drawNPC(
 
   ctx.fillStyle=
     "rgba(0,0,0,.22)";
+
 
   ctx.fillRect(
     x-10,
@@ -636,6 +691,7 @@ function drawNPC(
     npc.color ||
     "#65745b";
 
+
   ctx.fillRect(
     x-9,
     y-5,
@@ -648,6 +704,7 @@ function drawNPC(
 
   ctx.fillStyle=
     "#e6b98e";
+
 
   ctx.fillRect(
     x-7,
@@ -662,6 +719,7 @@ function drawNPC(
   ctx.fillStyle=
     "#38302b";
 
+
   ctx.fillRect(
     x-8,
     y-21,
@@ -675,6 +733,7 @@ function drawNPC(
   ctx.fillStyle=
     "rgba(15,24,17,.82)";
 
+
   ctx.fillRect(
     x-12,
     y-39,
@@ -686,15 +745,18 @@ function drawNPC(
   ctx.fillStyle=
     "#f2e7c7";
 
+
   ctx.font=
     "10px sans-serif";
+
 
   ctx.textAlign=
     "center";
 
 
   ctx.fillText(
-    npc.label || "人",
+    npc.label ||
+    "人",
     x,
     y-28
   );
@@ -702,11 +764,9 @@ function drawNPC(
 }
 
 
-/*
-==========================================================
- INTERACTABLE MARKERS
-==========================================================
-*/
+/* =========================================================
+   INTERACTABLE
+========================================================= */
 
 function drawInteractables(
   map
@@ -731,28 +791,24 @@ function drawInteractables(
 
 
     const x=
-      item.x*TILE-
+      (
+        item.x+.5
+      )*TILE-
       camera.x;
 
+
     const y=
-      item.y*TILE-
+      (
+        item.y+.5
+      )*TILE-
       camera.y;
 
 
     const bob=
-      Math.sin(time)*2;
-
-
-    ctx.fillStyle=
-      "#f1d06c";
-
-
-    ctx.fillRect(
-      x-3,
-      y-24+bob,
-      6,
-      6
-    );
+      Math.sin(
+        time+
+        item.x*.2
+      )*2;
 
 
     ctx.fillStyle=
@@ -766,22 +822,33 @@ function drawInteractables(
       14
     );
 
+
+    ctx.fillStyle=
+      "#f1d06c";
+
+
+    ctx.fillRect(
+      x-3,
+      y-24+bob,
+      6,
+      6
+    );
+
   }
 
 }
 
 
-/*
-==========================================================
- PLAYER
-==========================================================
-*/
+/* =========================================================
+   PLAYER
+========================================================= */
 
 function drawPlayer(){
 
   const x=
     player.x-
     camera.x;
+
 
   const y=
     player.y-
@@ -793,6 +860,7 @@ function drawPlayer(){
   ctx.fillStyle=
     "rgba(0,0,0,.24)";
 
+
   ctx.fillRect(
     x-10,
     y+10,
@@ -801,10 +869,11 @@ function drawPlayer(){
   );
 
 
-  /* clothes */
+  /* body */
 
   ctx.fillStyle=
     "#536a79";
+
 
   ctx.fillRect(
     x-9,
@@ -819,6 +888,7 @@ function drawPlayer(){
   ctx.fillStyle=
     "#e9ba94";
 
+
   ctx.fillRect(
     x-7,
     y-17,
@@ -831,6 +901,7 @@ function drawPlayer(){
 
   ctx.fillStyle=
     "#3e302a";
+
 
   ctx.fillRect(
     x-8,
@@ -899,44 +970,49 @@ function drawPlayer(){
 }
 
 
-/*
-==========================================================
- AMBIENT DETAILS
-==========================================================
-*/
+/* =========================================================
+   AMBIENT
+========================================================= */
 
-function drawAmbientDetails(
-  map
-){
-
-  /*
-  Village trees
-  */
+function drawAmbientDetails(){
 
   if(
-    currentMapId==="village"
+    currentMapId===
+    "village"
   ){
 
     const trees=[
 
       [2,11],
+
       [20,6],
+
       [33,8],
+
       [51,16],
+
       [3,29],
+
       [46,24],
+
       [34,33]
 
     ];
 
 
     for(
-      const [x,y] of trees
+      const [x,y] of
+      trees
     ){
 
       drawTree(
-        x*TILE,
-        y*TILE
+        (
+          x+.5
+        )*TILE,
+
+        (
+          y+.5
+        )*TILE
       );
 
     }
@@ -944,32 +1020,39 @@ function drawAmbientDetails(
   }
 
 
-  /*
-  Field trees
-  */
-
   if(
-    currentMapId==="field"
+    currentMapId===
+    "field"
   ){
 
     const trees=[
 
       [2,6],
+
       [7,12],
+
       [49,13],
+
       [3,37],
+
       [47,37]
 
     ];
 
 
     for(
-      const [x,y] of trees
+      const [x,y] of
+      trees
     ){
 
       drawTree(
-        x*TILE,
-        y*TILE
+        (
+          x+.5
+        )*TILE,
+
+        (
+          y+.5
+        )*TILE
       );
 
     }
@@ -977,37 +1060,49 @@ function drawAmbientDetails(
   }
 
 
-  /*
-  Mountain bamboo
-  */
-
   if(
-    currentMapId==="mountain"
+    currentMapId===
+    "mountain"
   ){
 
     const bamboo=[
 
       [7,5],
+
       [10,7],
+
       [14,5],
+
       [25,5],
+
       [29,6],
+
       [47,7],
+
       [49,11],
+
       [7,19],
+
       [47,29],
+
       [10,37]
 
     ];
 
 
     for(
-      const [x,y] of bamboo
+      const [x,y] of
+      bamboo
     ){
 
       drawBamboo(
-        x*TILE,
-        y*TILE
+        (
+          x+.5
+        )*TILE,
+
+        (
+          y+.5
+        )*TILE
       );
 
     }
@@ -1017,11 +1112,9 @@ function drawAmbientDetails(
 }
 
 
-/*
-==========================================================
- MAP
-==========================================================
-*/
+/* =========================================================
+   MAP
+========================================================= */
 
 function drawMap(){
 
@@ -1036,6 +1129,7 @@ function drawMap(){
         camera.x/TILE
       )-1
     );
+
 
   const startY=
     Math.max(
@@ -1079,6 +1173,7 @@ function drawMap(){
     ){
 
       drawTile(
+
         map.grid[y][x],
 
         x*TILE-
@@ -1088,7 +1183,9 @@ function drawMap(){
         camera.y,
 
         x,
+
         y
+
       );
 
     }
@@ -1096,9 +1193,7 @@ function drawMap(){
   }
 
 
-  drawAmbientDetails(
-    map
-  );
+  drawAmbientDetails();
 
 
   for(
@@ -1120,11 +1215,9 @@ function drawMap(){
 }
 
 
-/*
-==========================================================
- GAME DRAW
-==========================================================
-*/
+/* =========================================================
+   GAME
+========================================================= */
 
 function drawGame(){
 
@@ -1143,10 +1236,6 @@ function drawGame(){
     MAPS[currentMapId];
 
 
-  /*
-  NPCとPlayerはY順で描画
-  */
-
   const entities=[];
 
 
@@ -1157,10 +1246,17 @@ function drawGame(){
 
     entities.push({
 
-      y:npc.y*TILE,
+      y:
+        (
+          npc.y+.5
+        )*TILE,
 
       draw(){
-        drawNPC(npc);
+
+        drawNPC(
+          npc
+        );
+
       }
 
     });
@@ -1170,10 +1266,13 @@ function drawGame(){
 
   entities.push({
 
-    y:player.y,
+    y:
+      player.y,
 
     draw(){
+
       drawPlayer();
+
     }
 
   });
@@ -1196,24 +1295,29 @@ function drawGame(){
 
 
   /*
-  soft daylight
+  --------------------------------------------------------
+  DAYLIGHT
+  --------------------------------------------------------
   */
 
   const gradient=
     ctx.createLinearGradient(
-      0,0,
-      0,canvas.height
+      0,
+      0,
+      0,
+      canvas.height
     );
 
 
   gradient.addColorStop(
     0,
-    "rgba(255,241,188,.05)"
+    "rgba(255,241,188,.055)"
   );
+
 
   gradient.addColorStop(
     1,
-    "rgba(30,70,38,.04)"
+    "rgba(30,70,38,.035)"
   );
 
 
@@ -1232,5 +1336,5 @@ function drawGame(){
 
 
 console.log(
-  "杭州探索録2 Visual System Ver.1 / Spring Longjing loaded"
+  "杭州探索録2 Visual System Ver.1.1 loaded"
 );
