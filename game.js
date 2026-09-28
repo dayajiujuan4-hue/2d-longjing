@@ -1408,7 +1408,9 @@ function renderNotebook(){
 
     "山道",
 
-    "茶館"
+    "茶館",
+   
+    "茶葉店"
 
   ];
 
