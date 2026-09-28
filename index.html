@@ -12,17 +12,22 @@
 
   <link
     rel="stylesheet"
-    href="style.css"
+    href="./style.css"
   >
 </head>
 
 <body>
 
   <!-- ===================================================
-       TITLE
+       TITLE SCREEN
   ==================================================== -->
 
   <div id="titleScreen">
+
+    <div class="title-background">
+      <div class="mountain mountain-back"></div>
+      <div class="mountain mountain-front"></div>
+    </div>
 
     <div class="title-panel">
 
@@ -49,7 +54,10 @@
         中国語と龍井茶を知る。
       </p>
 
-      <button id="startButton">
+      <button
+        id="startButton"
+        class="main-button"
+      >
         龍井村へ
       </button>
 
@@ -104,7 +112,7 @@
     </div>
 
 
-    <!-- CONTROLS -->
+    <!-- CONTROL -->
 
     <div id="controlHint">
       WASD / 矢印：移動　
@@ -142,8 +150,7 @@
           杭州探索録
         </div>
 
-        <div id="dialogueText">
-        </div>
+        <div id="dialogueText"></div>
 
         <div class="dialogue-next">
           E / Enter
@@ -155,7 +162,7 @@
 
 
     <!-- =================================================
-         WORD DISCOVERY
+         WORD POPUP
     ================================================== -->
 
     <div
@@ -181,8 +188,7 @@
           茶畑
         </div>
 
-        <div id="wordDescription">
-        </div>
+        <div id="wordDescription"></div>
 
         <button id="wordCloseButton">
           手帖に登録
@@ -207,6 +213,7 @@
         <div class="notebook-header">
 
           <div>
+
             <div class="notebook-small">
               杭州探索録2
             </div>
@@ -214,6 +221,7 @@
             <h2>
               龍井茶手帖
             </h2>
+
           </div>
 
           <button id="notebookClose">
@@ -222,11 +230,9 @@
 
         </div>
 
-        <div id="notebookStats">
-        </div>
+        <div id="notebookStats"></div>
 
-        <div id="notebookWords">
-        </div>
+        <div id="notebookWords"></div>
 
       </div>
 
@@ -235,11 +241,15 @@
   </div>
 
 
-  <script src="map.js"></script>
-  <script src="vocabulary.js"></script>
-  <script src="dialogue.js"></script>
-  <script src="game.js"></script>
-  <script src="visuals.js"></script>
+  <!-- ===================================================
+       SCRIPT ORDER
+  ==================================================== -->
+
+  <script src="./map.js"></script>
+  <script src="./vocabulary.js"></script>
+  <script src="./dialogue.js"></script>
+  <script src="./game.js"></script>
+  <script src="./visuals.js"></script>
 
 </body>
 </html>
