@@ -3,7 +3,7 @@
 /*
 ==========================================================
  杭州探索録2
- DIALOGUE SYSTEM Ver.1
+ DIALOGUE SYSTEM Ver.1.1
 ==========================================================
 */
 
@@ -28,15 +28,18 @@ const dialogueBox=
     "dialogueBox"
   );
 
+
 const speakerName=
   document.getElementById(
     "speakerName"
   );
 
+
 const dialogueText=
   document.getElementById(
     "dialogueText"
   );
+
 
 const portraitFace=
   document.getElementById(
@@ -59,7 +62,12 @@ function startDialogue(
   dialogue.npc=npc;
 
   dialogue.lines=
-    npc.dialogue || [];
+    Array.isArray(
+      npc.dialogue
+    )
+    ? npc.dialogue
+    : [];
+
 
   dialogue.index=0;
 
@@ -68,19 +76,23 @@ function startDialogue(
 
 
   speakerName.textContent=
-    npc.name || "村人";
+    npc.name ||
+    "村人";
 
 
   dialogueText.textContent=
-    dialogue.lines[0] || "";
+    dialogue.lines[0] ||
+    "";
 
 
   portraitFace.textContent=
-    npc.label || "人";
+    npc.label ||
+    "人";
 
 
   portraitFace.style.background=
-    npc.color || "#536548";
+    npc.color ||
+    "#536548";
 
 
   dialogueBox.classList.remove(
@@ -92,7 +104,9 @@ function startDialogue(
 
 function advanceDialogue(){
 
-  if(!dialogue.active){
+  if(
+    !dialogue.active
+  ){
     return;
   }
 
@@ -118,7 +132,8 @@ function advanceDialogue(){
 
     if(
       npc &&
-      npc.reward
+      npc.reward &&
+      typeof obtainWord==="function"
     ){
 
       obtainWord(
@@ -129,7 +144,9 @@ function advanceDialogue(){
 
 
     if(callback){
+
       callback();
+
     }
 
 
@@ -164,3 +181,8 @@ function closeDialogue(){
   );
 
 }
+
+
+console.log(
+  "杭州探索録2 Dialogue System Ver.1.1 loaded"
+);
