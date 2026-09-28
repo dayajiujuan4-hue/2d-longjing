@@ -3,9 +3,10 @@
 /*
 ==========================================================
  杭州探索録2
- VISUAL SYSTEM Ver.4.0
+ VISUAL SYSTEM Ver.5.0
 
- LIVING LONGJING
+ ALIVE LONGJING
+ 高低差 / 遠景 / パララックス / 前景 / 段々茶畑
 ==========================================================
 */
 
@@ -71,6 +72,168 @@ function onScreen(x,y,m=100){
 
 
 /* =========================================================
+   AREA MOOD
+========================================================= */
+
+function areaMood(){
+
+  switch(currentMapId){
+
+    case "field":
+      return {
+        sky:"#dbe8c4",
+        mountain1:"#839b6e",
+        mountain2:"#657f5b",
+        mountain3:"#506c50"
+      };
+
+    case "mountain":
+      return {
+        sky:"#d7e4c6",
+        mountain1:"#7d9270",
+        mountain2:"#60765c",
+        mountain3:"#465f4b"
+      };
+
+    case "workshop":
+      return {
+        sky:"#d8c99e",
+        mountain1:"#85775d",
+        mountain2:"#695f4e",
+        mountain3:"#514a3e"
+      };
+
+    default:
+      return {
+        sky:"#dfe9c9",
+        mountain1:"#879d70",
+        mountain2:"#6b825e",
+        mountain3:"#536c51"
+      };
+  }
+}
+
+
+/* =========================================================
+   PARALLAX BACKGROUND
+========================================================= */
+
+function mountainLayer(
+  baseY,
+  speed,
+  color,
+  height,
+  seed
+){
+
+  const shift=
+    -((camera.x*speed)%220);
+
+  ctx.fillStyle=color;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -250,
+    canvas.height
+  );
+
+  for(let x=-250;x<canvas.width+300;x+=110){
+
+    const xx=x+shift;
+
+    const wave=
+      Math.sin(
+        (x+seed*71)*.012
+      )*22;
+
+    ctx.lineTo(
+      xx,
+      baseY-height-wave
+    );
+
+    ctx.lineTo(
+      xx+55,
+      baseY-height*.45+wave*.3
+    );
+  }
+
+  ctx.lineTo(
+    canvas.width+300,
+    canvas.height
+  );
+
+  ctx.closePath();
+  ctx.fill();
+}
+
+
+function drawParallaxBackground(){
+
+  if(currentMapId==="workshop"){
+    return;
+  }
+
+  const mood=areaMood();
+
+  const sky=
+    ctx.createLinearGradient(
+      0,0,
+      0,canvas.height*.55
+    );
+
+  sky.addColorStop(
+    0,
+    mood.sky
+  );
+
+  sky.addColorStop(
+    1,
+    "#eef0d6"
+  );
+
+  ctx.fillStyle=sky;
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height*.36
+  );
+
+  const horizon=
+    Math.min(
+      canvas.height*.34,
+      230
+    );
+
+  mountainLayer(
+    horizon+75,
+    .08,
+    mood.mountain1,
+    80,
+    1
+  );
+
+  mountainLayer(
+    horizon+100,
+    .16,
+    mood.mountain2,
+    70,
+    2
+  );
+
+  mountainLayer(
+    horizon+126,
+    .25,
+    mood.mountain3,
+    55,
+    3
+  );
+}
+
+
+/* =========================================================
    GROUND
 ========================================================= */
 
@@ -106,8 +269,7 @@ function grassTile(x,y,tx,ty){
       px,
       py,
       2,
-      3+
-      (i%2)
+      3+(i%2)
     );
   }
 
@@ -193,30 +355,47 @@ function pathTile(x,y,tx,ty){
 
 function teaTile(x,y,tx,ty){
 
+  /*
+   * Ver.5:
+   * 茶畑の下側を暗くすることで、
+   * 一段高い場所に植わっているように見せる。
+   */
+
   ctx.fillStyle="#617a49";
   ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle="rgba(24,47,24,.25)";
-  ctx.fillRect(x,y+17,TILE,11);
+  ctx.fillStyle="rgba(33,52,28,.26)";
+  ctx.fillRect(
+    x,
+    y+22,
+    TILE,
+    10
+  );
 
   const sway=
     Math.round(
       Math.sin(
-        vt()*1.1+
-        tx*.6+
-        ty*.25
-      )*.7
+        vt()*1.15+
+        tx*.58+
+        ty*.31
+      )*1
     );
 
   ctx.fillStyle=V.teaDark;
-  ctx.fillRect(x,y+10,TILE,14);
+
+  ctx.fillRect(
+    x,
+    y+11,
+    TILE,
+    14
+  );
 
   ctx.fillStyle=V.tea;
 
-  ctx.fillRect(x+sway,y+8,8,12);
-  ctx.fillRect(x+7+sway,y+5,9,15);
-  ctx.fillRect(x+15+sway,y+7,9,13);
-  ctx.fillRect(x+23+sway,y+4,9,16);
+  ctx.fillRect(x+sway,y+8,8,13);
+  ctx.fillRect(x+7+sway,y+5,9,16);
+  ctx.fillRect(x+15+sway,y+7,9,14);
+  ctx.fillRect(x+23+sway,y+4,9,17);
 
   ctx.fillStyle=V.tea2;
 
@@ -236,33 +415,96 @@ function teaTile(x,y,tx,ty){
   ctx.fillRect(x+12+sway,y+2,2,4);
   ctx.fillRect(x+27+sway,y+1,2,4);
 
-  ctx.fillStyle="rgba(27,45,25,.18)";
-  ctx.fillRect(x,y+25,TILE,7);
+  /* row highlight */
+
+  ctx.fillStyle=
+    "rgba(202,221,143,.12)";
+
+  ctx.fillRect(
+    x,
+    y+3,
+    TILE,
+    3
+  );
 }
 
 
 function wallTile(x,y,tx,ty){
 
-  ctx.fillStyle="#5e6058";
+  /*
+   * 石垣を以前より縦方向に強調。
+   * 高低差表現の中心。
+   */
+
+  ctx.fillStyle="#555b53";
   ctx.fillRect(x,y,TILE,TILE);
 
-  ctx.fillStyle=V.stone;
-  ctx.fillRect(x,y+2,TILE,27);
+  ctx.fillStyle="#7b7c71";
+  ctx.fillRect(
+    x,
+    y+1,
+    TILE,
+    27
+  );
 
-  ctx.fillStyle=V.stone2;
-  ctx.fillRect(x,y+2,TILE,4);
+  ctx.fillStyle="#aaa796";
+  ctx.fillRect(
+    x,
+    y+1,
+    TILE,
+    4
+  );
 
-  ctx.fillStyle="#5f6059";
+  ctx.fillStyle="#5b5e56";
 
-  ctx.fillRect(x,y+14,TILE,2);
-  ctx.fillRect(x+14,y+2,2,12);
-  ctx.fillRect(x+8,y+16,2,13);
-  ctx.fillRect(x+25,y+16,2,13);
+  ctx.fillRect(
+    x,
+    y+14,
+    TILE,
+    2
+  );
 
-  if(vrand(tx,ty,4)>.55){
+  ctx.fillRect(
+    x+14,
+    y+2,
+    2,
+    12
+  );
 
-    ctx.fillStyle="#58704a";
-    ctx.fillRect(x+3,y+7,7,3);
+  ctx.fillRect(
+    x+8,
+    y+16,
+    2,
+    12
+  );
+
+  ctx.fillRect(
+    x+25,
+    y+16,
+    2,
+    12
+  );
+
+  ctx.fillStyle=
+    "rgba(35,46,34,.28)";
+
+  ctx.fillRect(
+    x,
+    y+27,
+    TILE,
+    5
+  );
+
+  if(vrand(tx,ty,4)>.52){
+
+    ctx.fillStyle="#536f48";
+
+    ctx.fillRect(
+      x+3,
+      y+7,
+      7,
+      3
+    );
   }
 }
 
@@ -273,7 +515,13 @@ function waterTile(x,y,tx,ty){
   ctx.fillRect(x,y,TILE,TILE);
 
   ctx.fillStyle=V.water;
-  ctx.fillRect(x+3,y,TILE-6,TILE);
+
+  ctx.fillRect(
+    x+3,
+    y,
+    TILE-6,
+    TILE
+  );
 
   const t=vt();
 
@@ -439,103 +687,88 @@ function drawTileMap(){
 
 
 /* =========================================================
-   BUILDING
+   TERRACE DEPTH
 ========================================================= */
 
-function drawRoof(x,y,w){
+function drawTerraceDepth(){
 
-  ctx.fillStyle="rgba(28,37,31,.22)";
+  const map=MAPS[currentMapId];
 
-  ctx.fillRect(
-    x-9,
-    y+22,
-    w+23,
-    11
-  );
-
-  ctx.fillStyle=V.roofDark;
-
-  ctx.beginPath();
-
-  ctx.moveTo(x-16,y+23);
-  ctx.lineTo(x+8,y);
-  ctx.lineTo(x+w-8,y);
-  ctx.lineTo(x+w+16,y+23);
-  ctx.lineTo(x+w+10,y+29);
-  ctx.lineTo(x-10,y+29);
-
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle=V.roof;
-
-  ctx.beginPath();
-
-  ctx.moveTo(x-9,y+19);
-  ctx.lineTo(x+11,y+4);
-  ctx.lineTo(x+w-11,y+4);
-  ctx.lineTo(x+w+9,y+19);
-
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.strokeStyle=
-    "rgba(177,193,181,.24)";
-
-  ctx.lineWidth=1;
-
-  for(let i=10;i<w;i+=13){
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x+i,
-      y+5
-    );
-
-    ctx.lineTo(
-      x+i-8,
-      y+20
-    );
-
-    ctx.stroke();
+  if(
+    currentMapId!=="field" &&
+    currentMapId!=="village"
+  ){
+    return;
   }
 
-  ctx.fillStyle="#1d2824";
+  for(let y=1;y<map.height;y++){
 
-  ctx.fillRect(
-    x-13,
-    y+20,
-    w+26,
-    6
-  );
+    for(let x=0;x<map.width;x++){
 
-  ctx.fillStyle="#556159";
+      const tile=map.grid[y][x];
+      const above=map.grid[y-1][x];
 
-  for(let i=-7;i<w+10;i+=12){
+      if(
+        tile===4 &&
+        above===2
+      ){
 
-    ctx.fillRect(
-      x+i,
-      y+21,
-      8,
-      2
-    );
+        const sx=
+          x*TILE-camera.x;
+
+        const sy=
+          y*TILE-camera.y;
+
+        ctx.fillStyle=
+          "rgba(24,39,24,.20)";
+
+        ctx.fillRect(
+          sx+2,
+          sy+TILE-2,
+          TILE-4,
+          7
+        );
+      }
+    }
   }
 }
 
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
 
 function latticeWindow(x,y){
 
   ctx.fillStyle="#4c5c53";
   ctx.fillRect(x,y,29,25);
 
-  ctx.fillStyle="#94a99b";
+  ctx.fillStyle="#aab8a6";
   ctx.fillRect(x+3,y+3,23,19);
 
   ctx.fillStyle="#4c473a";
 
   ctx.fillRect(x+12,y+3,3,19);
   ctx.fillRect(x+3,y+10,23,3);
+}
+
+
+function tinyTeaPot(x,y){
+
+  ctx.fillStyle="#9c6044";
+
+  ctx.fillRect(x-6,y-4,12,8);
+  ctx.fillRect(x-3,y-7,6,3);
+  ctx.fillRect(x+6,y-2,5,3);
+
+  ctx.strokeStyle="#9c6044";
+
+  ctx.strokeRect(
+    x-10,
+    y-3,
+    5,
+    5
+  );
 }
 
 
@@ -581,6 +814,67 @@ function buildingSign(x,y,text){
 }
 
 
+function drawRoof(x,y,w){
+
+  ctx.fillStyle="rgba(28,37,31,.22)";
+
+  ctx.fillRect(
+    x-9,
+    y+22,
+    w+23,
+    11
+  );
+
+  ctx.fillStyle=V.roofDark;
+
+  ctx.beginPath();
+
+  ctx.moveTo(x-16,y+23);
+  ctx.lineTo(x+8,y);
+  ctx.lineTo(x+w-8,y);
+  ctx.lineTo(x+w+16,y+23);
+  ctx.lineTo(x+w+10,y+29);
+  ctx.lineTo(x-10,y+29);
+
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle=V.roof;
+
+  ctx.beginPath();
+
+  ctx.moveTo(x-9,y+19);
+  ctx.lineTo(x+11,y+4);
+  ctx.lineTo(x+w-11,y+4);
+  ctx.lineTo(x+w+9,y+19);
+
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle=
+    "rgba(177,193,181,.25)";
+
+  for(let i=10;i<w;i+=13){
+
+    ctx.beginPath();
+
+    ctx.moveTo(x+i,y+5);
+    ctx.lineTo(x+i-8,y+20);
+
+    ctx.stroke();
+  }
+
+  ctx.fillStyle="#1d2824";
+
+  ctx.fillRect(
+    x-13,
+    y+20,
+    w+26,
+    6
+  );
+}
+
+
 function drawBuilding(b){
 
   const x=b.x*TILE-camera.x;
@@ -589,25 +883,25 @@ function drawBuilding(b){
   const w=b.w*TILE;
   const h=b.h*TILE;
 
-  if(!onScreen(x+w/2,y+h/2,Math.max(w,h))){
+  if(
+    !onScreen(
+      x+w/2,
+      y+h/2,
+      Math.max(w,h)
+    )
+  ){
     return;
   }
 
-  /* long shadow */
+  ctx.fillStyle=
+    "rgba(30,45,29,.20)";
 
-  ctx.fillStyle="rgba(30,45,29,.19)";
-
-  ctx.beginPath();
-
-  ctx.moveTo(x+10,y+23);
-  ctx.lineTo(x+w+30,y+38);
-  ctx.lineTo(x+w+30,y+h+15);
-  ctx.lineTo(x+10,y+h);
-
-  ctx.closePath();
-  ctx.fill();
-
-  /* walls */
+  ctx.fillRect(
+    x+12,
+    y+34,
+    w+20,
+    h-20
+  );
 
   ctx.fillStyle=V.wall2;
 
@@ -636,8 +930,6 @@ function drawBuilding(b){
     7
   );
 
-  /* timber */
-
   ctx.fillStyle=V.woodDark;
 
   ctx.fillRect(
@@ -661,8 +953,6 @@ function drawBuilding(b){
     h-44
   );
 
-  /* windows */
-
   if(w>150){
 
     latticeWindow(
@@ -676,8 +966,6 @@ function drawBuilding(b){
     );
   }
 
-  /* door */
-
   const dx=x+w/2-17;
   const dy=y+h-50;
 
@@ -689,8 +977,6 @@ function drawBuilding(b){
 
   ctx.fillStyle="#382c23";
   ctx.fillRect(dx+16,dy+4,2,46);
-
-  /* shop decoration */
 
   if(
     b.name.includes("茶馆") ||
@@ -741,7 +1027,7 @@ function drawTree(tx,ty,scale=1){
   const x=(tx+.5)*TILE-camera.x;
   const y=(ty+.5)*TILE-camera.y;
 
-  if(!onScreen(x,y,90)){
+  if(!onScreen(x,y,100)){
     return;
   }
 
@@ -749,9 +1035,10 @@ function drawTree(tx,ty,scale=1){
     Math.sin(
       vt()*.8+
       tx*.45
-    )*1.2;
+    )*1.5;
 
-  ctx.fillStyle="rgba(28,46,28,.19)";
+  ctx.fillStyle=
+    "rgba(28,46,28,.20)";
 
   ctx.beginPath();
 
@@ -760,8 +1047,7 @@ function drawTree(tx,ty,scale=1){
     y+18,
     27*scale,
     9*scale,
-    0,
-    0,
+    0,0,
     Math.PI*2
   );
 
@@ -841,7 +1127,7 @@ function drawBamboo(tx,ty){
   const x=(tx+.5)*TILE-camera.x;
   const y=(ty+.5)*TILE-camera.y;
 
-  if(!onScreen(x,y,80)){
+  if(!onScreen(x,y,90)){
     return;
   }
 
@@ -876,21 +1162,51 @@ function drawBamboo(tx,ty){
 
     ctx.fillStyle="#9daf69";
 
-    for(let yy=top+10;yy<y+20;yy+=13){
-      ctx.fillRect(bx,yy,4,2);
+    for(
+      let yy=top+10;
+      yy<y+20;
+      yy+=13
+    ){
+      ctx.fillRect(
+        bx,
+        yy,
+        4,
+        2
+      );
     }
   }
 
   ctx.fillStyle="#3d703b";
 
-  ctx.fillRect(x-23+sway,y-38,19,4);
-  ctx.fillRect(x+5+sway,y-31,23,4);
-  ctx.fillRect(x-14+sway,y-20,18,4);
+  ctx.fillRect(
+    x-23+sway,
+    y-38,
+    19,
+    4
+  );
+
+  ctx.fillRect(
+    x+5+sway,
+    y-31,
+    23,
+    4
+  );
 
   ctx.fillStyle="#6f9957";
 
-  ctx.fillRect(x-18+sway,y-45,15,3);
-  ctx.fillRect(x+8+sway,y-43,17,3);
+  ctx.fillRect(
+    x-18+sway,
+    y-45,
+    15,
+    3
+  );
+
+  ctx.fillRect(
+    x+8+sway,
+    y-43,
+    17,
+    3
+  );
 }
 
 
@@ -899,23 +1215,7 @@ function drawBush(tx,ty){
   const x=(tx+.5)*TILE-camera.x;
   const y=(ty+.5)*TILE-camera.y;
 
-  ctx.fillStyle="rgba(30,48,27,.15)";
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    x,
-    y+8,
-    17,
-    6,
-    0,0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
   ctx.fillStyle="#3d693b";
-
   ctx.fillRect(x-14,y-5,28,12);
 
   ctx.fillStyle="#59804b";
@@ -943,17 +1243,11 @@ function sceneryItem(s){
     break;
 
     case "bamboo":
-      drawBamboo(
-        s.x,
-        s.y
-      );
+      drawBamboo(s.x,s.y);
     break;
 
     case "bush":
-      drawBush(
-        s.x,
-        s.y
-      );
+      drawBush(s.x,s.y);
     break;
 
     case "grassTuft":{
@@ -998,25 +1292,6 @@ function sceneryItem(s){
    PROPS
 ========================================================= */
 
-function tinyTeaPot(x,y){
-
-  ctx.fillStyle="#9c6044";
-
-  ctx.fillRect(x-6,y-4,12,8);
-  ctx.fillRect(x-3,y-7,6,3);
-  ctx.fillRect(x+6,y-2,5,3);
-
-  ctx.strokeStyle="#9c6044";
-
-  ctx.strokeRect(
-    x-10,
-    y-3,
-    5,
-    5
-  );
-}
-
-
 function basket(x,y){
 
   ctx.fillStyle="#725032";
@@ -1046,7 +1321,6 @@ function chair(x,y){
   ctx.fillStyle=V.woodDark;
 
   ctx.fillRect(x-9,y-7,18,4);
-
   ctx.fillRect(x-7,y-3,3,12);
   ctx.fillRect(x+4,y-3,3,12);
 
@@ -1057,32 +1331,13 @@ function chair(x,y){
 
 function teaTable(x,y){
 
-  ctx.fillStyle="rgba(30,40,27,.15)";
-
-  ctx.fillRect(
-    x-18,
-    y+8,
-    38,
-    5
-  );
-
   ctx.fillStyle=V.woodDark;
 
-  ctx.fillRect(
-    x-17,
-    y-5,
-    34,
-    7
-  );
+  ctx.fillRect(x-17,y-5,34,7);
 
   ctx.fillStyle=V.wood2;
 
-  ctx.fillRect(
-    x-14,
-    y-4,
-    28,
-    3
-  );
+  ctx.fillRect(x-14,y-4,28,3);
 
   ctx.fillStyle=V.woodDark;
 
@@ -1090,8 +1345,6 @@ function teaTable(x,y){
   ctx.fillRect(x+8,y+2,4,13);
 
   tinyTeaPot(x,y-9);
-
-  /* cup */
 
   ctx.fillStyle="#d7d1b4";
 
@@ -1182,9 +1435,6 @@ function drawProp(p){
       ctx.fillStyle="#a09e90";
       ctx.fillRect(x-8,y-9,14,5);
 
-      ctx.fillStyle="#5d714e";
-      ctx.fillRect(x-9,y-3,5,3);
-
     break;
 
     case "sign":{
@@ -1194,11 +1444,6 @@ function drawProp(p){
 
       ctx.fillStyle="#d5c59a";
       ctx.fillRect(x-39,y-25,78,25);
-
-      ctx.fillStyle="#786546";
-
-      ctx.fillRect(x-39,y-25,78,3);
-      ctx.fillRect(x-39,y-3,78,3);
 
       ctx.fillStyle="#324235";
 
@@ -1252,12 +1497,6 @@ function drawProp(p){
       ctx.fillRect(x-11,y-6,25,5);
       ctx.fillRect(x-7,y-12,20,5);
 
-      ctx.fillStyle="#8b6743";
-
-      ctx.fillRect(x+7,y+1,4,3);
-      ctx.fillRect(x+7,y-5,4,3);
-      ctx.fillRect(x+6,y-11,4,3);
-
     break;
 
     case "bambooFence":
@@ -1276,7 +1515,6 @@ function drawProp(p){
     case "flower":
 
       ctx.fillStyle="#527641";
-
       ctx.fillRect(x-1,y-7,2,14);
 
       ctx.fillStyle="#d7b9a2";
@@ -1317,7 +1555,8 @@ function npcBase(
       vt()*1.6+x*.01
     )*.5;
 
-  ctx.fillStyle="rgba(25,38,24,.22)";
+  ctx.fillStyle=
+    "rgba(25,38,24,.22)";
 
   ctx.beginPath();
 
@@ -1332,14 +1571,10 @@ function npcBase(
 
   ctx.fill();
 
-  /* legs */
-
   ctx.fillStyle="#3f4541";
 
   ctx.fillRect(x-7,y+8+idle,5,10);
   ctx.fillRect(x+2,y+8+idle,5,10);
-
-  /* clothes */
 
   ctx.fillStyle=color;
 
@@ -1364,8 +1599,6 @@ function npcBase(
     13
   );
 
-  /* head */
-
   ctx.fillStyle="#e1b38b";
 
   ctx.fillRect(
@@ -1374,8 +1607,6 @@ function npcBase(
     14,
     13
   );
-
-  /* hair */
 
   ctx.fillStyle="#372e29";
 
@@ -1390,8 +1621,6 @@ function npcBase(
     type==="farmer" ||
     type==="worker"
   ){
-
-    /* straw hat */
 
     ctx.fillStyle="#c1a263";
 
@@ -1412,8 +1641,6 @@ function npcBase(
 
   if(type==="tourist"){
 
-    /* small backpack */
-
     ctx.fillStyle="#7b5141";
 
     ctx.fillRect(
@@ -1424,21 +1651,10 @@ function npcBase(
     );
   }
 
-  if(type==="teaGuest"){
-
-    ctx.fillStyle="#c7b68d";
-
-    ctx.fillRect(
-      x-5,
-      y+1+idle,
-      10,
-      4
-    );
-  }
-
   if(label){
 
-    ctx.fillStyle="rgba(18,28,18,.82)";
+    ctx.fillStyle=
+      "rgba(18,28,18,.82)";
 
     ctx.fillRect(
       x-14,
@@ -1504,21 +1720,28 @@ function drawNPC(npc){
 
 function drawAmbientNPC(npc){
 
-  const x=(npc.x+.5)*TILE-camera.x;
-  const y=(npc.y+.5)*TILE-camera.y;
+  /*
+   * living.js が存在する場合は
+   * そちらにアニメーションを任せる。
+   */
 
-  if(!onScreen(x,y,60)){
+  if(
+    typeof livingDrawNPC==="function"
+  ){
+
+    livingDrawNPC(npc);
     return;
   }
 
-  const colors={
+  const x=(npc.x+.5)*TILE-camera.x;
+  const y=(npc.y+.5)*TILE-camera.y;
 
+  const colors={
     villager:"#726050",
     tourist:"#596e7c",
     farmer:"#617348",
     teaGuest:"#77695a",
     worker:"#6e5542"
-
   };
 
   npcBase(
@@ -1552,7 +1775,8 @@ function drawPlayer(){
       ? Math.abs(step)*1.1
       : 0;
 
-  ctx.fillStyle="rgba(23,35,23,.25)";
+  ctx.fillStyle=
+    "rgba(23,35,23,.25)";
 
   ctx.beginPath();
 
@@ -1702,7 +1926,7 @@ function drawInteractables(map){
 
 
 /* =========================================================
-   WORLD OBJECTS
+   WORLD
 ========================================================= */
 
 function drawWorldObjects(){
@@ -1710,18 +1934,21 @@ function drawWorldObjects(){
   const map=MAPS[currentMapId];
 
   if(Array.isArray(map.scenery)){
+
     for(const s of map.scenery){
       sceneryItem(s);
     }
   }
 
   if(Array.isArray(map.buildings)){
+
     for(const b of map.buildings){
       drawBuilding(b);
     }
   }
 
   if(Array.isArray(map.props)){
+
     for(const p of map.props){
       drawProp(p);
     }
@@ -1730,10 +1957,6 @@ function drawWorldObjects(){
   drawInteractables(map);
 }
 
-
-/* =========================================================
-   ENTITIES
-========================================================= */
 
 function drawEntities(){
 
@@ -1787,17 +2010,116 @@ function drawEntities(){
     (a,b)=>a.y-b.y
   );
 
-  for(const entity of list){
-    entity.draw();
+  for(const e of list){
+    e.draw();
   }
 }
 
 
 /* =========================================================
-   ATMOSPHERE
+   FOREGROUND
+========================================================= */
+
+function foregroundLeaves(){
+
+  if(currentMapId==="workshop"){
+    return;
+  }
+
+  const t=vt();
+
+  ctx.save();
+
+  const sway=
+    Math.sin(t*.7)*7;
+
+  /*
+   * 左手前
+   */
+
+  ctx.translate(
+    sway,
+    0
+  );
+
+  ctx.fillStyle=
+    "rgba(39,82,43,.90)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    -12,
+    canvas.height*.72,
+    65,
+    22,
+    -.5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle=
+    "rgba(62,108,54,.92)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    20,
+    canvas.height*.82,
+    75,
+    25,
+    -.2,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /*
+   * 右手前
+   */
+
+  ctx.fillStyle=
+    "rgba(43,88,45,.91)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    canvas.width+15,
+    canvas.height*.68,
+    80,
+    25,
+    .45,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.restore();
+}
+
+
+/* =========================================================
+   LIGHT
 ========================================================= */
 
 function drawSunlight(){
+
+  if(currentMapId==="workshop"){
+
+    ctx.fillStyle=
+      "rgba(209,167,91,.06)";
+
+    ctx.fillRect(
+      0,0,
+      canvas.width,
+      canvas.height
+    );
+
+    return;
+  }
 
   const g=
     ctx.createLinearGradient(
@@ -1809,7 +2131,7 @@ function drawSunlight(){
 
   g.addColorStop(
     0,
-    "rgba(255,240,188,.09)"
+    "rgba(255,240,188,.11)"
   );
 
   g.addColorStop(
@@ -1825,8 +2147,7 @@ function drawSunlight(){
   ctx.fillStyle=g;
 
   ctx.fillRect(
-    0,
-    0,
+    0,0,
     canvas.width,
     canvas.height
   );
@@ -1834,6 +2155,10 @@ function drawSunlight(){
 
 
 function drawCloudShadow(){
+
+  if(currentMapId==="workshop"){
+    return;
+  }
 
   const x=
     (vt()*17)%
@@ -1887,14 +2212,13 @@ function drawVignette(){
 
   g.addColorStop(
     1,
-    "rgba(22,38,24,.11)"
+    "rgba(22,38,24,.12)"
   );
 
   ctx.fillStyle=g;
 
   ctx.fillRect(
-    0,
-    0,
+    0,0,
     canvas.width,
     canvas.height
   );
@@ -1902,7 +2226,7 @@ function drawVignette(){
 
 
 /* =========================================================
-   EXIT HINT
+   EXIT
 ========================================================= */
 
 function drawExitHints(){
@@ -1947,22 +2271,49 @@ function drawGame(){
     canvas.height
   );
 
+  drawParallaxBackground();
+
   drawTileMap();
+
+  drawTerraceDepth();
 
   drawExitHints();
 
   drawWorldObjects();
 
+  /*
+   * living.js の蝶・鳥など
+   * NPCより後ろ側
+   */
+
+  if(
+    typeof livingDrawBack==="function"
+  ){
+    livingDrawBack();
+  }
+
   drawEntities();
+
+  /*
+   * NPCより前側の生活エフェクト
+   */
+
+  if(
+    typeof livingDrawFront==="function"
+  ){
+    livingDrawFront();
+  }
 
   drawSunlight();
 
   drawCloudShadow();
+
+  foregroundLeaves();
 
   drawVignette();
 }
 
 
 console.log(
-  "杭州探索録2 Visual System Ver.4.0 - LIVING LONGJING loaded"
+  "杭州探索録2 Visual System Ver.5.0 - ALIVE LONGJING loaded"
 );
