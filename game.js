@@ -3,7 +3,7 @@
 /*
 ==========================================================
  杭州探索録2
- GAME SYSTEM Ver.1
+ GAME SYSTEM Ver.1.2
 ==========================================================
 */
 
@@ -13,47 +13,62 @@ const canvas=
     "gameCanvas"
   );
 
+
 const ctx=
-  canvas.getContext("2d");
+  canvas.getContext(
+    "2d"
+  );
 
 
-ctx.imageSmoothingEnabled=false;
+ctx.imageSmoothingEnabled=
+  false;
 
+
+/* =========================================================
+   DOM
+========================================================= */
 
 const titleScreen=
   document.getElementById(
     "titleScreen"
   );
 
+
 const startButton=
   document.getElementById(
     "startButton"
   );
+
 
 const titleNotebookButton=
   document.getElementById(
     "titleNotebookButton"
   );
 
+
 const mapName=
   document.getElementById(
     "mapName"
   );
+
 
 const mapNameCN=
   document.getElementById(
     "mapNameCN"
   );
 
+
 const wordCounter=
   document.getElementById(
     "wordCounter"
   );
 
+
 const titleProgress=
   document.getElementById(
     "titleProgress"
   );
+
 
 const interactionHint=
   document.getElementById(
@@ -61,11 +76,69 @@ const interactionHint=
   );
 
 
-/*
-==========================================================
- SAVE
-==========================================================
-*/
+const wordPopup=
+  document.getElementById(
+    "wordPopup"
+  );
+
+
+const wordChinese=
+  document.getElementById(
+    "wordChinese"
+  );
+
+
+const wordPinyin=
+  document.getElementById(
+    "wordPinyin"
+  );
+
+
+const wordJapanese=
+  document.getElementById(
+    "wordJapanese"
+  );
+
+
+const wordDescription=
+  document.getElementById(
+    "wordDescription"
+  );
+
+
+const wordCloseButton=
+  document.getElementById(
+    "wordCloseButton"
+  );
+
+
+const notebook=
+  document.getElementById(
+    "notebook"
+  );
+
+
+const notebookClose=
+  document.getElementById(
+    "notebookClose"
+  );
+
+
+const notebookStats=
+  document.getElementById(
+    "notebookStats"
+  );
+
+
+const notebookWords=
+  document.getElementById(
+    "notebookWords"
+  );
+
+
+/* =========================================================
+   SAVE
+========================================================= */
 
 const SAVE_KEY=
   "hangzhouExplorer2LongjingV1";
@@ -90,16 +163,41 @@ function loadSave(){
       );
 
 
-    if(raw){
+    if(!raw){
+      return;
+    }
 
-      const parsed=
-        JSON.parse(raw);
+
+    const parsed=
+      JSON.parse(
+        raw
+      );
 
 
-      saveData={
-        ...saveData,
-        ...parsed
-      };
+    if(
+      parsed &&
+      typeof parsed==="object"
+    ){
+
+      if(
+        Array.isArray(
+          parsed.words
+        )
+      ){
+
+        saveData.words=
+          parsed.words.filter(
+            id=>
+              VOCABULARY[id]
+          );
+
+      }
+
+
+      saveData.started=
+        Boolean(
+          parsed.started
+        );
 
     }
 
@@ -107,7 +205,7 @@ function loadSave(){
   catch(error){
 
     console.warn(
-      "save load failed",
+      "Save data could not be loaded.",
       error
     );
 
@@ -118,21 +216,31 @@ function loadSave(){
 
 function saveGame(){
 
-  localStorage.setItem(
-    SAVE_KEY,
-    JSON.stringify(
-      saveData
-    )
-  );
+  try{
+
+    localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify(
+        saveData
+      )
+    );
+
+  }
+  catch(error){
+
+    console.warn(
+      "Save failed.",
+      error
+    );
+
+  }
 
 }
 
 
-/*
-==========================================================
- PLAYER
-==========================================================
-*/
+/* =========================================================
+   MAP / PLAYER
+========================================================= */
 
 let currentMapId=
   "village";
@@ -148,9 +256,9 @@ const player={
     MAPS.village.spawn.y *
     TILE,
 
-  width:20,
+  width:18,
 
-  height:24,
+  height:20,
 
   speed:145,
 
@@ -170,11 +278,12 @@ const camera={
 };
 
 
-/*
-==========================================================
- INPUT
-==========================================================
-*/
+let exitCooldown=0;
+
+
+/* =========================================================
+   INPUT
+========================================================= */
 
 const keys={};
 
@@ -191,13 +300,11 @@ window.addEventListener(
 
 
     if(
-      [
-        "arrowup",
-        "arrowdown",
-        "arrowleft",
-        "arrowright",
-        " "
-      ].includes(key)
+      key==="arrowup" ||
+      key==="arrowdown" ||
+      key==="arrowleft" ||
+      key==="arrowright" ||
+      key===" "
     ){
 
       event.preventDefault();
@@ -223,7 +330,9 @@ window.addEventListener(
       }
 
 
-      if(dialogue.active){
+      if(
+        dialogue.active
+      ){
 
         advanceDialogue();
 
@@ -243,15 +352,35 @@ window.addEventListener(
       }
 
 
+      if(
+        !titleScreen.classList.contains(
+          "hidden"
+        )
+      ){
+
+        return;
+
+      }
+
+
       interact();
 
     }
 
 
-    if(key==="l"){
+    if(
+      key==="l"
+    ){
 
-      if(dialogue.active){
+      if(
+        dialogue.active ||
+        !wordPopup.classList.contains(
+          "hidden"
+        )
+      ){
+
         return;
+
       }
 
 
@@ -275,11 +404,9 @@ window.addEventListener(
 );
 
 
-/*
-==========================================================
- START
-==========================================================
-*/
+/* =========================================================
+   START
+========================================================= */
 
 startButton.addEventListener(
   "click",
@@ -311,11 +438,9 @@ titleNotebookButton.addEventListener(
 );
 
 
-/*
-==========================================================
- COLLISION
-==========================================================
-*/
+/* =========================================================
+   COLLISION
+========================================================= */
 
 function isWalkableTile(
   tile
@@ -343,6 +468,7 @@ function pointWalkable(
     Math.floor(
       px/TILE
     );
+
 
   const ty=
     Math.floor(
@@ -377,6 +503,7 @@ function canMoveTo(
   const halfW=
     player.width/2;
 
+
   const halfH=
     player.height/2;
 
@@ -408,15 +535,22 @@ function canMoveTo(
 }
 
 
-/*
-==========================================================
- PLAYER MOVEMENT
-==========================================================
-*/
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
 
 function updatePlayer(
   dt
 ){
+
+  if(
+    exitCooldown>0
+  ){
+
+    exitCooldown-=dt;
+
+  }
+
 
   if(
     dialogue.active ||
@@ -495,13 +629,20 @@ function updatePlayer(
     dy!==0;
 
 
-  if(!player.moving){
+  if(
+    !player.moving
+  ){
+
     return;
+
   }
 
 
   const length=
-    Math.hypot(dx,dy);
+    Math.hypot(
+      dx,
+      dy
+    );
 
 
   dx/=length;
@@ -509,16 +650,17 @@ function updatePlayer(
 
 
   const amount=
-    player.speed*dt;
+    player.speed *
+    dt;
 
 
   const nx=
-    player.x+
+    player.x +
     dx*amount;
 
 
   const ny=
-    player.y+
+    player.y +
     dy*amount;
 
 
@@ -551,13 +693,18 @@ function updatePlayer(
 }
 
 
-/*
-==========================================================
- EXIT
-==========================================================
-*/
+/* =========================================================
+   EXIT
+========================================================= */
 
 function checkExits(){
+
+  if(
+    exitCooldown>0
+  ){
+    return;
+  }
+
 
   const map=
     MAPS[currentMapId];
@@ -565,6 +712,7 @@ function checkExits(){
 
   const tx=
     player.x/TILE;
+
 
   const ty=
     player.y/TILE;
@@ -576,13 +724,10 @@ function checkExits(){
   ){
 
     if(
-
       tx>=exit.x &&
-      tx<=exit.x+exit.width &&
-
+      tx<exit.x+exit.width &&
       ty>=exit.y &&
-      ty<=exit.y+exit.height
-
+      ty<exit.y+exit.height
     ){
 
       changeMap(
@@ -602,33 +747,54 @@ function changeMap(
   exit
 ){
 
+  if(
+    !MAPS[
+      exit.target
+    ]
+  ){
+
+    console.warn(
+      "Unknown map:",
+      exit.target
+    );
+
+    return;
+
+  }
+
+
   currentMapId=
     exit.target;
 
 
   player.x=
-    exit.targetX*TILE;
+    (
+      exit.targetX+.5
+    )*TILE;
+
 
   player.y=
-    exit.targetY*TILE;
+    (
+      exit.targetY+.5
+    )*TILE;
 
 
   player.moving=false;
 
 
+  exitCooldown=.65;
+
+
   updateMapLabel();
 
-
-  clampCamera();
+  updateCamera();
 
 }
 
 
-/*
-==========================================================
- INTERACTION
-==========================================================
-*/
+/* =========================================================
+   DISTANCE
+========================================================= */
 
 function distance(
   ax,
@@ -645,6 +811,10 @@ function distance(
 }
 
 
+/* =========================================================
+   INTERACTABLE
+========================================================= */
+
 function getNearbyInteractable(){
 
   const map=
@@ -652,7 +822,9 @@ function getNearbyInteractable(){
 
 
   let best=null;
-  let bestDistance=9999;
+
+  let bestDistance=
+    Infinity;
 
 
   for(
@@ -660,17 +832,29 @@ function getNearbyInteractable(){
     map.interactables
   ){
 
+    const x=
+      (
+        item.x+.5
+      )*TILE;
+
+
+    const y=
+      (
+        item.y+.5
+      )*TILE;
+
+
     const d=
       distance(
         player.x,
         player.y,
-        item.x*TILE,
-        item.y*TILE
+        x,
+        y
       );
 
 
     if(
-      d<48 &&
+      d<56 &&
       d<bestDistance
     ){
 
@@ -695,7 +879,9 @@ function getNearbyNPC(){
 
 
   let best=null;
-  let bestDistance=9999;
+
+  let bestDistance=
+    Infinity;
 
 
   for(
@@ -703,17 +889,29 @@ function getNearbyNPC(){
     map.npcs
   ){
 
+    const x=
+      (
+        npc.x+.5
+      )*TILE;
+
+
+    const y=
+      (
+        npc.y+.5
+      )*TILE;
+
+
     const d=
       distance(
         player.x,
         player.y,
-        npc.x*TILE,
-        npc.y*TILE
+        x,
+        y
       );
 
 
     if(
-      d<52 &&
+      d<60 &&
       d<bestDistance
     ){
 
@@ -763,17 +961,21 @@ function interact(){
 }
 
 
-/*
-==========================================================
- INTERACTION HINT
-==========================================================
-*/
+/* =========================================================
+   INTERACTION HINT
+========================================================= */
 
 function updateInteractionHint(){
 
   if(
     dialogue.active ||
     !wordPopup.classList.contains(
+      "hidden"
+    ) ||
+    !notebook.classList.contains(
+      "hidden"
+    ) ||
+    !titleScreen.classList.contains(
       "hidden"
     )
   ){
@@ -790,19 +992,26 @@ function updateInteractionHint(){
   const npc=
     getNearbyNPC();
 
+
   const item=
     getNearbyInteractable();
 
 
-  if(
-    npc ||
-    item
-  ){
+  if(npc){
 
     interactionHint.textContent=
-      npc
-      ? `E　${npc.name}と話す`
-      : `E　${item.label}`;
+      `E　${npc.name}と話す`;
+
+
+    interactionHint.classList.remove(
+      "hidden"
+    );
+
+  }
+  else if(item){
+
+    interactionHint.textContent=
+      `E　${item.label}`;
 
 
     interactionHint.classList.remove(
@@ -821,42 +1030,9 @@ function updateInteractionHint(){
 }
 
 
-/*
-==========================================================
- WORD POPUP
-==========================================================
-*/
-
-const wordPopup=
-  document.getElementById(
-    "wordPopup"
-  );
-
-const wordChinese=
-  document.getElementById(
-    "wordChinese"
-  );
-
-const wordPinyin=
-  document.getElementById(
-    "wordPinyin"
-  );
-
-const wordJapanese=
-  document.getElementById(
-    "wordJapanese"
-  );
-
-const wordDescription=
-  document.getElementById(
-    "wordDescription"
-  );
-
-const wordCloseButton=
-  document.getElementById(
-    "wordCloseButton"
-  );
-
+/* =========================================================
+   WORD
+========================================================= */
 
 function obtainWord(
   id
@@ -867,21 +1043,27 @@ function obtainWord(
 
 
   if(!word){
-    return;
-  }
 
-
-  const already=
-    saveData.words.includes(
+    console.warn(
+      "Unknown vocabulary:",
       id
     );
 
+    return;
 
-  if(!already){
+  }
+
+
+  if(
+    !saveData.words.includes(
+      id
+    )
+  ){
 
     saveData.words.push(
       id
     );
+
 
     saveGame();
 
@@ -891,11 +1073,14 @@ function obtainWord(
   wordChinese.textContent=
     word.cn;
 
+
   wordPinyin.textContent=
     word.pinyin;
 
+
   wordJapanese.textContent=
     word.jp;
+
 
   wordDescription.textContent=
     word.description;
@@ -926,32 +1111,9 @@ wordCloseButton.addEventListener(
 );
 
 
-/*
-==========================================================
- NOTEBOOK
-==========================================================
-*/
-
-const notebook=
-  document.getElementById(
-    "notebook"
-  );
-
-const notebookClose=
-  document.getElementById(
-    "notebookClose"
-  );
-
-const notebookStats=
-  document.getElementById(
-    "notebookStats"
-  );
-
-const notebookWords=
-  document.getElementById(
-    "notebookWords"
-  );
-
+/* =========================================================
+   NOTEBOOK
+========================================================= */
 
 function toggleNotebook(){
 
@@ -976,6 +1138,7 @@ function toggleNotebook(){
 function openNotebook(){
 
   renderNotebook();
+
 
   notebook.classList.remove(
     "hidden"
@@ -1009,10 +1172,15 @@ function renderNotebook(){
 
 
   const categories=[
+
     "龍井村",
+
     "茶畑",
+
     "製茶",
+
     "山道"
+
   ];
 
 
@@ -1080,40 +1248,80 @@ function renderNotebook(){
 
       if(unlocked){
 
-        row.innerHTML=`
+        const cn=
+          document.createElement(
+            "div"
+          );
 
-          <div class="notebook-cn">
-            ${word.cn}
-          </div>
+        cn.className=
+          "notebook-cn";
 
-          <div>
-            ${word.pinyin}
-          </div>
+        cn.textContent=
+          word.cn;
 
-          <div>
-            ${word.jp}
-          </div>
 
-        `;
+        const py=
+          document.createElement(
+            "div"
+          );
+
+        py.textContent=
+          word.pinyin;
+
+
+        const jp=
+          document.createElement(
+            "div"
+          );
+
+        jp.textContent=
+          word.jp;
+
+
+        row.append(
+          cn,
+          py,
+          jp
+        );
 
       }
       else{
 
-        row.innerHTML=`
+        const a=
+          document.createElement(
+            "div"
+          );
 
-          <div class="notebook-cn">
-            ？？？
-          </div>
+        a.className=
+          "notebook-cn";
 
-          <div>
-            ？？？
-          </div>
+        a.textContent=
+          "？？？";
 
-          <div>
-            未発見
-          </div>
 
-        `;
+        const b=
+          document.createElement(
+            "div"
+          );
+
+        b.textContent=
+          "？？？";
+
+
+        const c=
+          document.createElement(
+            "div"
+          );
+
+        c.textContent=
+          "未発見";
+
+
+        row.append(
+          a,
+          b,
+          c
+        );
 
       }
 
@@ -1129,16 +1337,15 @@ function renderNotebook(){
 }
 
 
-/*
-==========================================================
- PROGRESS
-==========================================================
-*/
+/* =========================================================
+   PROGRESS
+========================================================= */
 
 function updateProgress(){
 
   const count=
     saveData.words.length;
+
 
   const total=
     VOCABULARY_IDS.length;
@@ -1154,11 +1361,9 @@ function updateProgress(){
 }
 
 
-/*
-==========================================================
- MAP LABEL
-==========================================================
-*/
+/* =========================================================
+   MAP LABEL
+========================================================= */
 
 function updateMapLabel(){
 
@@ -1169,35 +1374,18 @@ function updateMapLabel(){
   mapName.textContent=
     map.name;
 
+
   mapNameCN.textContent=
     map.cn;
 
 }
 
 
-/*
-==========================================================
- CAMERA
-==========================================================
-*/
+/* =========================================================
+   CAMERA
+========================================================= */
 
 function updateCamera(){
-
-  camera.x=
-    player.x-
-    canvas.width/2;
-
-  camera.y=
-    player.y-
-    canvas.height/2;
-
-
-  clampCamera();
-
-}
-
-
-function clampCamera(){
 
   const map=
     MAPS[currentMapId];
@@ -1206,15 +1394,26 @@ function clampCamera(){
   const mapWidth=
     map.width*TILE;
 
+
   const mapHeight=
     map.height*TILE;
+
+
+  const desiredX=
+    player.x-
+    canvas.width/2;
+
+
+  const desiredY=
+    player.y-
+    canvas.height/2;
 
 
   camera.x=
     Math.max(
       0,
       Math.min(
-        camera.x,
+        desiredX,
         Math.max(
           0,
           mapWidth-canvas.width
@@ -1227,7 +1426,7 @@ function clampCamera(){
     Math.max(
       0,
       Math.min(
-        camera.y,
+        desiredY,
         Math.max(
           0,
           mapHeight-canvas.height
@@ -1238,11 +1437,9 @@ function clampCamera(){
 }
 
 
-/*
-==========================================================
- UPDATE
-==========================================================
-*/
+/* =========================================================
+   UPDATE
+========================================================= */
 
 function update(
   dt
@@ -1252,18 +1449,18 @@ function update(
     dt
   );
 
+
   updateCamera();
+
 
   updateInteractionHint();
 
 }
 
 
-/*
-==========================================================
- LOOP
-==========================================================
-*/
+/* =========================================================
+   GAME LOOP
+========================================================= */
 
 let lastTime=
   performance.now();
@@ -1290,7 +1487,14 @@ function gameLoop(
   );
 
 
-  drawGame();
+  if(
+    typeof drawGame===
+    "function"
+  ){
+
+    drawGame();
+
+  }
 
 
   requestAnimationFrame(
@@ -1300,11 +1504,9 @@ function gameLoop(
 }
 
 
-/*
-==========================================================
- INIT
-==========================================================
-*/
+/* =========================================================
+   INIT
+========================================================= */
 
 loadSave();
 
@@ -1312,11 +1514,14 @@ updateProgress();
 
 updateMapLabel();
 
+updateCamera();
+
+
 requestAnimationFrame(
   gameLoop
 );
 
 
 console.log(
-  "杭州探索録2 Game System Ver.1 loaded"
+  "杭州探索録2 Game System Ver.1.2 loaded"
 );
