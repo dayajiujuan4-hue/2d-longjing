@@ -476,6 +476,131 @@ const VOCABULARY={
 
 };
 
+/* =========================================================
+   茶館
+========================================================= */
+
+　chahu:{
+  　category:"茶館",
+  　cn:"茶壶",
+  　pinyin:"cháhú",
+  　jp:"急須・ティーポット",
+  　description:"お茶を淹れるための茶壺。中国茶では茶葉や飲み方に合わせてさまざまな茶壺が使われる。"
+　},
+
+　chabei:{
+  　category:"茶館",
+  　cn:"茶杯",
+  　pinyin:"chábēi",
+  　jp:"茶杯・湯のみ",
+  　description:"お茶を飲むための小さな杯。"
+　},
+
+　chaguan_tin:{
+  　category:"茶館",
+  　cn:"茶罐",
+  　pinyin:"cháguàn",
+  　jp:"茶葉を入れる容器",
+  　description:"茶葉を保存するための容器。"
+　},
+
+　chazhuo:{
+  　category:"茶館",
+  　cn:"茶桌",
+  　pinyin:"cházhuō",
+  　jp:"茶卓・お茶を飲むテーブル",
+  　description:"お茶を淹れたり、囲んで飲んだりするためのテーブル。"
+　},
+
+　yizi:{
+  　category:"茶館",
+  　cn:"椅子",
+  　pinyin:"yǐzi",
+  　jp:"椅子",
+  　description:"座るための椅子。茶館では茶桌と一緒に置かれている。"
+　},
+
+　kaishui:{
+  　category:"茶館",
+  　cn:"开水",
+  　pinyin:"kāishuǐ",
+  　jp:"沸かしたお湯",
+  　description:"沸騰させた湯。中国語では飲用のお湯を「开水」と呼ぶことが多い。"
+　},
+
+　paocha:{
+  　category:"茶館",
+  　cn:"泡茶",
+  　pinyin:"pàochá",
+  　jp:"お茶を淹れる",
+  　description:"茶葉に湯を注いで、お茶を淹れること。"
+　},
+
+　daocha:{
+  　category:"茶館",
+  　cn:"倒茶",
+  　pinyin:"dàochá",
+  　jp:"お茶を注ぐ",
+  　description:"茶壺などから茶杯へお茶を注ぐこと。"
+　},
+
+　hecha:{
+  　category:"茶館",
+  　cn:"喝茶",
+  　pinyin:"hēchá",
+  　jp:"お茶を飲む",
+  　description:"お茶を飲むこと。"
+　},
+
+　caidan:{
+  　category:"茶館",
+  　cn:"菜单",
+  　pinyin:"càidān",
+  　jp:"メニュー",
+  　description:"店で注文できるものが書かれたメニュー。"
+　},
+
+　laoban:{
+  　category:"茶館",
+  　cn:"老板",
+  　pinyin:"lǎobǎn",
+  　jp:"店主・老板",
+  　description:"店の主人や経営者を表す言葉。"
+　},
+
+　keren:{
+  　category:"茶館",
+  　cn:"客人",
+  　pinyin:"kèrén",
+  　jp:"客・お客さん",
+  　description:"店などを訪れた客を表す言葉。"
+　},
+
+　guitai:{
+  　category:"茶館",
+  　cn:"柜台",
+  　pinyin:"guìtái",
+  　jp:"カウンター",
+  　description:"店員が接客したり商品を置いたりするカウンター。"
+　},
+
+　chuanghu:{
+  　category:"茶館",
+　  cn:"窗户",
+ 　 pinyin:"chuānghu",
+ 　 jp:"窓",
+　  description:"建物の窓。村口茶館からは龍井の茶山を眺めることができる。"
+　},
+
+　chaju:{
+ 　 category:"茶館",
+ 　 cn:"茶具",
+ 　 pinyin:"chájù",
+ 　 jp:"茶器",
+  　description:"茶壺や茶杯など、お茶を淹れて飲むために使う道具の総称。"
+　}
+};
+
 
 const VOCABULARY_IDS=
   Object.keys(
